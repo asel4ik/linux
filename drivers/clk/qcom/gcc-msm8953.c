@@ -3852,6 +3852,11 @@ static struct gdsc usb30_gdsc = {
 		.name = "usb30",
 	},
 	.pwrsts = PWRSTS_OFF_ON,
+	.flags = ALWAYS_ON,
+	/*
+	 * FIXME: dwc3 usb gadget cannot resume after GDSC power off
+	 * dwc3 7000000.dwc3: failed to enable ep0out
+	 * */
 };
 
 static struct gdsc venus_gdsc = {

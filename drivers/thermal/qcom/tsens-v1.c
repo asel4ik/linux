@@ -147,17 +147,17 @@ static void compute_intercept_slope_8976(struct tsens_priv *priv,
 {
 	int i;
 
-	priv->sensor[0].slope = 3313;
-	priv->sensor[1].slope = 3275;
-	priv->sensor[2].slope = 3320;
-	priv->sensor[3].slope = 3246;
-	priv->sensor[4].slope = 3279;
-	priv->sensor[5].slope = 3257;
-	priv->sensor[6].slope = 3234;
-	priv->sensor[7].slope = 3269;
-	priv->sensor[8].slope = 3255;
-	priv->sensor[9].slope = 3239;
-	priv->sensor[10].slope = 3286;
+	priv->sensor[0].slope = 3200;
+	priv->sensor[1].slope = 3200;
+	priv->sensor[2].slope = 3200;
+	priv->sensor[3].slope = 3200;
+	priv->sensor[4].slope = 3200;
+	priv->sensor[5].slope = 3200;
+	priv->sensor[6].slope = 3200;
+	priv->sensor[7].slope = 3200;
+	priv->sensor[8].slope = 3200;
+	priv->sensor[9].slope = 3200;
+	priv->sensor[10].slope = 3200;
 
 	for (i = 0; i < priv->num_sensors; i++) {
 		priv->sensor[i].offset = (p1[i] * MSM8976_SLOPE_FACTOR) -

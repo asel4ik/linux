@@ -277,6 +277,7 @@
 #define RST_CAMSS_CSI_VFE1_BCR			8
 #define RST_CAMSS_VFE1_BCR			9
 #define RST_CAMSS_CPP_BCR			10
+#define RST_MSS_BCR				11
 
 /* GDSCs */
 #define VENUS_GDSC				0

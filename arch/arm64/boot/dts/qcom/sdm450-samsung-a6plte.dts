@@ -357,33 +357,11 @@
 		compatible = "nxp,tfa9872";
 		reg = <0x34>;
 
-		dcdc-enable = <1>;
-		dpsa-enable = <0>;
-		first-boost-trip-lvl = <7>;
-		first-boost-voltage = <4>;
-		low-audio-hold-time = <27>;
-		low-noise-mode = <0>;
-		lpm-idle-bypass = <1>;
-		lpm1-hold-time = <0>;
-		lpm1-mode = <1>;
 		max-coil-current = <12>;
-		pdm-subsystem-enable = <0>;
-		pga-chop-clock-enable = <0>;
-		second-boost-trip-lvl = <5>;
+		first-boost-voltage = <4>;
+		first-boost-trip-lvl = <7>;
 		second-boost-voltage = <5>;
-		tdm-slot-bits = <15>;
-		tdm-current-sense = <1>;
-		tdm-current-sense-slot = <0>;
-		tdm-fs-bit-clks = <0>;
-		tdm-sample-size = <15>;
-		tdm-sense-a-val = <1>;
-		tdm-sense-b-val = <2>;
-		tdm-slots = <1>;
-		tdm-source-mapping = <2>;
-		tdm-speaker-dcdc-slot = <0>;
-		tdm-speaker-gain = <6>;
-		tdm-voltage-sense = <1>;
-		tdm-voltage-sense-slot = <1>;
+		second-boost-trip-lvl = <5>;
 
 		#sound-dai-cells = <0>;
 		status = "okay";

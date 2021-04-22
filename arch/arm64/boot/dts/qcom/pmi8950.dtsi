@@ -166,10 +166,11 @@
 			status = "disabled";
 		};
 
-		leds@1000 {
+		atc_leds: leds@1243 {
 			reg = <0x1243>;
 			compatible = "qcom,leds-atc";
 			label = "charging";
+			status = "disabled";
 		};
 	};
 

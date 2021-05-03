@@ -134,12 +134,14 @@
 #define MSM8916_VDDMX_AO	4
 
 /* MSM8976 Power Domain Indexes */
-#define MSM8976_VDDCX		0
-#define MSM8976_VDDCX_AO	1
-#define MSM8976_VDDCX_VFL	2
-#define MSM8976_VDDMX		3
-#define MSM8976_VDDMX_AO	4
-#define MSM8976_VDDMX_VFL	5
+#define MSM8976_VDDMSS		0
+#define MSM8976_VDDMSS_AO	1
+#define MSM8976_VDDCX		2
+#define MSM8976_VDDCX_AO	3
+#define MSM8976_VDDCX_VFL	4
+#define MSM8976_VDDMX		5
+#define MSM8976_VDDMX_AO	6
+#define MSM8976_VDDMX_VFL	7
 
 /* MSM8994 Power Domain Indexes */
 #define MSM8994_VDDCX		0

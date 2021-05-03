@@ -628,6 +628,7 @@ static const struct rpm_smd_clk_desc rpm_clk_msm8974 = {
 
 
 /* msm8976 */
+DEFINE_CLK_SMD_RPM_BRANCH(msm8976, xo_clk_src, xo_a_clk_src, QCOM_SMD_RPM_MISC_CLK, 0, 19200000);
 DEFINE_CLK_SMD_RPM(msm8976, pcnoc_clk, pcnoc_a_clk, QCOM_SMD_RPM_BUS_CLK, 0);
 DEFINE_CLK_SMD_RPM(msm8976, snoc_clk, snoc_a_clk, QCOM_SMD_RPM_BUS_CLK, 1);
 DEFINE_CLK_SMD_RPM(msm8976, mmssnoc_ahb_clk, mmssnoc_ahb_a_clk,
@@ -644,6 +645,8 @@ DEFINE_CLK_SMD_RPM_XO_BUFFER_PINCTRL(msm8976, bb_clk1_pin, bb_clk1_a_pin, 1);
 DEFINE_CLK_SMD_RPM_XO_BUFFER_PINCTRL(msm8976, bb_clk2_pin, bb_clk2_a_pin, 2);
 
 static struct clk_smd_rpm *msm8976_clks[] = {
+	[RPM_SMD_XO_CLK_SRC] = &msm8976_xo_clk_src,
+	[RPM_SMD_XO_A_CLK_SRC]	= &msm8976_xo_a_clk_src,
 	[RPM_SMD_PCNOC_CLK] = &msm8976_pcnoc_clk,
 	[RPM_SMD_PCNOC_A_CLK] = &msm8976_pcnoc_a_clk,
 	[RPM_SMD_SNOC_CLK] = &msm8976_snoc_clk,

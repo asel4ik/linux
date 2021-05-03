@@ -140,13 +140,16 @@ static const struct rpmpd_desc msm8953_desc = {
 };
 
 /* msm8976 RPM Power Domains */
+DEFINE_RPMPD_PAIR(msm8976, vddmss, vddmss_ao, SMPA, LEVEL, 1);
 DEFINE_RPMPD_PAIR(msm8976, vddcx, vddcx_ao, SMPA, LEVEL, 2);
 DEFINE_RPMPD_PAIR(msm8976, vddmx, vddmx_ao, SMPA, LEVEL, 6);
 
-DEFINE_RPMPD_VFL(msm8976, vddcx_vfl, RWSC, 2);
-DEFINE_RPMPD_VFL(msm8976, vddmx_vfl, RWSM, 6);
+DEFINE_RPMPD_VFL(msm8976, vddcx_vfl, SMPA, 2);
+DEFINE_RPMPD_VFL(msm8976, vddmx_vfl, SMPA, 6);
 
 static struct rpmpd *msm8976_rpmpds[] = {
+	[MSM8976_VDDMSS] =	&msm8976_vddmss,
+	[MSM8976_VDDMSS_AO] =	&msm8976_vddmss_ao,
 	[MSM8976_VDDCX] =	&msm8976_vddcx,
 	[MSM8976_VDDCX_AO] =	&msm8976_vddcx_ao,
 	[MSM8976_VDDCX_VFL] =	&msm8976_vddcx_vfl,
@@ -158,7 +161,7 @@ static struct rpmpd *msm8976_rpmpds[] = {
 static const struct rpmpd_desc msm8976_desc = {
 	.rpmpds = msm8976_rpmpds,
 	.num_pds = ARRAY_SIZE(msm8976_rpmpds),
-	.max_state = RPM_SMD_LEVEL_TURBO_HIGH,
+	.max_state = RPM_SMD_LEVEL_TURBO,
 };
 
 /* msm8996 RPM Power domains */

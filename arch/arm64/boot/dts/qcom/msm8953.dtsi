@@ -2000,6 +2000,10 @@
 								qcom,sd-lines = <0 1>;
 							};
 						};
+						q6afecc: clock-controller {
+							compatible = "qcom,q6afe-clocks";
+							#clock-cells = <2>;
+						};
 					};
 
 					q6asm: q6asm {
@@ -2179,6 +2183,11 @@
 			compatible = "qcom,msm8916-wcd-digital-codec";
 			reg = <0x0c0f0000 0x400>;
 			#sound-dai-cells = <1>;
+
+			clocks = <&q6afecc LPASS_CLK_ID_INTERNAL_DIGITAL_CODEC_CORE
+					   LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+				 <&xo_board>;
+			clock-names = "mclk", "ahbix-clk";
 		};
 
 		sound_card: sound {

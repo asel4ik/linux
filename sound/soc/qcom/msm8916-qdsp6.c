@@ -36,18 +36,14 @@ struct msm8916_qdsp6_data {
 	struct snd_soc_jack jack;
 	bool jack_setup;
 	unsigned int mi2s_clk_count[MI2S_COUNT];
-	unsigned int mclk_count;
 };
 
-static struct {
-	int clk_id;
-	bool need_mclk;
-} msm8953_bitclk_map[MI2S_COUNT] = {
-	{ Q6AFE_LPASS_CLK_ID_PRI_MI2S_IBIT, true },
-	{ Q6AFE_LPASS_CLK_ID_SEC_MI2S_IBIT, false },
-	{ Q6AFE_LPASS_CLK_ID_TER_MI2S_IBIT, true },
-	{ Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT, false },
-	{ Q6AFE_LPASS_CLK_ID_QUI_MI2S_IBIT, false },
+static const int msm8953_bitclk_map[MI2S_COUNT] = {
+	[MI2S_PRIMARY] = Q6AFE_LPASS_CLK_ID_PRI_MI2S_IBIT,
+	[MI2S_SECONDARY] = Q6AFE_LPASS_CLK_ID_SEC_MI2S_IBIT,
+	[MI2S_TERTIARY] = Q6AFE_LPASS_CLK_ID_TER_MI2S_IBIT,
+	[MI2S_QUATERNARY] = Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT,
+	[MI2S_QUINARY] = Q6AFE_LPASS_CLK_ID_QUI_MI2S_IBIT,
 };
 
 #define MIC_CTRL_TER_WS_SLAVE_SEL	BIT(21)
@@ -210,7 +206,6 @@ static int msm8953_qdsp6_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_card *card = rtd->card;
-	struct msm8916_qdsp6_data *data = snd_soc_card_get_drvdata(card);
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
 	int mi2s, ret, clk_id;
 
@@ -218,7 +213,7 @@ static int msm8953_qdsp6_startup(struct snd_pcm_substream *substream)
 	if (mi2s < 0)
 		return mi2s;
 
-	clk_id = msm8953_bitclk_map[mi2s].clk_id;
+	clk_id = msm8953_bitclk_map[mi2s];
 
 	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id,
 			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
@@ -227,21 +222,6 @@ static int msm8953_qdsp6_startup(struct snd_pcm_substream *substream)
 		return ret;
 	}
 
-	if (!msm8953_bitclk_map[mi2s].need_mclk)
-		return 0;
-
-	if (data->mclk_count == 0) {
-		ret = snd_soc_dai_set_sysclk(cpu_dai,
-				Q6AFE_LPASS_CLK_ID_INTERNAL_DIGITAL_CODEC_CORE,
-				DEFAULT_MCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
-		if (ret) {
-			dev_err(card->dev, "Failed to enable mclk: %d\n", ret);
-			return ret;
-		}
-	}
-
-	data->mclk_count ++;
-
 	return ret;
 }
 
@@ -249,7 +229,6 @@ static void msm8953_qdsp6_shutdown(struct snd_pcm_substream *substream)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_card *card = rtd->card;
-	struct msm8916_qdsp6_data *data = snd_soc_card_get_drvdata(card);
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
 	int mi2s, ret, clk_id;
 
@@ -257,9 +236,7 @@ static void msm8953_qdsp6_shutdown(struct snd_pcm_substream *substream)
 	if (mi2s < 0)
 		return;
 
-	clk_id = msm8953_bitclk_map[mi2s].clk_id;
-
-	data->mclk_count--;
+	clk_id = msm8953_bitclk_map[mi2s];
 
 	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id, 0, SNDRV_PCM_STREAM_PLAYBACK);
 	if (ret)

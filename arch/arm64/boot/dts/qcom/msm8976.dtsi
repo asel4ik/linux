@@ -1444,6 +1444,44 @@
 			status = "disabled";
 		};
 
+		usb: usb@78db000 {
+			compatible = "qcom,ci-hdrc";
+			reg = <0x78db000 0x400>,
+			      <0x6c000 0x200>;
+			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&gcc GCC_USB_HS_AHB_CLK>,
+				 <&gcc GCC_USB_HS_SYSTEM_CLK>;
+			clock-names = "iface", "core";
+			assigned-clocks = <&gcc GCC_USB_HS_SYSTEM_CLK>;
+			assigned-clock-rates = <80000000>;
+			resets = <&gcc RST_USB_HS_BCR>;
+			reset-names = "core";
+			phy_type = "ulpi";
+			dr_mode = "otg";
+			hnp-disable;
+			srp-disable;
+			adp-disable;
+			ahb-burst-config = <0>;
+			phy-names = "usb-phy";
+			phys = <&usb_hs_phy>;
+			status = "disabled";
+			#reset-cells = <1>;
+
+			ulpi {
+				usb_hs_phy: phy {
+					compatible = "qcom,msm8976-s2-usb-hsphy",
+						     "qcom,usb-hs-phy";
+					#phy-cells = <0>;
+					clocks = <&xo_board>, <&gcc GCC_USB2A_PHY_SLEEP_CLK>;
+					clock-names = "ref", "sleep";
+					resets = <&gcc RST_QUSB2_PHY_BCR>, <&usb 0>;
+					reset-names = "phy", "por";
+				};
+			};
+		};
+
+
 		modem: remoteproc@4080000 {
 			compatible = "qcom,msm8953-mss-pil";
 			reg = <0x4080000 0x100>,

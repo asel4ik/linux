@@ -478,7 +478,9 @@ status = "ok";
 	};
 };
 
-
+&usb {
+status = "okay";
+};
 &pm8950_spmi_regulators {
 	vdd_s5-supply = <&vph_pwr>;
 

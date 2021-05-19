@@ -4,14 +4,13 @@
 #include "msm8976.dtsi"
 #include "pm8950.dtsi"
 
-/*
-&hsusb_phy {
-	phy-supply = <&pm8953_l3>;
-	vdda-pll-supply = <&pm8953_l7>;
-	vdda-phy-dpdm-supply = <&pm8953_l13>;
+
+&usb_hs_phy {
+	v1p8-supply = <&pm8950_l7>;
+	v3p3-supply = <&pm8950_l13>;
 };
 
-
+/*
 &camss {
 	vdda-supply = <&pm8953_s3>;
 };

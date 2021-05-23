@@ -1,0 +1,411 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ */
+/dts-v1/;
+#include "msm8976.dtsi"
+#include "msm8976-pm8950.dtsi"
+#include "pmi8950.dtsi"
+#include "pm8950.dtsi"
+#include "pm8004.dtsi"
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/gpio-keys.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/input/linux-event-codes.h>
+#include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+#include <dt-bindings/leds/common.h>
+
+/ {
+	model = "Qualcomm Technologies, Inc. MSM8956 MTP";
+	compatible = "qcom,msm8956-mtp", "qcom,msm8956", "qcom,mtp";
+	qcom,board-id = <8 0>;
+  	qcom,msm-id = <266 0>;
+  	
+
+	reserved-memory {
+	
+/delete-node/ ext-region@85b00000;
+ 	ext-region@86300000 {
+		reg = <0x0 0x86300000 0x0 0x500000>;
+		no-map;
+		};
+		
+    };
+    
+    vph_pwr: vph-pwr-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "vph_pwr";
+		regulator-always-on;
+		regulator-boot-on;
+	};
+	
+	
+	gpio_keys {
+		compatible = "gpio-keys";
+		input-name = "gpio-keys";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		autorepeat;
+
+		button@0 {
+			label = "Volume Up";
+			gpios = <&tlmm 113 GPIO_ACTIVE_LOW>;
+			linux,input-type = <EV_KEY>;
+			linux,code = <KEY_VOLUMEUP>;
+			wakeup-source;
+			debounce-interval = <15>;
+		};
+	};
+};
+
+&blsp_dma {
+	status = "okay";
+};
+
+&blsp2_dma {
+	status = "okay";
+};
+
+/* eMMC */
+&sdhc_1 {
+	
+	status = "okay";
+
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&sdc1_clk_on &sdc1_cmd_on &sdc1_data_on  &sdc1_rclk_on>;
+	pinctrl-1 = <&sdc1_clk_off &sdc1_cmd_off &sdc1_data_off &sdc1_rclk_off>;
+
+};
+
+&wcd_codec {
+	status="disabled";
+	qcom,micbias1-ext-cap;
+	qcom,hphl-jack-type-normally-open;
+	qcom,mbhc-vthreshold-low = <75 150 237 450 500>;
+	qcom,mbhc-vthreshold-high = <75 150 237 450 500>;
+};
+
+&blsp_i2c4 {
+	status = "okay";
+
+	touch@4a {
+		compatible = "atmel,maxtouch";
+		reg = <0x4a>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&touch_int_default &ts_reset>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <65 IRQ_TYPE_LEVEL_LOW>;
+		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
+	};
+	touchscreen@38 {
+		compatible = "edt,edt-ft5406", "edt,edt-ft5x06";
+		reg = <0x38>;
+		vcc-supply = <&pm8950_l10>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&touch_int_default &ts_reset>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <65 IRQ_TYPE_EDGE_FALLING>;
+		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
+		touchscreen-size-x = <1080>;
+		touchscreen-size-y = <1920>;
+	};
+
+};
+
+&blsp_i2c6 {
+	status = "okay";
+	led-controller@45 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		compatible = "awinic,aw2013";
+		reg = <0x45>;
+		vcc-supply = <&pm8950_l10>;
+
+		led@0 {
+			reg = <0>;
+			led-max-microamp = <5000>;
+			function = LED_FUNCTION_INDICATOR;
+			color = <LED_COLOR_ID_RED>;
+		};
+		led@1 {
+			reg = <1>;
+			led-max-microamp = <5000>;
+			function = LED_FUNCTION_INDICATOR;
+			color = <LED_COLOR_ID_GREEN>;
+		};
+		led@2 {
+			reg = <2>;
+			led-max-microamp = <5000>;
+			function = LED_FUNCTION_INDICATOR;
+			color = <LED_COLOR_ID_BLUE>;
+		};
+	};
+};
+
+&pmi8950_wled {
+	status = "okay";
+
+	/* Don't copy-paste! See pmi8950.dtsi */
+
+	qcom,current-limit-microamp = <20000>;
+	qcom,enabled-strings = <0 1>;
+	qcom,num-strings = <2>;
+	qcom,ovp-millivolt = <29600>;
+};
+
+&tlmm {
+	gpio-reserved-ranges = <0 4>, <8 4>;
+
+	mdp_vsync_p_gpio: mdp_sync_p_gpio {
+		pins = "gpio24";
+		function = "mdp_vsync";
+
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+
+	pmx_mdss_default: pmx-mdss-default-pins {
+		pins = "gpio25";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+		output-high;
+	};
+
+	pmx_mdss_sleep: pmx-mdss-sleep-pins {
+		pins = "gpio25";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+
+	mdss_te_default: mdss-te-pins {
+			pins = "gpio24";
+			function = "mdp_vsync";
+			drive-strength = <2>;
+			bias-pull-down;
+		};
+
+	ts_reset: ts_reset {
+		pins = "gpio64";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+
+	ts_reset_suspend: ts_reset {
+		pins = "gpio64";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+
+	touch_int_default: touch_int_default {
+		pins = "gpio65";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+
+	touch_int_suspend: touch_int_suspend {
+		pins = "gpio65";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+};
+
+&pm8004_lsid5 {
+	status = "ok";
+};
+
+&pm8004_spmi_regulators {
+	vdd_s2-supply = <&vph_pwr>;
+	vdd_s5-supply = <&vph_pwr>;
+status = "ok";
+	/* Cluster 1 supply */
+	pm8004_s2: s2 {
+		/* Set APC1 always-on and raise min voltage to .95V
+		 * until a proper CPU scaling solution lands
+		 */
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-name = "vdd_apc1";
+		regulator-min-microvolt = <950000>; /* 500000 */
+		regulator-max-microvolt = <1165000>;
+	};
+
+	pm8004_s5: s5 {
+		/* Put GFX VDD up at boot until a proper solution lands */
+		regulator-name = "VDD_GFX";
+		regulator-min-microvolt = <950000>;
+		regulator-max-microvolt = <1165000>;
+		regulator-enable-ramp-delay = <500>;
+		regulator-always-on;
+				regulator-initial-mode = <1>;
+				regulator-allowed-modes = <1>, <2>, <3>;
+	};
+};
+
+
+&dsi0 {
+	panel@0 {
+		compatible = "novatek,nt35596-tianma-fhd";
+		reg = <0>;
+		backlight = <&pmi8950_wled>;
+
+		supply-names = "vsp", "vsn";
+		vsp-supply = <&lab_vreg>;
+		vsn-supply = <&ibb_vreg>;
+
+		reset-gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
+
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&pmx_mdss_default &mdss_te_default>;
+		pinctrl-1 = <&pmx_mdss_sleep &mdss_te_default>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&dsi0_out>;
+			};
+		};
+	};
+};
+
+
+&dsi0_out {
+	data-lanes = <0 1 2 3>;
+	remote-endpoint = <&panel_in>;
+};
+
+&pm8950_spmi_regulators {
+	vdd_s5-supply = <&vph_pwr>;
+
+	/* Cluster 0 supply */
+	pm8950_spmi_s5: s5 {
+		/* Set APC0 always-on and raise min voltage to .95V
+		 * until a proper CPU scaling solution lands
+		 */
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-name = "vdd_apc0";
+		regulator-min-microvolt = <950000>; /* 790000 */
+		regulator-max-microvolt = <1165000>;
+	};
+};
+&smd_rpm_regulators {
+		
+		pm8950_s1: s1 {
+			regulator-min-microvolt = <863000>;
+			regulator-max-microvolt = <1162500>;	
+		};
+	
+		pm8950_s3: s3 {
+			regulator-min-microvolt = <1325000>;
+			regulator-max-microvolt = <1325000>;
+		};
+	
+		pm8950_s4: s4 {
+			regulator-min-microvolt = <2050000>;
+			regulator-max-microvolt = <2050000>;
+		};
+	
+		pm8950_l1: l1 {
+			regulator-min-microvolt = <1100000>;
+			regulator-max-microvolt = <1300000>;
+		};
+	
+		pm8950_l2: l2 {
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
+		};
+	
+		pm8950_l3: l3 {
+			regulator-min-microvolt = <1000000>;
+			regulator-max-microvolt = <1100000>;
+		};
+	
+		pm8950_l5: l5 { 
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+		};
+	
+		pm8950_l6: l6 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+		};
+		
+		pm8950_l7: l7 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1900000>;
+		};
+		
+		pm8950_l8: l8 {
+			regulator-min-microvolt = <2900000>;
+			regulator-max-microvolt = <2900000>;
+		};
+	
+		pm8950_l9: l9 { 
+			regulator-min-microvolt = <3000000>;
+			regulator-max-microvolt = <3300000>;
+		};
+	
+		pm8950_l10: l10 {
+		
+			regulator-min-microvolt = <2850000>;
+			regulator-max-microvolt = <2850000>;
+		};
+	
+		pm8950_l11: l11 {
+			regulator-min-microvolt = <2950000>;
+			regulator-max-microvolt = <2950000>;
+		};
+	
+		pm8950_l12: l12 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <2950000>;
+		};
+	
+		pm8950_l13: l13 {
+			regulator-min-microvolt = <3075000>;
+			regulator-max-microvolt = <3075000>;
+		};
+	
+		pm8950_l14: l14 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3300000>;
+		};
+	
+		pm8950_l15: l15 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3300000>;
+		};
+	
+		pm8950_l16: l16 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+		};
+	
+		pm8950_l17: l17 {
+			regulator-min-microvolt = <2500000>;
+			regulator-max-microvolt = <2900000>;
+		};
+	
+		pm8950_l19: l19 {
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1350000>;
+		};
+	
+		pm8950_l22: l22 {
+			regulator-min-microvolt = <2800000>;
+			regulator-max-microvolt = <2800000>;
+		};
+	
+		pm8950_l23: l23 {
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
+		};
+	};
+

@@ -116,6 +116,33 @@ struct rpmpd_desc {
 
 static DEFINE_MUTEX(rpmpd_lock);
 
+
+
+/* msm8937 RPM Power Domains */
+DEFINE_RPMPD_PAIR(msm8937, vddmss, vddmss_ao, SMPA, LEVEL, 1);
+DEFINE_RPMPD_PAIR(msm8937, vddcx, vddcx_ao, SMPA, LEVEL, 2);
+DEFINE_RPMPD_PAIR(msm8937, vddmx, vddmx_ao, LDOA, LEVEL, 3);
+
+DEFINE_RPMPD_VFL(msm8937, vddcx_vfl, SMPA, 2);
+
+static struct rpmpd *msm8937_rpmpds[] = {
+	[MSM8937_VDDMSS] =	&msm8937_vddmss,
+	[MSM8937_VDDMSS_AO] =	&msm8937_vddmss_ao,
+	[MSM8937_VDDCX] =	&msm8937_vddcx,
+	[MSM8937_VDDCX_AO] =	&msm8937_vddcx_ao,
+	[MSM8937_VDDCX_VFL] =	&msm8937_vddcx_vfl,
+	[MSM8937_VDDMX] =	&msm8937_vddmx,
+	[MSM8937_VDDMX_AO] =	&msm8937_vddmx_ao,
+};
+
+static const struct rpmpd_desc msm8937_desc = {
+	.rpmpds = msm8937_rpmpds,
+	.num_pds = ARRAY_SIZE(msm8937_rpmpds),
+	.max_state = RPM_SMD_LEVEL_TURBO,
+};
+
+
+
 /* msm8953 RPM Power Domains */
 DEFINE_RPMPD_PAIR(msm8953, vddmss, vddmss_ao, SMPA, LEVEL, 1);
 DEFINE_RPMPD_PAIR(msm8953, vddcx, vddcx_ao, SMPA, LEVEL, 2);
@@ -247,6 +274,7 @@ static const struct rpmpd_desc qcs404_desc = {
 };
 
 static const struct of_device_id rpmpd_match_table[] = {
+	{ .compatible = "qcom,msm8937-rpmpd", .data = &msm8937_desc },
 	{ .compatible = "qcom,msm8953-rpmpd", .data = &msm8953_desc },
 	{ .compatible = "qcom,msm8976-rpmpd", .data = &msm8976_desc },
 	{ .compatible = "qcom,msm8996-rpmpd", .data = &msm8996_desc },

@@ -64,6 +64,13 @@
 #define RPMH_REGULATOR_LEVEL_TURBO	384
 #define RPMH_REGULATOR_LEVEL_TURBO_L1	416
 
+/* MSM8937 Power Domain Indexes */
+#define MSM8937_VDDCX		1
+#define MSM8937_VDDCX_AO	2
+#define MSM8937_VDDCX_VFL	3
+#define MSM8937_VDDMX		4
+#define MSM8937_VDDMX_AO	5
+
 /* MSM8953 Power Domain Indexes */
 #define MSM8953_VDDMSS		0
 #define MSM8953_VDDMSS_AO	1

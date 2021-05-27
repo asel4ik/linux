@@ -252,7 +252,7 @@ status = "ok";
 
 &dsi0 {
 	panel@0 {
-		compatible = "novatek,nt35596-tianma-fhd";
+		compatible = "tianma,nt35596";
 		reg = <0>;
 		backlight = <&pmi8950_wled>;
 

@@ -99,6 +99,11 @@ config DRM_PANEL_TIANMA_TL052VDXP02
 config DRM_PANEL_TIANMA_NT35596
 	tristate "Tianma panel with Novatek NT35596"
 	select DRM_PANEL_MIPI_DSI_COMMON
+	
+config DRM_PANEL_TIANMA_NT35596_KENZO
+	tristate "Tianma panel with Novatek NT35596 used in Redmi Note 3 Pro"
+	select DRM_PANEL_MIPI_DSI_COMMON
+	
 
 config DRM_PANEL_BOE_NT35596S
 	tristate "Boe panel with Novatek NT35596S"

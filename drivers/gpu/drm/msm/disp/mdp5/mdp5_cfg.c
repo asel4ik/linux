@@ -689,7 +689,7 @@ const struct mdp5_cfg_hw msm8x76_config = {
 				{ .id = 1, .pp = -1, .dspp = -1,
 				  .caps = MDP_LM_CAP_WB },
 			     },
-		.nb_stages = 8,
+		.nb_stages = 5,
 		.max_width = 2560,
 		.max_height = 0xFFFF,
 	},

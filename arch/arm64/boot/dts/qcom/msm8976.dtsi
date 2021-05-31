@@ -726,7 +726,7 @@
 				pins = "gpio100";
 				function = "gpio";
 				drive-strength = <2>;
-				bias-disable;
+				bias-pull-up;
 			};
 
 			sdc2_cd_off: cd-off-pins {
@@ -1256,7 +1256,6 @@
 			bus-width = <8>;
 			non-removable;
 			status = "disabled";
-			
 			sdhc1_opp_table: sdhc1-opp-table {
 				compatible = "operating-points-v2";
 
@@ -1294,7 +1293,7 @@
 				 <&gcc GCC_SDCC2_AHB_CLK>,
 				 <&xo_board>;
 			clock-names = "core", "iface", "xo";
-
+			power-domains = <&rpmpd MSM8976_VDDCX>;
 			bus-width = <4>;
 			status = "disabled";
 			

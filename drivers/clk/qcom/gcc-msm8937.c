@@ -291,7 +291,11 @@ static const struct clk_parent_data gcc_parent_data_gpu[] = {
 	{ .hw = &gpll6.clkr.hw },
 };
 
-
+static const struct parent_map gcc_byte0_map[] = {
+	{ P_XO, 0 },
+	{ P_DSI0PLL_BYTE, 1 },
+	{ P_DSI1PLL_BYTE, 3 },
+};
 static const struct parent_map gcc_byte1_map[] = {
 	{ P_XO, 0 },
 	{ P_DSI0PLL_BYTE, 3 },

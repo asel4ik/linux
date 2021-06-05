@@ -461,7 +461,7 @@
 			};
 		};
 		
-		tlmm: pinctrl@1000000 {
+		msmgpio: pinctrl@1000000 {
 			compatible = "qcom,msm8937-pinctrl";
 			reg = <0x01000000 0x300000>;
 			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;

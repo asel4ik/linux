@@ -1,0 +1,264 @@
+/* Copyright (c) 2017,2020 The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+/dts-v1/;
+
+#include "msm8937-pm8937.dtsi"
+#include "pmi8950.dtsi"
+#include <dt-bindings/leds/common.h>
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	model = "Motorola G5 (Cedric)";
+	compatible = "qcom,msm8937-cedric", "qcom,msm8937-motorola", "qcom,msm8937";
+
+	qcom,msm-id = <294 66 0 0x10000>;
+
+	aliases {
+		panel = &panel;
+	};
+
+	reserved-memory {
+		ramoops@ae000000 {
+			compatible = "ramoops";
+			reg = <0x0 0xae000000 0x0 0x80000>;
+			console-size = <0x40000>;
+			pmsg-size = <0x40000>;
+			record-size = <0x3f800>;
+		};
+	};
+	
+	vdda_touch: regulator-vdda_touch {
+		compatible = "regulator-fixed";
+		regulator-name = "vdda_touch";
+		gpio = <&msmgpio 59 0>;
+		startup-delay-us = <300>;
+		enable-active-high;
+		regulator-boot-on;
+	};
+};
+
+
+	&blsp_i2c3 {
+		status= "okay";
+		rmi4@20 {
+			compatible = "syna,rmi4-i2c";
+			reg = <0x20>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			interrupt-parent = <&msmgpio>;
+			interrupts = <65 IRQ_TYPE_EDGE_FALLING>;
+	
+			vdd-supply = <&vdda_touch>;
+			vio-supply = <&pm8937_l6>;
+	
+			syna,reset-delay-ms = <100>;
+			syna,startup-delay-ms = <500>;
+
+			rmi4-f01@1 {
+				reg = <0x1>;
+				syna,nosleep-mode = <1>; // Allow sleeping
+			};
+
+			rmi4-f12@12 {
+				reg = <0x12>;
+				syna,sensor-type = <1>; // Touchscreen
+			};
+		};
+
+};
+
+/*
+Implement cedric panel-verify pins for mdss
+&dsi0 {
+	panel: panel@0 {
+		compatible = "novatek,nt35596-tianma-fhd";
+		reg = <0>;
+
+		
+
+		supply-names = "vsp", "vsn";
+		vsp-supply = <&lab_vreg>;
+		vsn-supply = <&ibb_vreg>;
+
+		reset-gpios = <&msmgpio 61 GPIO_ACTIVE_LOW>;
+
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&pmx_mdss_default &mdss_te_default>;
+		pinctrl-1 = <&pmx_mdss_sleep &mdss_te_default>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&dsi0_out>;
+			};
+		};
+	};
+};
+*/
+&dsi0_out {
+	data-lanes = <0 1 2 3>;
+	remote-endpoint = <&panel_in>;
+};
+
+&sdhc_1 {
+	status = "okay";
+
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&sdc1_clk_on &sdc1_cmd_on &sdc1_data_on  &sdc1_rclk_on>;
+	pinctrl-1 = <&sdc1_clk_off &sdc1_cmd_off &sdc1_data_off &sdc1_rclk_off>;
+};
+
+&sdhc_2 {
+	status = "okay";
+
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on &sdc2_cd_on>;
+	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off &sdc2_cd_off>;
+
+};
+
+&wcd_codec {
+	qcom,micbias1-ext-cap;
+	qcom,hphl-jack-type-normally-open;
+	qcom,mbhc-vthreshold-low = <75 150 237 450 500>;
+	qcom,mbhc-vthreshold-high = <75 150 237 450 500>;
+};
+
+&msmgpio {
+	gpio-reserved-ranges = <0 4>, <135 4>;
+
+	ts_reset_active: ts-reset-active-pins {
+		pins = "gpio64";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+
+	ts_reset_suspend: ts-reset-suspend-pins {
+		pins = "gpio64";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+	ts_int_active: ts-int-active-pins {
+		pins = "gpio65";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+
+	ts_int_suspend: ts-int-suspend-pins {
+		pins = "gpio65";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+
+	pmx_mdss_default: pmx-mdss-default-pins {
+		pins = "gpio61";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+		output-high;
+	};
+
+	pmx_mdss_sleep: pmx-mdss-sleep-pins {
+		pins = "gpio61";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+};
+// Verify regulators pm8937 default values used
+&smd_rpm_regulators {
+	s1 {
+		regulator-min-microvolt = <863000>;
+		regulator-max-microvolt = <1225000>;
+	};
+	s3 {
+		regulator-min-microvolt = <1224000>;
+		regulator-max-microvolt = <1300000>;
+	};
+	s4 {
+		regulator-min-microvolt = <1896000>;
+		regulator-max-microvolt = <2048000>;
+	};
+
+	l2 {
+		regulator-min-microvolt = <1200000>;
+		regulator-max-microvolt = <1200000>;
+	};
+	
+	l5 {
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+	};
+	l6 {
+		regulator-always-on;
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+	};
+	l8 {
+		regulator-min-microvolt = <2850000>;
+		regulator-max-microvolt = <2900000>;
+	};
+	l9 {
+		regulator-min-microvolt = <3000000>;
+		regulator-max-microvolt = <3300000>;
+	};
+	l10 {
+		regulator-always-on;
+		regulator-min-microvolt = <2800000>;
+		regulator-max-microvolt = <3000000>;
+	};
+	l11 {
+		regulator-min-microvolt = <2800000>;
+		regulator-max-microvolt = <3000000>;
+	};
+	l12 {
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <3000000>;
+	};
+	l13 {
+		regulator-min-microvolt = <3075000>;
+		regulator-max-microvolt = <3075000>;
+	};
+	l14 {
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <3300000>;
+	};
+	l15 {
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <3300000>;
+	};
+	l16 {
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+	};
+	l17 {
+		regulator-min-microvolt = <2800000>;
+		regulator-max-microvolt = <2900000>;
+	};
+	l19 {
+		regulator-min-microvolt = <1200000>;
+		regulator-max-microvolt = <1350000>;
+	};
+	l22 {
+		regulator-always-on;
+		regulator-min-microvolt = <2800000>;
+		regulator-max-microvolt = <2800000>;
+	};
+	l23 {
+		regulator-min-microvolt = <975000>;
+		regulator-max-microvolt = <1225000>;
+	};
+};

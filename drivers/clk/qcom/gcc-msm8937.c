@@ -426,9 +426,7 @@ static struct freq_tbl ftbl_cpp_clk_src[] = {
 };
 
 static struct freq_tbl ftbl_gp_clk_src[] = {
-	F(100000000, P_GPLL0, 8, 0, 0),
-	F(160000000, P_GPLL0, 5, 0, 0),
-	F(200000000, P_GPLL0, 4, 0, 0),
+	F(19200000, P_XO, 1, 0, 0),
 	 { }
 };
 
@@ -1171,7 +1169,7 @@ static struct clk_rcg2 gp3_clk_src = {
 	},
 };
 
-
+//TODO:compare with 8953
 static struct clk_rcg2 byte0_clk_src = {
 	.cmd_rcgr = 0x4D044,
 	.hid_width = 5,
@@ -1194,7 +1192,7 @@ static struct clk_rcg2 byte1_clk_src = {
 		.name = "byte1_clk_src",
 		.num_parents = ARRAY_SIZE(gcc_byte_data),
 		.parent_data = gcc_byte_data,
-		.ops = &clk_rcg2_ops,
+		.ops = &clk_byte2_ops,
 		.flags = CLK_SET_RATE_PARENT,
 		
 	},
@@ -1497,45 +1495,6 @@ static struct clk_branch gcc_blsp1_qup2_i2c_apps_clk = {
 		}
 	}
 };
-
-/*
-static struct clk_branch gcc_blsp1_qup1_i2c_apps_clk = {
-
-	.halt_reg = 0x02008,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x02008,
-		.enable_mask = BIT(0),
-		.hw.init = &(struct clk_init_data) {
-			.num_parents = 1,
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &blsp1_qup1_i2c_apps_clk_src.clkr.hw,
-			},
-			.name = "gcc_blsp1_qup1_i2c_apps_clk",
-			.ops = &clk_branch2_ops,
-			.flags = CLK_SET_RATE_PARENT,
-		}
-	}
-};
-
-static struct clk_branch gcc_blsp1_qup2_i2c_apps_clk = {
-	.halt_reg = 0x03010,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x03010,
-		.enable_mask = BIT(0),
-		.hw.init = &(struct clk_init_data) {
-			.num_parents = 1,
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &blsp1_qup2_i2c_apps_clk_src.clkr.hw,
-			},
-			.name = "gcc_blsp1_qup2_i2c_apps_clk",
-			.ops = &clk_branch2_ops,
-			.flags = CLK_SET_RATE_PARENT,
-		}
-	}
-};
-*/
 
 static struct clk_branch gcc_blsp1_qup3_i2c_apps_clk = {
 	.halt_reg = 0x04020,
@@ -2727,7 +2686,7 @@ static struct clk_branch gcc_crypto_clk = {
 		}
 	}
 };
-/*TODO: This one is defined as gate_clk */
+/*TODO: This one is defined as gate_clk and only used on 8952 so we can rekt it i guess */
 static struct clk_branch gcc_oxili_gmem_clk = {
 	.halt_reg = 0x59024,
 	.clkr = {

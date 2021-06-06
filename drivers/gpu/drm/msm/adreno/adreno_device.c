@@ -151,7 +151,6 @@ static const struct adreno_info gpulist[] = {
 		.quirks = ADRENO_QUIRK_TWO_PASS_USE_WFI
 			| ADRENO_QUIRK_LMLOADKILL_DISABLE,
 		.init = a5xx_gpu_init,
-		.zapfw = "a506_zap.mdt",
 	}, {
 		.rev   = ADRENO_REV(5, 0, 6, ANY_ID),
 		.revn = 506,

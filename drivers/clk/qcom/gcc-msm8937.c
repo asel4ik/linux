@@ -3695,7 +3695,6 @@ static struct clk_regmap *gcc_msm8937_clocks[] = {
 	[GCC_GFX3D_OXILI_GMEM_CLK] = &gcc_oxili_gmem_clk.clkr,
 	[GCC_GFX3D_GTCU_AHB_CLK] = &gcc_gtcu_ahb_clk.clkr,
 	[GCC_GFX3D_TBU0_CLK] = &gcc_gfx_tbu_clk.clkr,
-	[GCC_GFX3D_GTCU_AHB_CLK] = &gcc_gtcu_ahb_clk.clkr,
 	[GCC_GFX3D_TCU_CLK] = &gcc_gfx_tcu_clk.clkr,
 	[GCC_IPA_TBU_CLK] = &gcc_ipa_tbu_clk.clkr,
 };

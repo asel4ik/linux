@@ -9,11 +9,11 @@
 	vdda-pll-supply = <&pm8937_l7>;
 	vdda-phy-dpdm-supply = <&pm8937_l13>;
 };
-*/
+
 &camss {
 	vdda-supply = <&pm8937_l2>;
 };
-
+*/
 &dsi_phy0 {
 	vddio-supply = <&pm8937_l6>;
 	//vdda-supply = <&pm8937_l2>; 

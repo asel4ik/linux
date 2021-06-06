@@ -77,8 +77,8 @@
 
 };
 
-/*
-Implement cedric panel-verify pins for mdss
+
+//Implement cedric panel-verify pins for mdss
 &dsi0 {
 	panel: panel@0 {
 		compatible = "novatek,nt35596-tianma-fhd";
@@ -103,7 +103,7 @@ Implement cedric panel-verify pins for mdss
 		};
 	};
 };
-*/
+
 &dsi0_out {
 	data-lanes = <0 1 2 3>;
 	remote-endpoint = <&panel_in>;

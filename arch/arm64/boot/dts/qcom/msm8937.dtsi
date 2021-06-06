@@ -877,15 +877,11 @@
 				clocks = <&gcc GCC_MDSS_AHB_CLK>,
 					 <&gcc GCC_MDSS_AXI_CLK>,
 					 <&gcc GCC_MDSS_MDP_CLK>,
-					 <&gcc GCC_MDSS_VSYNC_CLK>,
-					 <&gcc GCC_MDP_TBU_CLK>,
-					 <&gcc GCC_MDP_RT_TBU_CLK>;
+					 <&gcc GCC_MDSS_VSYNC_CLK>;
 				clock-names = "iface",
 					      "bus",
 					      "core",
-					      "vsync",
-					      "tbu",
-					      "tbu_rt";
+					      "vsync";
 
 				iommus = <&apps_iommu 0x17>;
 				iommu-defer-attach;
@@ -919,8 +915,8 @@
 				interrupts = <4 IRQ_TYPE_LEVEL_HIGH>;
 
 				assigned-clocks =
-					<&gcc GCC_MDSS_BYTE0_CLK_SRC>,
-					<&gcc GCC_MDSS_PCLK0_CLK_SRC>;
+					<&gcc BYTE0_CLK_SRC>,
+					<&gcc PCLK0_CLK_SRC>;
 				assigned-clock-parents = <&dsi_phy0 0>,
 							 <&dsi_phy0 1>;
 
@@ -989,8 +985,8 @@
 				interrupts = <5 IRQ_TYPE_LEVEL_HIGH>;
 
 				assigned-clocks =
-					<&gcc GCC_MDSS_BYTE1_CLK_SRC>,
-					<&gcc GCC_MDSS_PCLK1_CLK_SRC>;
+					<&gcc BYTE1_CLK_SRC>,
+					<&gcc PCLK1_CLK_SRC>;
 				assigned-clock-parents = <&dsi_phy1 0>,
 							 <&dsi_phy1 1>;
 
@@ -1397,7 +1393,7 @@
 			power-domains = <&rpmpd MSM8937_VDDCX>;
 			power-domain-names = "cx";
 
-			memory-region = <&lpass_mem>;
+			memory-region = <&adsp_fw_mem>;
 
 			qcom,smem-states = <&smp2p_adsp_out 0>;
 			qcom,smem-state-names = "stop";

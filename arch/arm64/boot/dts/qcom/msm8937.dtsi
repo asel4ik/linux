@@ -1249,14 +1249,14 @@
 					required-opps = <&rpmpd_opp_svs>;
 				};
 
-				opp-192000000 {
-					opp-hz = /bits/ 64 <192000000>;
+				opp-177770000 {
+					opp-hz = /bits/ 64 <177770000>;
 					required-opps = <&rpmpd_opp_nom>;
 				};
 
 
-				opp-384000000 {
-					opp-hz = /bits/ 64 <384000000>;
+				opp-200000000 {
+					opp-hz = /bits/ 64 <200000000>;
 					required-opps = <&rpmpd_opp_nom>;
 				};
 			};

@@ -37,7 +37,7 @@
 		};
 
 		pm8937_mpps: mpps@a000 {
-			compatible = "qcom,pm8937-mpp", "qcom,spmi-mpp";
+			compatible = "qcom,pm8950-mpp", "qcom,spmi-mpp";
 			reg = <0xa000>;
 			gpio-controller;
 			#gpio-cells = <2>;
@@ -189,15 +189,23 @@
 	};
 
 	pm8937_1: pm8937@1 {
-		compatible = "qcom,pm8937", "qcom,spmi-pmic";
+		compatible = "qcom,pm8941", "qcom,spmi-pmic";
 		reg = <0x1 SPMI_USID>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 
 		pm8937_spmi_regulators: regulators {
-			compatible = "qcom,pm8937-regulators";
+			compatible = "qcom,pm8950-regulators";
+			vreg_apc: s5 {
+				regulator-min-microvolt = <1050000>;
+				regulator-max-microvolt = <1350000>;
+				regulator-boot-on;
+				regulator-always-on;
+				regulator-initial-mode = <1>;
+				regulator-allowed-modes = <1>, <2>, <3>;
+			};
 		};
-		/*
+		
 		wcd_codec: codec@f000 {
 			compatible = "qcom,pm8916-wcd-analog-codec";
 			reg = <0xf000 0x200>;

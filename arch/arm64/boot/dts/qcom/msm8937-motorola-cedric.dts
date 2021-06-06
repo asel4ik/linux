@@ -20,8 +20,7 @@
 	model = "Motorola G5 (Cedric)";
 	compatible = "qcom,msm8937-cedric", "qcom,msm8937-motorola", "qcom,msm8937";
 
-	qcom,msm-id = <294 66 0 0x10000>;
-
+	qcom,board-id = <65 33024>;
 	aliases {
 		panel = &panel;
 	};

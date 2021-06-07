@@ -564,7 +564,7 @@
 			};
 
 			cci1_i2c_default: cci1_i2c_default {
-				pins = "gpio103", "gpio104";
+				pins = "gpio31", "gpio32";
 				function = "cci0_i2c";
 
 				drive-strength = <2>;
@@ -577,8 +577,15 @@
 				drive-strength = <2>;
 				bias-disable;
 			};
-
+			
 			camss_mclk1_default: camss-mclk1-pins {
+				pins = "gpio27";
+				function = "cam_mclk";
+				drive-strength = <2>;
+				bias-disable;
+			};
+			
+			camss_mclk2_default: camss-mclk2-pins {
 				pins = "gpio28";
 				function = "cam_mclk";
 				drive-strength = <2>;
@@ -607,14 +614,14 @@
 
 			sdc1_cmd_on: sdc1-cmd-on-pins {
 				pins = "sdc1_cmd";
-				bias-disable;
+				bias-pull-up;
 				drive-strength = <10>;
 			};
 
 			sdc1_cmd_off: sdc1-cmd-off-pins {
 				pins = "sdc1_cmd";
 				num-grp-pins = <1>;
-				bias-disable;
+				bias-pull-up;
 				drive-strength = <2>;
 			};
 
@@ -680,7 +687,7 @@
 				pins = "gpio67";
 				function = "gpio";
 				drive-strength = <2>;
-				bias-disable;
+				bias-pull-up;
 			};
 
 			sdc2_cd_off: cd-off-pins {
@@ -727,26 +734,26 @@
 
 			wcnss_sleep: wcnss-sleep-pins {
 				wcss_wlan2 {
-					pins = "gpio40";
+					pins = "gpio76";
 					function = "wcss_wlan2";
 				};
 				wcss_wlan1 {
-					pins = "gpio41";
+					pins = "gpio77";
 					function = "wcss_wlan1";
 				};
 				wcss_wlan0 {
-					pins = "gpio42";
+					pins = "gpio78";
 					function = "wcss_wlan0";
 				};
 				wcss_wlan {
-					pins = "gpio43", "gpio44";
+					pins = "gpio79", "gpio80";
 					function = "wcss_wlan";
 				};
 
 				pinconf {
-					pins = "gpio40", "gpio41",
-						"gpio42", "gpio43",
-						"gpio44";
+					pins = "gpio76", "gpio77",
+						"gpio78", "gpio79",
+						"gpio80";
 					drive-strength = <2>;
 					bias-pull-down;
 				};
@@ -766,12 +773,12 @@
 			};
 
 			cdc_pdm_lines_act: pdm-lines-on-pins {
-					pins = "gpio120", "gpio121";
+					pins = "gpio69", "gpio73", "gpio74";
 					function = "cdc_pdm0";
 					drive-strength = <8>;
 			};
 			cdc_pdm_lines_sus: pdm-lines-off-pins {
-					pins = "gpio120", "gpio121";
+					pins = "gpio69", "gpio73", "gpio74";
 					function = "cdc_pdm0";
 					drive-strength = <2>;
 					bias-disable;
@@ -787,16 +794,17 @@
 			#iommu-cells = <1>;
 			compatible = "qcom,msm8953-iommu", "qcom,msm-iommu-v1";
 			ranges  = <0 0x1e20000 0x20000>;
+			#global-interrupts = <0>;
 			clocks = <&gcc GCC_SMMU_CFG_CLK>,
 				 <&gcc GCC_APSS_TCU_CLK>;
 			clock-names = "iface", "bus";
 			qcom,iommu-secure-id = <17>;
 			status = "ok";
 
-			iommu-ctx@17000 { // mdp_0
+			iommu-ctx@15000 { // mdp_0
 				compatible = "qcom,msm-iommu-v1-ns";
-				reg = <0x17000 0x1000>;
-				interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
+				reg = <0x15000 0x1000>;
+				interrupts = <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>;
 			};
 		};
 
@@ -883,7 +891,7 @@
 					      "core",
 					      "vsync";
 
-				iommus = <&apps_iommu 0x17>;
+				iommus = <&apps_iommu 0x15>;
 				iommu-defer-attach;
 
 				ports {
@@ -1067,8 +1075,6 @@
 
 		adreno_gpu: gpu@1c00000 {
 			compatible = "qcom,adreno-505.0", "qcom,adreno";
-			#stream-id-cells = <16>;
-			status = "okay";
 			reg = <0x01c00000 0x40000>;
 			reg-names = "kgsl_3d0_reg_memory";
 

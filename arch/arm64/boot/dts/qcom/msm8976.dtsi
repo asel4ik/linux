@@ -1446,8 +1446,8 @@
 
 		usb: usb@78db000 {
 			compatible = "qcom,ci-hdrc";
-			reg = <0x78db000 0x400>,
-			      <0x6c000 0x200>;
+		reg = <0x78db000 0x200>,
+			      <0x78db200 0x200>;
 			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&gcc GCC_USB_HS_AHB_CLK>,
@@ -1459,9 +1459,6 @@
 			reset-names = "core";
 			phy_type = "ulpi";
 			dr_mode = "otg";
-			hnp-disable;
-			srp-disable;
-			adp-disable;
 			ahb-burst-config = <0>;
 			phy-names = "usb-phy";
 			phys = <&usb_hs_phy>;
@@ -1469,16 +1466,26 @@
 			#reset-cells = <1>;
 
 			ulpi {
-				usb_hs_phy: phy {
-					compatible = "qcom,msm8976-s2-usb-hsphy",
-						     "qcom,usb-hs-phy";
-					#phy-cells = <0>;
-					clocks = <&xo_board>, <&gcc GCC_USB2A_PHY_SLEEP_CLK>;
-					clock-names = "ref", "sleep";
-					resets = <&gcc RST_QUSB2_PHY_BCR>, <&usb 0>;
-					reset-names = "phy", "por";
-				};
+	
+				usb_hs_phy: phy@0x6c000  {
+			compatible = "qcom,msm8976-s2-usb-hsphy";
+		
+			#phy-cells = <0>;
+			clocks = <&xo_board>,
+				 <&gcc GCC_USB_HS_PHY_CFG_AHB_CLK>,
+				 <&gcc GCC_USB2A_PHY_SLEEP_CLK>; 
+			clock-names = "ref", "ahb", "sleep";
+			resets = <&gcc RST_QUSB2_PHY_BCR>,
+			<&gcc RST_USB2_HS_PHY_ONLY_BCR>;
+			reset-names = "phy", "por";
+		
+		};
+				
+				
 			};
+			
+			
+			
 		};
 
 

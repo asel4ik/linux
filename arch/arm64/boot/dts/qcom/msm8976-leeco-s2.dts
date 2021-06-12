@@ -169,6 +169,14 @@
 	mode = <DRV260X_LRA_MODE>;
 	library-sel = <DRV260X_LIB_LRA>;
 	};
+	
+	
+	tiusb320: tusb320@47 {
+            compatible = "ti,tusb320";
+            reg = <0x47>;
+            interrupt-parent = <&tlmm>;
+            interrupts = <21 IRQ_TYPE_EDGE_RISING>;
+        };
 };
 
 &blsp_i2c8 {
@@ -480,6 +488,11 @@ status = "ok";
 
 &usb {
 status = "okay";
+	extcon = <&tiusb320>, <0>;
+};
+&usb_hs_phy {
+status = "okay";
+	extcon = <&tiusb320>;
 };
 &pm8950_spmi_regulators {
 	vdd_s5-supply = <&vph_pwr>;
@@ -560,6 +573,7 @@ status = "okay";
 		};
 	
 		pm8950_l11: l11 {
+		regulator-always-on;
 			regulator-min-microvolt = <2950000>;
 			regulator-max-microvolt = <2950000>;
 		};

@@ -505,7 +505,6 @@ static const struct rpm_smd_clk_desc rpm_clk_msm8936 = {
 DEFINE_CLK_SMD_RPM_BRANCH(msm8937, xo_clk_src, xo_a_clk_src, QCOM_SMD_RPM_MISC_CLK, 0, 19200000);
 DEFINE_CLK_SMD_RPM(msm8937, pnoc_clk, pnoc_a_clk, QCOM_SMD_RPM_BUS_CLK, 0);
 DEFINE_CLK_SMD_RPM(msm8937, bimc_clk, bimc_a_clk, QCOM_SMD_RPM_MEM_CLK, 0);
-DEFINE_CLK_SMD_RPM(msm8937, bimc_gpu_clk, bimc_gpu_a_clk, QCOM_SMD_RPM_MEM_CLK, 2);
 DEFINE_CLK_SMD_RPM(msm8937, snoc_clk, snoc_a_clk, QCOM_SMD_RPM_BUS_CLK, 1);
 DEFINE_CLK_SMD_RPM(msm8937, sysmmnoc_clk, sysmmnoc_a_clk, QCOM_SMD_RPM_BUS_CLK, 2);
 DEFINE_CLK_SMD_RPM_QDSS(msm8937, qdss_clk, qdss_a_clk, QCOM_SMD_RPM_MISC_CLK, 1);
@@ -523,8 +522,6 @@ static struct clk_smd_rpm *msm8937_clks[] = {
 	[RPM_SMD_PNOC_A_CLK]		= &msm8937_pnoc_a_clk,
 	[RPM_SMD_BIMC_CLK]		= &msm8937_bimc_clk,
 	[RPM_SMD_BIMC_A_CLK]		= &msm8937_bimc_a_clk,
-	[RPM_SMD_BIMC_GPU_CLK]		= &msm8937_bimc_gpu_clk,
-	[RPM_SMD_BIMC_GPU_A_CLK]	= &msm8937_bimc_gpu_a_clk,
 	[RPM_SMD_SNOC_CLK]		= &msm8937_snoc_clk,
 	[RPM_SMD_SNOC_A_CLK]		= &msm8937_snoc_a_clk,
 	[RPM_SMD_SYSMMNOC_CLK]		= &msm8937_sysmmnoc_clk,

@@ -495,6 +495,20 @@
 			};
 		};
 		
+		
+		usb_hs_phy: phy@6c000 {
+			compatible = "qcom,msm8976-s2-usb-hsphy";
+			reg = <0x0006c000 0x200>;
+			#phy-cells = <0>;
+			clocks = <&xo_board>,
+				 <&gcc GCC_USB_HS_PHY_CFG_AHB_CLK>,
+				 <&gcc GCC_USB2A_PHY_SLEEP_CLK>; 
+			clock-names = "ref", "ahb", "sleep";
+			resets = <&gcc RST_QUSB2_PHY_BCR>,
+			<&gcc RST_USB2_HS_PHY_ONLY_BCR>;
+			reset-names = "phy", "por";
+		};
+		
 		tlmm: pinctrl@1000000 {
 			compatible = "qcom,msm8976-pinctrl";
 			reg = <0x01000000 0x300000>;
@@ -1454,7 +1468,7 @@
 				 <&gcc GCC_USB_HS_SYSTEM_CLK>;
 			clock-names = "iface", "core";
 			assigned-clocks = <&gcc GCC_USB_HS_SYSTEM_CLK>;
-			assigned-clock-rates = <80000000>;
+			assigned-clock-rates = <100000000>;
 			resets = <&gcc RST_USB_HS_BCR>;
 			reset-names = "core";
 			phy_type = "ulpi";
@@ -1464,28 +1478,7 @@
 			phys = <&usb_hs_phy>;
 			status = "disabled";
 			#reset-cells = <1>;
-
-			ulpi {
 	
-				usb_hs_phy: phy@0x6c000  {
-			compatible = "qcom,msm8976-s2-usb-hsphy";
-		
-			#phy-cells = <0>;
-			clocks = <&xo_board>,
-				 <&gcc GCC_USB_HS_PHY_CFG_AHB_CLK>,
-				 <&gcc GCC_USB2A_PHY_SLEEP_CLK>; 
-			clock-names = "ref", "ahb", "sleep";
-			resets = <&gcc RST_QUSB2_PHY_BCR>,
-			<&gcc RST_USB2_HS_PHY_ONLY_BCR>;
-			reset-names = "phy", "por";
-		
-		};
-				
-				
-			};
-			
-			
-			
 		};
 
 

@@ -488,11 +488,11 @@ status = "ok";
 
 &usb {
 status = "okay";
-	extcon = <&tiusb320>, <0>;
+	extcon = <&tiusb320>,<0>;
 };
 &usb_hs_phy {
 status = "okay";
-	extcon = <&tiusb320>;
+	
 };
 &pm8950_spmi_regulators {
 	vdd_s5-supply = <&vph_pwr>;

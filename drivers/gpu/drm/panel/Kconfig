@@ -608,7 +608,7 @@ config DRM_PANEL_HIMAX_HX8399C_FHDPLUS
 	  
 	  
 	  
-config  CONFIG_DRM_PANELS_XIAOMI_MIDO
+config DRM_PANELS_XIAOMI_MIDO
 	tristate "Driver for multiple panels found in Xiaomi Redmi Note 4x"
 	depends on OF
 	depends on DRM_MIPI_DSI

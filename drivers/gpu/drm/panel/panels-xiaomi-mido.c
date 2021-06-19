@@ -7,7 +7,7 @@
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
 #include <linux/of.h>
-
+#include <video/mipi_display.h>
 #include "panel-mipi-dsi-common.h"
 
 static void nt35532_ili9885_otm1911_r63350_reset_seq(struct gpio_desc *reset_gpio)

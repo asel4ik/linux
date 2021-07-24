@@ -1471,7 +1471,7 @@
 			assigned-clock-rates = <100000000>;
 			resets = <&gcc RST_USB_HS_BCR>;
 			reset-names = "core";
-			phy_type = "ulpi";
+			//phy_type = "ulpi";
 			dr_mode = "otg";
 			ahb-burst-config = <0>;
 			phy-names = "usb-phy";

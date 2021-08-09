@@ -158,3 +158,5 @@ x509.genkey
 
 # Documentation toolchain
 sphinx_*/
+
+arch/arm64/configs/mido_defconfig

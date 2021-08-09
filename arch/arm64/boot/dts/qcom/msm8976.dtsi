@@ -1468,11 +1468,11 @@
 				 <&gcc GCC_USB_HS_SYSTEM_CLK>;
 			clock-names = "iface", "core";
 			assigned-clocks = <&gcc GCC_USB_HS_SYSTEM_CLK>;
-			assigned-clock-rates = <100000000>;
+			assigned-clock-rates = <133333333>;
 			resets = <&gcc RST_USB_HS_BCR>;
 			reset-names = "core";
-			//phy_type = "ulpi";
-			dr_mode = "otg";
+			phy_type = "ulpi";
+			dr_mode = "peripheral";
 			ahb-burst-config = <0>;
 			phy-names = "usb-phy";
 			phys = <&usb_hs_phy>;

@@ -408,6 +408,18 @@ static const struct hsphy_init_seq init_seq_mdm9607[] = {
 	HSPHY_INIT_CFG(0x83, 0x13, 0),
 };
 
+static const struct hsphy_init_seq init_seq_msm8976_s2[] = {
+	HSPHY_INIT_CFG(0x80, 0x73, 0),
+	HSPHY_INIT_CFG(0x81, 0x0a, 0),
+	HSPHY_INIT_CFG(0x82, 0x3f, 0),
+	HSPHY_INIT_CFG(0x83, 0x33, 0),
+};
+
+static const struct hsphy_data hsphy_data_msm8976_s2 = {
+	.init_seq = init_seq_msm8976_s2,
+	.init_seq_num = ARRAY_SIZE(init_seq_msm8976_s2),
+};
+
 static const struct hsphy_data hsphy_data_femtophy = {
 	.init_seq = init_seq_femtophy,
 	.init_seq_num = ARRAY_SIZE(init_seq_femtophy),
@@ -421,6 +433,7 @@ static const struct hsphy_data hsphy_data_mdm9607 = {
 static const struct of_device_id qcom_snps_hsphy_match[] = {
 	{ .compatible = "qcom,usb-hs-28nm-femtophy", .data = &hsphy_data_femtophy, },
 	{ .compatible = "qcom,usb-hs-28nm-mdm9607", .data = &hsphy_data_mdm9607, },
+	{ .compatible = "qcom,msm8976-s2-usb-hsphy", .data = &hsphy_data_msm8976_s2, },
 	{ },
 };
 MODULE_DEVICE_TABLE(of, qcom_snps_hsphy_match);

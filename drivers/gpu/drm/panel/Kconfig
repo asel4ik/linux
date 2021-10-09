@@ -96,6 +96,10 @@ config DRM_PANEL_MIPI_DSI_COMMON
 	depends on BACKLIGHT_CLASS_DEVICE
 	select VIDEOMODE_HELPERS
 
+config DRM_PANEL_BOE_NT35596S
+	tristate "Boe panel with Novatek NT35596S"
+	select DRM_PANEL_MIPI_DSI_COMMON
+
 config DRM_PANEL_ELIDA_KD35T133
 	tristate "Elida KD35T133 panel driver"
 	depends on OF

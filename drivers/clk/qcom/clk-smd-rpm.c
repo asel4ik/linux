@@ -567,11 +567,14 @@ static const struct rpm_smd_clk_desc rpm_clk_msm8974 = {
 	.num_clks = ARRAY_SIZE(msm8974_clks),
 };
 
+DEFINE_CLK_SMD_RPM_BRANCH(msm8976, xo_clk_src, xo_a_clk_src, QCOM_SMD_RPM_MISC_CLK, 0, 19200000);
 DEFINE_CLK_SMD_RPM(msm8976, mmssnoc_ahb_clk, mmssnoc_ahb_a_clk,
 		   QCOM_SMD_RPM_BUS_CLK, 2);
 DEFINE_CLK_SMD_RPM(msm8976, ipa_clk, ipa_a_clk, QCOM_SMD_RPM_IPA_CLK, 0);
 
 static struct clk_smd_rpm *msm8976_clks[] = {
+	[RPM_SMD_XO_CLK_SRC] = &msm8976_xo_clk_src,
+	[RPM_SMD_XO_A_CLK_SRC]	= &msm8976_xo_a_clk_src,
 	[RPM_SMD_PCNOC_CLK] = &msm8916_pcnoc_clk,
 	[RPM_SMD_PCNOC_A_CLK] = &msm8916_pcnoc_a_clk,
 	[RPM_SMD_SNOC_CLK] = &msm8916_snoc_clk,

@@ -117,7 +117,16 @@
 	qcom,mbhc-vthreshold-high = <75 150 237 450 500>;
 };
 
-
+&pm8950_gpios {
+	cdc_pm_mclk_pin: cdc_pm_mclk {
+		pins = "gpio1";
+		function = PMIC_GPIO_FUNC_FUNC1; /* SF1 */
+		output-low;
+		bias-disable;
+		qcom,drive-strength = <PMIC_GPIO_STRENGTH_MED>;
+		power-source = <0>; /* VIN 0 */
+	};
+};
 
 &blsp_i2c4 {
 	status = "okay";
@@ -165,6 +174,7 @@
 	
 	tiusb320: tusb320@47 {
             compatible = "ti,tusb320";
+            status = "okay";
             reg = <0x47>;
             interrupt-parent = <&tlmm>;
             interrupts = <21 IRQ_TYPE_EDGE_RISING>;
@@ -249,23 +259,6 @@
 		drive-strength = <8>;
 
 	};
-
-	cdc_reset_line_sus: cdc_reset_sleep {
-		pins = "gpio133";
-		function = "gpio";
-		drive-strength = <16>;
-		bias-disable;
-		output-low;
-	};
-
-	cdc_reset_line_act: cdc_reset_active {
-		pins = "gpio133";
-		function = "gpio";
-		drive-strength = <16>;
-		bias-disable;
-		output-high;
-	};
-
 
 	tlmm_pri_act: tlmm_quin_default {
 	pins = "gpio123", "gpio124", "gpio125", "gpio127";
@@ -410,12 +403,12 @@ status = "ok";
 };
 
 &sound_card {
-	status = "disabled";
+	status = "okay";
 
 	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act  &tlmm_pri_act &cross_con_act >;
-	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus  &tlmm_pri_sus &cross_con_sus >;
-	model = "samsung-a2015";
+	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act  &tlmm_pri_act &cdc_reset_active >;
+	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus  &tlmm_pri_sus &cdc_reset_sus >;
+	model = "motorola-ocean";
 
 	quinary-mi2s-dai-link {
 		link-name = "Quinary MI2S";

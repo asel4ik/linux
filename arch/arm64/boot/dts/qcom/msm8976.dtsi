@@ -351,6 +351,20 @@
 		compatible = "arm,cortex-a53-pmu";
 		interrupts = <GIC_PPI 7 (GIC_CPU_MASK_SIMPLE(8)| IRQ_TYPE_LEVEL_HIGH)>;
 	};
+	
+	firmware {
+		scm: scm {
+			compatible = "qcom,scm-msm8976", "qcom,scm";
+			clocks = <&gcc GCC_CRYPTO_CLK>,
+				 <&gcc GCC_CRYPTO_AXI_CLK>,
+				 <&gcc GCC_CRYPTO_AHB_CLK>;
+			clock-names = "core", "bus", "iface";
+			#reset-cells = <1>;
+
+			//qcom,dload-mode = <&tcsr 0x6100>;
+		};
+	};
+	
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 2 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
@@ -849,6 +863,20 @@
 					drive-strength = <2>;
 					bias-disable;
 			};
+			cdc_reset_active: cdc_reset_active {
+					pins = "gpio133";
+					function = "gpio";
+					output-high;
+					drive-strength = <16>;
+					bias-disable;
+			};
+			cdc_reset_sus: cdc_reset_sus {
+					pins = "gpio133";
+					function = "gpio";
+					output-low;
+					drive-strength = <16>;
+					bias-disable;
+			};
 		};
 
 
@@ -881,7 +909,7 @@
 
 		};
 
-		gpu_iommu: iommu@1f08000 {
+		gpu_iommu: iommu@1f00000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
 			#iommu-cells = <1>;
@@ -900,13 +928,6 @@
 				interrupts = <GIC_SPI 240 IRQ_TYPE_LEVEL_HIGH>;
 			};
 
-	
-			// gfx3d_priv:
-			iommu-ctx@2000 {
-				compatible = "qcom,msm-iommu-v1-sec";
-				reg = <0x2000 0x1000>;
-				interrupts = <GIC_SPI 242 IRQ_TYPE_LEVEL_HIGH>;
-			};
 		};
 
 		rng@22000 {
@@ -1516,8 +1537,8 @@
 			qcom,smem-states = <&modem_smp2p_out 0>;
 			qcom,smem-state-names = "stop";
 
-			//resets = <&gcc RST_MSS_BCR>;
-			//reset-names = "mss_restart";
+			resets = <&gcc RST_MSS_BCR>;
+			reset-names = "mss_restart";
 
 			qcom,halt-regs = <&tcsr 0x18000 0x19000 0x1a000>;
 
@@ -1664,6 +1685,7 @@
 					sound-dai = <&q6voicedai CS_VOICE>;
 				};
 			};
+			
 
 			primary-mi2s-dai-link {
 				link-name = "Primary MI2S";
@@ -1679,7 +1701,7 @@
 					sound-dai = <&lpass_codec 0>, <&wcd_codec 0>;
 				};
 			};
-
+		
 			tertiary-mi2s-dai-link {
 				link-name = "Tertiary MI2S";
 				cpu {
@@ -1694,6 +1716,8 @@
 					sound-dai = <&lpass_codec 1>, <&wcd_codec 1>;
 				};
 			};
+
+			
 		};
 		
 		lpass_codec: codec {
@@ -2029,18 +2053,6 @@
 		};
 	};
 
-	firmware {
-		scm: scm {
-			compatible = "qcom,scm-msm8976";
-			clocks = <&gcc GCC_CRYPTO_CLK>,
-				 <&gcc GCC_CRYPTO_AXI_CLK>,
-				 <&gcc GCC_CRYPTO_AHB_CLK>;
-			clock-names = "core", "bus", "iface";
-			#reset-cells = <1>;
-
-			qcom,dload-mode = <&tcsr 0x6100>;
-		};
-	};
 
 	thermal_zones: thermal-zones {
 		aoss0-thermal {

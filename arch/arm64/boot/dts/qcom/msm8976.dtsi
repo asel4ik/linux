@@ -444,6 +444,31 @@
                     			"dsi1pll",
                    			"dsi1pllbyte";
 		};
+		/*
+		a53_pll: clock-controller@b116000 {
+			compatible = "qcom,hf2pll-msm8976", "qcom,hf2pll";
+			reg = <0xb116000 0x40>;
+			clocks = <&xo_board>;
+			clock-names = "xo";
+			clock-output-names = "hfpll_a53";
+		};
+		
+		cci_pll: clock-controller@b1d0000 {
+			compatible = "qcom,hf2pll-msm8976", "qcom,hf2pll";
+			reg = <0xb1d0000 0x40>;
+			clocks = <&xo_board>;
+			clock-names = "xo";
+			clock-output-names = "hfpll_cci";
+		};
+		*/
+		a72_pll: clock-controller@b016000 {
+			compatible = "qcom,msm8976-a72pll", "qcom,hf2pll";
+			reg = <0xb016000 0x40>;
+			clocks = <&xo_board>;
+			clock-names = "xo";
+			clock-output-names = "hfpll_a72";
+		};
+		
 
 		apcs: mailbox@b011000 {
 			compatible = "qcom,msm8976-apcs-kpss-global", "syscon";
@@ -1655,13 +1680,6 @@
 				link-name = "MultiMedia1";
 				cpu {
 					sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA1>;
-				};
-			};
-
-			mm2-dai-link {
-				link-name = "MultiMedia2";
-				cpu {
-					sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA2>;
 				};
 			};
 

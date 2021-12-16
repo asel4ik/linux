@@ -534,6 +534,73 @@ static const struct venus_resources msm8916_res = {
 	.fwname = "qcom/venus-1.8/venus.mdt",
 };
 
+static const struct freq_tbl msm8976_freq_table[] = {
+	{ 0, 466000000 },
+	{ 0, 400000000 },
+	{ 0, 360000000 },
+	{ 0, 310667000 },
+	{ 0, 228570000 },
+	{ 0, 133333333 },
+	{ 0, 100000000 },
+	{ 0, 80000000 },
+	{ 0, 72727200 },
+	
+};
+//presets same like 8953 reuse maybe?
+static const struct reg_val msm8976_reg_preset[] = {
+	{ 0xe0020, 0x05555556 },
+	{ 0xe0024, 0x05555556 },
+	{ 0x80124, 0x00000003 },
+};
+//10bit not supported wipe some stuff pls
+static const struct bw_tbl msm8976_bw_table_enc[] = {
+	{  979200,  1964000, 0, 2446336, 0 },	/* 4k UHD @ 30 */
+	{  489600,  1530000, 0, 1207296, 0 },	/* 1080p @ 60 */
+	{  244800,   775000, 0,  616448, 0 },	/* 1080p @ 30 */
+	{  216000,   677000, 0,  534528, 0 },	/* 720p @ 60 */
+	{  108000,   342000, 0,  271360, 0 },	/* 720p @ 30 */
+				
+};
+
+static const struct bw_tbl msm8976_bw_table_dec[] = {
+	{  979200,  2458000, 0, 1892000, 0 },	/* 4k UHD @ 30 */
+	{  489600,  1148000, 0,  895000, 0 },	/* 1080p @ 60 */
+	{  244800,   574000, 0,  460000, 0 },	/* 1080p @ 30 */
+	{  216000,   496000, 0,  301000, 0 },	/* 720p @ 60 */
+	{  108000,   252000, 0,  202000, 0 },	/* 720p @ 30 */
+
+};
+
+static const struct venus_resources msm8976_res = {
+	.freq_tbl = msm8976_freq_table,
+	.freq_tbl_size = ARRAY_SIZE(msm8976_freq_table),
+	.reg_tbl = msm8976_reg_preset,
+	.reg_tbl_size = ARRAY_SIZE(msm8976_reg_preset),
+	.bw_tbl_enc = msm8976_bw_table_enc,
+	.bw_tbl_enc_size = ARRAY_SIZE(msm8976_bw_table_enc),
+	.bw_tbl_dec = msm8976_bw_table_dec,
+	.bw_tbl_dec_size = ARRAY_SIZE(msm8976_bw_table_dec),
+	.clks = { "core", "iface", "bus" },
+	.clks_num = 3,
+	.vcodec0_clks = { "vcodec0" },
+	.vcodec1_clks = { "vcodec0" },
+	.vcodec_clks_num = 1,
+	.vcodec_pmdomains = { "venus" },
+	.vcodec_pmdomains_num = 1,
+	.opp_pmdomain = (const char *[]) { "cx", NULL },
+	.max_load = 1011840, /* 3840x2176@31 */
+	.hfi_version = HFI_VERSION_3XX,
+	.vmem_id = VIDC_RESOURCE_NONE,
+	.vmem_size = 0,
+	.vmem_addr = 0,
+	.cp_start = 0,
+	.cp_size = 0x5dc00000, 
+	.cp_nonpixel_start = 0x1000000,
+	.cp_nonpixel_size = 0x24800000,
+	.dma_mask = 0xddc00000 - 1,
+	.fwname = "qcom/venus-4.1/venus.mdt",
+};
+
 static const struct freq_tbl msm8996_freq_table[] = {
 	{ 1944000, 520000000 },	/* 4k UHD @ 60 (decode only) */
 	{  972000, 520000000 },	/* 4k UHD @ 30 */

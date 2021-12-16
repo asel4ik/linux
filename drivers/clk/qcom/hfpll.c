@@ -137,7 +137,7 @@ static int qcom_hfpll_probe(struct platform_device *pdev)
 	void __iomem *base;
 	struct regmap *regmap;
 	struct clk_hfpll *h;
-	dev_info(dev, "Probbing PLLs \n");
+	printk( "Probbing PLLs \n");
 	enum hf_pll_type type;
 	type = (enum hf_pll_type) of_device_get_match_data(dev);
 	if (type >= NUM_PLL_TYPES)
@@ -145,19 +145,19 @@ static int qcom_hfpll_probe(struct platform_device *pdev)
 		
 	switch(type) {
 		case 0:
-		dev_info(dev, "failed to register regmap clock \n");
+		printk( "failed to register regmap clock \n");
 		break;
 		case 1:
-		dev_info(dev, "Selected MSM8976 A53 PLL \n");
+		printk( "Selected MSM8976 A53 PLL \n");
 		break;
 		case 2:
-		dev_info(dev, "Selected MSM8976 A72 PLL \n");
+		printk( "Selected MSM8976 A72 PLL \n");
 		break;
 		case 3:
-		dev_info(dev, "Selected MSM8976 CCI PLL \n");
+		printk( "Selected MSM8976 CCI PLL \n");
 		break;
 		default:
-		dev_info(dev, "Selected default HFPLL \n");
+		printk( "Selected default HFPLL \n");
 		return 0;
 		}
 return 0;
@@ -205,7 +205,7 @@ return 0;
 
 	ret = devm_clk_register_regmap(dev, &h->clkr);
 	if (ret) {
-		dev_info(dev, "failed to register regmap clock: %d\n", ret);
+		printk( "failed to register regmap clock: %d\n", ret);
 		return ret;
 	}
 

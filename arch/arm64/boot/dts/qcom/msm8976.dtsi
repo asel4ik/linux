@@ -1802,11 +1802,6 @@
 							#size-cells = <0>;
 							#sound-dai-cells = <1>;
 
-							dai@16 {
-								reg = <PRIMARY_MI2S_RX>;
-								qcom,sd-lines = <0 1>;
-							};
-
 							dai@21 {
 								reg = <TERTIARY_MI2S_TX>;
 								qcom,sd-lines = <0 1>;

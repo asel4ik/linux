@@ -117,17 +117,6 @@
 	qcom,mbhc-vthreshold-high = <75 150 237 450 500>;
 };
 
-&pm8950_gpios {
-	cdc_pm_mclk_pin: cdc_pm_mclk {
-		pins = "gpio1";
-		function = PMIC_GPIO_FUNC_FUNC1; /* SF1 */
-		output-low;
-		bias-disable;
-		qcom,drive-strength = <PMIC_GPIO_STRENGTH_MED>;
-		power-source = <0>; /* VIN 0 */
-	};
-};
-
 &blsp_i2c4 {
 	status = "okay";
 
@@ -224,9 +213,9 @@
 };
 
 &q6afedai {
-	dai@22 {
+	dai@127 {
 		reg = <QUINARY_MI2S_RX>;
-		qcom,sd-lines = <1>;
+		qcom,sd-lines = <0>;
 	};
 };
 
@@ -406,9 +395,10 @@ status = "ok";
 	status = "okay";
 
 	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act  &tlmm_pri_act &cdc_reset_active >;
-	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus  &tlmm_pri_sus &cdc_reset_sus >;
-	model = "motorola-ocean";
+	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act  &tlmm_pri_act &cross_con_sus >;
+	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus  &tlmm_pri_sus &cross_con_act>;
+	model = "samsung-a2015";
+
 
 	quinary-mi2s-dai-link {
 		link-name = "Quinary MI2S";

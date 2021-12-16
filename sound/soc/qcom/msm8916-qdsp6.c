@@ -29,6 +29,15 @@ enum {
 	MI2S_COUNT
 };
 
+
+enum {
+	MI2S_OSR_PRIMARY,
+	MI2S_OSR_SECONDARY,
+	MI2S_OSR_TERTIARY,
+	MI2S_OSR_QUATERNARY,
+	MI2S_OSR_QUINARY,
+	MI2S_OSR_COUNT
+};
 struct msm8916_qdsp6_data {
 	void __iomem *mic_iomux;
 	void __iomem *spkr_iomux;
@@ -36,7 +45,9 @@ struct msm8916_qdsp6_data {
 	struct snd_soc_jack jack;
 	bool jack_setup;
 	unsigned int mi2s_clk_count[MI2S_COUNT];
+	unsigned int mi2s_osr_clk_count[MI2S_OSR_COUNT];
 };
+
 
 static const int msm8953_bitclk_map[MI2S_COUNT] = {
 	[MI2S_PRIMARY] = Q6AFE_LPASS_CLK_ID_PRI_MI2S_IBIT,
@@ -46,12 +57,21 @@ static const int msm8953_bitclk_map[MI2S_COUNT] = {
 	[MI2S_QUINARY] = Q6AFE_LPASS_CLK_ID_QUI_MI2S_IBIT,
 };
 
+static const int msm8976_fucked_leeco_osrclk_map[MI2S_COUNT] = {
+	[MI2S_OSR_PRIMARY] = Q6AFE_LPASS_CLK_ID_PRI_MI2S_IBIT,
+	[MI2S_OSR_SECONDARY] = Q6AFE_LPASS_CLK_ID_SEC_MI2S_IBIT,
+	[MI2S_OSR_TERTIARY] = Q6AFE_LPASS_CLK_ID_TER_MI2S_IBIT,
+	[MI2S_OSR_QUATERNARY] = Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT,
+	[MI2S_OSR_QUINARY] = Q6AFE_LPASS_CLK_ID_QUI_MI2S_IBIT,
+
+};
 #define MIC_CTRL_TER_WS_SLAVE_SEL	BIT(21)
 #define MIC_CTRL_QUA_WS_SLAVE_SEL_10	BIT(17)
 #define MIC_CTRL_TLMM_SCLK_EN		BIT(1)
 #define SPKR_CTL_PRI_WS_SLAVE_SEL_11	(BIT(17) | BIT(16))
 #define DEFAULT_MCLK_RATE		9600000
 #define MI2S_BCLK_RATE			1536000
+#define MI2S_OSR_RATE 			12288000
 
 static int msm8916_qdsp6_get_mi2s_id(struct snd_soc_pcm_runtime *rtd)
 {
@@ -207,22 +227,28 @@ static int msm8953_qdsp6_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_card *card = rtd->card;
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-	int mi2s, ret, clk_id;
+	int mi2s, ret ,retard, clk_id;
 
+
+	retard = snd_soc_dai_set_sysclk(cpu_dai, Q6AFE_LPASS_CLK_ID_QUI_MI2S_OSR , MI2S_OSR_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+	if (retard) {
+		dev_err(card->dev, "Failed to enable OSR clock for mi2s rx quin. \n");
+		return ret;
+	}
+	
 	mi2s = msm8916_qdsp6_get_mi2s_id(rtd);
 	if (mi2s < 0)
 		return mi2s;
 
 	clk_id = msm8953_bitclk_map[mi2s];
 
+
 	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id,
 			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
-	if (ret) {
+	if (ret) 
 		dev_err(card->dev, "Failed to enable bit clk (clk_id = %d): %d\n", clk_id, ret);
 		return ret;
-	}
-
-	return ret;
+	
 }
 
 static void msm8953_qdsp6_shutdown(struct snd_pcm_substream *substream)
@@ -230,17 +256,20 @@ static void msm8953_qdsp6_shutdown(struct snd_pcm_substream *substream)
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_card *card = rtd->card;
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-	int mi2s, ret, clk_id;
+	int mi2s, ret, retard, clk_id;
 
 	mi2s = msm8916_qdsp6_get_mi2s_id(rtd);
 	if (mi2s < 0)
 		return;
-
+		
+	retard = snd_soc_dai_set_sysclk(cpu_dai, Q6AFE_LPASS_CLK_ID_QUI_MI2S_OSR , 0 , 0);
+	
 	clk_id = msm8953_bitclk_map[mi2s];
 
 	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id, 0, SNDRV_PCM_STREAM_PLAYBACK);
 	if (ret)
 		dev_err(card->dev, "Failed to disable bit clk (clk_id = %d): %d\n", clk_id, ret);
+	
 }
 
 static const struct snd_soc_ops msm8916_qdsp6_be_ops = {

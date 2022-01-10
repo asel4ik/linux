@@ -403,7 +403,7 @@ status = "ok";
 };
 
 &sound_card {
-	status = "okay";
+	status = "disabled";
 
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act  &tlmm_pri_act &cdc_reset_active >;

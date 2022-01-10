@@ -1639,7 +1639,6 @@ static const struct freq_tbl ftbl_vcodec0_clk_src[] = {
 
 static struct clk_rcg2 vcodec0_clk_src = {
 	.cmd_rcgr = 0x4c000,
-	.mnd_width = 8,
 	.hid_width = 5,
 	.parent_map = gcc_parent_map_3,
 	.freq_tbl = ftbl_vcodec0_clk_src,
@@ -3761,8 +3760,9 @@ static struct gdsc venus_core0_gdsc = {
 	.cxcs = (unsigned int []){ 0x4c02c },
 	.cxc_count = 1,
 	.pd = {
-		.name = "venus_core0_gdsc",
+		.name = "venus_core0",
 	},
+	.flags = HW_CTRL,
 	.pwrsts = PWRSTS_OFF_ON,
 };
 

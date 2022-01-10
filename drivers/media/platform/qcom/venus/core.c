@@ -576,10 +576,10 @@ static const struct venus_resources msm8976_res = {
 	.freq_tbl_size = ARRAY_SIZE(msm8976_freq_table),
 	.reg_tbl = msm8976_reg_preset,
 	.reg_tbl_size = ARRAY_SIZE(msm8976_reg_preset),
-	.bw_tbl_enc = msm8976_bw_table_enc,
-	.bw_tbl_enc_size = ARRAY_SIZE(msm8976_bw_table_enc),
-	.bw_tbl_dec = msm8976_bw_table_dec,
-	.bw_tbl_dec_size = ARRAY_SIZE(msm8976_bw_table_dec),
+	//.bw_tbl_enc = msm8976_bw_table_enc,
+	//.bw_tbl_enc_size = ARRAY_SIZE(msm8976_bw_table_enc),
+	//.bw_tbl_dec = msm8976_bw_table_dec,
+	//.bw_tbl_dec_size = ARRAY_SIZE(msm8976_bw_table_dec),
 	.clks = { "core", "iface", "bus" },
 	.clks_num = 3,
 	.vcodec0_clks = { "vcodec0" },
@@ -598,7 +598,7 @@ static const struct venus_resources msm8976_res = {
 	.cp_nonpixel_start = 0x1000000,
 	.cp_nonpixel_size = 0x24800000,
 	.dma_mask = 0xddc00000 - 1,
-	.fwname = "qcom/venus-4.1/venus.mdt",
+	.fwname = "venus-v1.mdt",
 };
 
 static const struct freq_tbl msm8996_freq_table[] = {
@@ -805,6 +805,7 @@ static const struct venus_resources sm8250_res = {
 
 static const struct of_device_id venus_dt_match[] = {
 	{ .compatible = "qcom,msm8916-venus", .data = &msm8916_res, },
+	{ .compatible = "qcom,msm8976-venus", .data = &msm8976_res, },
 	{ .compatible = "qcom,msm8996-venus", .data = &msm8996_res, },
 	{ .compatible = "qcom,sdm845-venus", .data = &sdm845_res, },
 	{ .compatible = "qcom,sdm845-venus-v2", .data = &sdm845_res_v2, },

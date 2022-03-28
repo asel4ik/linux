@@ -913,7 +913,7 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			#iommu-cells = <1>;
-			compatible = "qcom,msm8976-gpu-iommu", "qcom,msm-iommu-v1";
+			compatible = "qcom,msm8953-gpu-iommu", "qcom,msm-iommu-v1";
 			ranges = <0 0x01f08000 0x8000>;
 			clocks = <&gcc GCC_SMMU_CFG_CLK>,
 				 <&gcc GCC_GFX3D_TCU_CLK>;

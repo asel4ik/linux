@@ -1212,7 +1212,7 @@
 			power-domains = <&gcc OXILI_CX_GDSC>,
 			<&gcc OXILI_GX_GDSC>,
 			<&rpmpd MSM8976_VDDCX>;
-			power-domain-names = "cx", "gx", "pstate-supply";
+			power-domain-names = "cx", "gx", "pstate";
 
 			iommus = <&gpu_iommu 0>;
 

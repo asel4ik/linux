@@ -395,9 +395,9 @@ status = "ok";
 	status = "okay";
 
 	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act  &tlmm_pri_act &cross_con_sus >;
+	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act  &tlmm_pri_act &cross_con_sus &cdc_reset_active >;
 	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus  &tlmm_pri_sus &cross_con_act>;
-	model = "samsung-a2015";
+	model = "motorola-ocean";
 
 
 	quinary-mi2s-dai-link {
@@ -414,6 +414,7 @@ status = "ok";
 			sound-dai = <&speaker_codec>;
 		};
 	};
+	
 };
 
 &usb {
@@ -454,6 +455,7 @@ status = "okay";
 		pm8950_s4: s4 {
 			regulator-min-microvolt = <2050000>;
 			regulator-max-microvolt = <2050000>;
+			regulator-always-on;
 		};
 	
 		pm8950_l1: l1 {
@@ -555,3 +557,25 @@ status = "okay";
 	};
 
 
+&pm8950_gpios {
+	pm8950_gpio_1: cdc_pm_mclk {
+		cdc_pm {
+			pins = "gpio1";
+			function = "func1"; /* SF1 */
+			output-low;
+			bias-disable;
+			qcom,drive-strength = <2>;
+			power-source = <0>; /* VIN 2 */
+		};
+	};
+
+	pm8950_gpio_7: wcd_eldo_en {
+		wcd_eldo {
+			pins = "gpio7";
+			function = "gpio";
+			output-low;
+			bias-disable;
+			power-source = <0>; /* VPH_PWR */
+		};
+	};
+};

@@ -96,7 +96,7 @@
 			reg = <0x0 0x8d200000  0x0 0x5FB000>;
 		};
 		
-			idk: memory@0x8D7FB000 {
+			idk: memory@8d7fb000 {
 			reg = <0x0 0x8D7FB000 0x0 0x2005000>;
 			no-map;
 	 };
@@ -1590,7 +1590,7 @@
 			status = "ok";
 			
 			iris: iris {
-				compatible = "qcom,wcn3660b";
+				compatible = "qcom,wcn3680";
 			
 				clocks = <&rpmcc RPM_SMD_RF_CLK2>;
 				clock-names = "xo";
@@ -1651,12 +1651,6 @@
 
 			status = "disabled";
 
-			mm1-dai-link {
-				link-name = "MultiMedia1";
-				cpu {
-					sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA1>;
-				};
-			};
 
 			mm2-dai-link {
 				link-name = "MultiMedia2";
@@ -1687,21 +1681,6 @@
 			};
 			
 
-			primary-mi2s-dai-link {
-				link-name = "Primary MI2S";
-				cpu {
-					sound-dai = <&q6afedai PRIMARY_MI2S_RX>;
-				};
-
-				platform {
-					sound-dai = <&q6routing>;
-				};
-
-				codec {
-					sound-dai = <&lpass_codec 0>, <&wcd_codec 0>;
-				};
-			};
-		
 			tertiary-mi2s-dai-link {
 				link-name = "Tertiary MI2S";
 				cpu {
@@ -1744,7 +1723,7 @@
 					  "handover", "stop-ack";
 			clocks = <&xo_board>;
 			clock-names = "xo";
-
+			
 			power-domains = <&rpmpd MSM8976_VDDCX>;
 			power-domain-names = "cx";
 
@@ -1783,12 +1762,7 @@
 							#address-cells = <1>;
 							#size-cells = <0>;
 							#sound-dai-cells = <1>;
-
-							dai@16 {
-								reg = <PRIMARY_MI2S_RX>;
-								qcom,sd-lines = <0 1>;
-							};
-
+							
 							dai@21 {
 								reg = <TERTIARY_MI2S_TX>;
 								qcom,sd-lines = <0 1>;
@@ -1810,10 +1784,7 @@
 							#size-cells = <0>;
 							#sound-dai-cells = <1>;
 
-							dai@0 {
-								reg = <MSM_FRONTEND_DAI_MULTIMEDIA1>;
-							};
-
+							
 							dai@1 {
 								reg = <MSM_FRONTEND_DAI_MULTIMEDIA2>;
 							};

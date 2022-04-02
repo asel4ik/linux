@@ -29,7 +29,7 @@
 #include "wcn36xx.h"
 #include "testmode.h"
 
-unsigned int wcn36xx_dbg_mask = 0xFFFFFFFF;
+unsigned int wcn36xx_dbg_mask;
 module_param_named(debug_mask, wcn36xx_dbg_mask, uint, 0644);
 MODULE_PARM_DESC(debug_mask, "Debugging mask");
 

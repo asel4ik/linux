@@ -39,6 +39,9 @@ static const int msm8953_bitclk_map[MI2S_COUNT] = {
 	[MI2S_QUINARY] = Q6AFE_LPASS_CLK_ID_QUI_MI2S_IBIT,
 };
 
+static const int msm8976_osr_map[MI2S_COUNT] = {
+	[MI2S_QUINARY] = Q6AFE_LPASS_CLK_ID_QUI_MI2S_OSR,
+};
 #define MIC_CTRL_TER_WS_SLAVE_SEL	BIT(21)
 #define MIC_CTRL_QUA_WS_SLAVE_SEL_10	BIT(17)
 #define MIC_CTRL_TLMM_SCLK_EN		BIT(1)
@@ -52,6 +55,7 @@ static const int msm8953_bitclk_map[MI2S_COUNT] = {
 #define SPKR_CTL_TLMM_WS_EN_SEL_SEC	BIT(18)
 #define DEFAULT_MCLK_RATE		9600000
 #define MI2S_BCLK_RATE			1536000
+#define MI2S_OSR_RATE 			12288000
 
 static int apq8016_dai_init(struct snd_soc_pcm_runtime *rtd, int mi2s)
 {
@@ -282,11 +286,82 @@ static void msm8953_qdsp6_shutdown(struct snd_pcm_substream *substream)
 		dev_err(card->dev, "Failed to disable bit clk (clk_id = %d): %d\n", clk_id, ret);
 }
 
+
+
 static const struct snd_soc_ops msm8953_qdsp6_be_ops = {
 	.startup = msm8953_qdsp6_startup,
 	.shutdown = msm8953_qdsp6_shutdown,
 };
 
+static int msm8976_qdsp6_startup(struct snd_pcm_substream *substream)
+{
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_soc_card *card = rtd->card;
+	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
+	int mi2s, ret, clk_id, clk_id2;
+
+	mi2s = qdsp6_dai_get_lpass_id(cpu_dai);
+	if (mi2s < 0)
+		return mi2s;
+
+	clk_id = msm8953_bitclk_map[mi2s];
+	
+	
+	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id,
+			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+	if (ret) {
+		dev_err(card->dev, "Failed to enable bit clk (clk_id = %d): %d\n", clk_id, ret);
+		return ret;
+	}
+	
+	clk_id2 = msm8976_osr_map[mi2s];
+	if(clk_id2 !=0)
+	{
+	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id2,
+			MI2S_OSR_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+	if (ret) {
+		dev_err(card->dev, "Failed to enable OSR clk (clk_id = %d): %d\n", clk_id, ret);
+		return ret;
+	}
+	
+	}
+
+	return ret;
+}
+
+static void msm8976_qdsp6_shutdown(struct snd_pcm_substream *substream)
+{
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_soc_card *card = rtd->card;
+	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
+	int mi2s, ret, clk_id, clk_id2;
+
+	mi2s = qdsp6_dai_get_lpass_id(cpu_dai);
+	if (mi2s < 0)
+		return;
+
+	clk_id = msm8953_bitclk_map[mi2s];
+
+	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id, 0, SNDRV_PCM_STREAM_PLAYBACK);
+	if (ret)
+		dev_err(card->dev, "Failed to disable bit clk (clk_id = %d): %d\n", clk_id, ret);
+		
+	clk_id2 = msm8976_osr_map[mi2s];
+	if(clk_id2 !=0)
+	{
+	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id2,
+			0, SNDRV_PCM_STREAM_PLAYBACK);
+	if (ret) {
+		dev_err(card->dev, "Failed to  disable OSR clk (clk_id = %d): %d\n", clk_id, ret);
+	}
+	
+	}
+}
+
+static const struct snd_soc_ops msm8976_qdsp6_be_ops = {
+	.startup = msm8976_qdsp6_startup,
+	.shutdown = msm8976_qdsp6_shutdown,
+};
 
 static int msm8916_qdsp6_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 					    struct snd_pcm_hw_params *params)
@@ -339,6 +414,23 @@ static void msm8953_qdsp6_add_ops(struct snd_soc_card *card)
 		if (link->no_pcm) {
 			link->init = msm8916_qdsp6_dai_init;
 			link->ops = &msm8953_qdsp6_be_ops;
+			link->be_hw_params_fixup = msm8916_qdsp6_be_hw_params_fixup;
+		}
+	}
+}
+
+static void msm8976_qdsp6_add_ops(struct snd_soc_card *card)
+{
+	struct snd_soc_dai_link *link;
+	int i;
+
+	/* Make it obvious to userspace that QDSP6 is used */
+	card->components = "qdsp6";
+
+	for_each_card_prelinks(card, i, link) {
+		if (link->no_pcm) {
+			link->init = msm8916_qdsp6_dai_init;
+			link->ops = &msm8976_qdsp6_be_ops;
 			link->be_hw_params_fixup = msm8916_qdsp6_be_hw_params_fixup;
 		}
 	}
@@ -401,6 +493,7 @@ static const struct of_device_id apq8016_sbc_device_id[] __maybe_unused = {
 	{ .compatible = "qcom,apq8016-sbc-sndcard", .data = apq8016_sbc_add_ops },
 	{ .compatible = "qcom,msm8916-qdsp6-sndcard", .data = msm8916_qdsp6_add_ops },
 	{ .compatible = "qcom,msm8953-qdsp6-sndcard", .data = msm8953_qdsp6_add_ops },
+	{ .compatible = "qcom,msm8976-qdsp6-sndcard", .data = msm8976_qdsp6_add_ops },
 	{},
 };
 MODULE_DEVICE_TABLE(of, apq8016_sbc_device_id);

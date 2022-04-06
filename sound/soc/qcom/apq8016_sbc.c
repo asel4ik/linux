@@ -39,9 +39,19 @@ static const int msm8953_bitclk_map[MI2S_COUNT] = {
 	[MI2S_QUINARY] = Q6AFE_LPASS_CLK_ID_QUI_MI2S_IBIT,
 };
 
+
+
 static const int msm8976_osr_map[MI2S_COUNT] = {
 	[MI2S_QUINARY] = Q6AFE_LPASS_CLK_ID_QUI_MI2S_OSR,
 };
+
+static const int msm8976_pcm_map[MI2S_COUNT] = {
+	[MI2S_PRIMARY] = Q6AFE_LPASS_CLK_ID_PRI_PCM_IBIT,
+	[MI2S_QUINARY] = Q6AFE_LPASS_CLK_ID_QUIN_PCM_IBIT,
+};
+
+
+
 #define MIC_CTRL_TER_WS_SLAVE_SEL	BIT(21)
 #define MIC_CTRL_QUA_WS_SLAVE_SEL_10	BIT(17)
 #define MIC_CTRL_TLMM_SCLK_EN		BIT(1)
@@ -298,7 +308,7 @@ static int msm8976_qdsp6_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_card *card = rtd->card;
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-	int mi2s, ret, clk_id, clk_id2;
+	int mi2s, ret, clk_id, clk_id2, clk_id3;
 
 	mi2s = qdsp6_dai_get_lpass_id(cpu_dai);
 	if (mi2s < 0)
@@ -319,12 +329,33 @@ static int msm8976_qdsp6_startup(struct snd_pcm_substream *substream)
 	{
 	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id2,
 			MI2S_OSR_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+	}
 	if (ret) {
 		dev_err(card->dev, "Failed to enable OSR clk (clk_id = %d): %d\n", clk_id, ret);
 		return ret;
 	}
 	
+	clk_id3 = msm8976_pcm_map[mi2s];
+	
+	if(mi2s == MI2S_PRIMARY)
+	{
+	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id3,
+			DEFAULT_MCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
 	}
+	
+	if(mi2s == MI2S_QUINARY)
+	{
+	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id3,
+			MI2S_OSR_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+	}
+	
+	
+if (ret) {
+		dev_err(card->dev, "Failed to enable PCM clk (clk_id = %d): %d\n", clk_id, ret);
+		return ret;
+	}
+
+	
 
 	return ret;
 }
@@ -334,7 +365,7 @@ static void msm8976_qdsp6_shutdown(struct snd_pcm_substream *substream)
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_card *card = rtd->card;
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-	int mi2s, ret, clk_id, clk_id2;
+	int mi2s, ret, clk_id, clk_id2, clk_id3;
 
 	mi2s = qdsp6_dai_get_lpass_id(cpu_dai);
 	if (mi2s < 0)
@@ -351,11 +382,31 @@ static void msm8976_qdsp6_shutdown(struct snd_pcm_substream *substream)
 	{
 	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id2,
 			0, SNDRV_PCM_STREAM_PLAYBACK);
+	}
 	if (ret) {
 		dev_err(card->dev, "Failed to  disable OSR clk (clk_id = %d): %d\n", clk_id, ret);
 	}
 	
+	clk_id3 = msm8976_pcm_map[mi2s];
+	
+	if(mi2s == MI2S_PRIMARY)
+	{
+	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id3,
+			0, SNDRV_PCM_STREAM_PLAYBACK);
 	}
+	
+	if(mi2s == MI2S_QUINARY)
+	{
+	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id3,
+			0, SNDRV_PCM_STREAM_PLAYBACK);
+	}
+	
+	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id3,
+			0, SNDRV_PCM_STREAM_PLAYBACK);
+	if (ret) {
+		dev_err(card->dev, "Failed to  disable PCM clk (clk_id = %d): %d\n", clk_id, ret);
+	}
+	
 }
 
 static const struct snd_soc_ops msm8976_qdsp6_be_ops = {

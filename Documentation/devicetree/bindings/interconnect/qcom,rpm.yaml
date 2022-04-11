@@ -26,6 +26,9 @@ properties:
       - qcom,msm8939-bimc
       - qcom,msm8939-pcnoc
       - qcom,msm8939-snoc
+      - qcom,msm8976-bimc
+      - qcom,msm8976-pcnoc
+      - qcom,msm8976-snoc
       - qcom,msm8996-a0noc
       - qcom,msm8996-a1noc
       - qcom,msm8996-a2noc
@@ -116,6 +119,7 @@ allOf:
               compatible:
                 enum:
                   - qcom,msm8939-snoc-mm
+                  - qcom,msm8976-snoc-mm
 
               '#interconnect-cells':
                 const: 1

@@ -5,6 +5,7 @@
 
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/clock/qcom,gcc-msm8976.h>
+#include <dt-bindings/interconnect/qcom,msm8976.h>
 #include <dt-bindings/clock/qcom,rpmcc.h>
 #include <dt-bindings/power/qcom-rpmpd.h>
 #include <dt-bindings/soc/qcom,apr.h>
@@ -408,6 +409,39 @@
 			reg = <0x4ab000 0x4>;
 		};
 		
+		pcnoc: interconnect@500000 {
+			compatible = "qcom,msm8976-pcnoc";
+			reg = <0x500000 0x14000>;
+
+			clock-names = "bus", "bus_a";
+			clocks = <&rpmcc RPM_SMD_PCNOC_CLK>,
+				 <&rpmcc RPM_SMD_PCNOC_A_CLK>;
+
+			#interconnect-cells = <1>;
+		};
+
+		snoc: interconnect@580000 {
+			compatible = "qcom,msm8976-snoc";
+			reg = <0x580000 0x1a000>;
+
+			clock-names = "bus", "bus_a";
+			clocks = <&rpmcc RPM_SMD_SNOC_CLK>,
+				 <&rpmcc RPM_SMD_SNOC_A_CLK>;
+
+			#interconnect-cells = <1>;
+
+			snoc_mm: interconnect {
+				compatible = "qcom,msm8976-snoc-mm";
+
+				clock-names = "bus", "bus_a";
+				clocks = <&rpmcc RPM_SMD_MMSSNOC_AHB_CLK>,
+					 <&rpmcc RPM_SMD_MMSSNOC_AHB_A_CLK>;
+
+				#interconnect-cells = <1>;
+			};
+		};
+
+
 		tcsr_mutex_regs: syscon@1905000 {
 			compatible = "syscon";
 			reg = <0x1905000 0x20000>;
@@ -937,6 +971,17 @@
 			clocks = <&gcc GCC_PRNG_AHB_CLK>;
 			clock-names = "core";
 		};
+		
+		bimc: interconnect@400000 {
+			compatible = "qcom,msm8976-bimc";
+			reg = <0x400000 0x62000>;
+
+			clock-names = "bus", "bus_a";
+			clocks = <&rpmcc RPM_SMD_BIMC_CLK>,
+				 <&rpmcc RPM_SMD_BIMC_A_CLK>;
+
+			#interconnect-cells = <1>;
+		};
 
 		qfprom@a4000 {
 			compatible = "qcom,qfprom";
@@ -1295,6 +1340,9 @@
 				 <&xo_board>;
 			clock-names = "core", "iface", "xo";
 			operating-points-v2 = <&sdhc1_opp_table>;
+			interconnects = <&pcnoc MAS_SDCC_1 &bimc SLV_EBI>,
+					<&bimc MAS_APPS_PROC &pcnoc SLV_SDCC_1>;
+
 			mmc-hs200-1_8v;
 			mmc-hs400-1_8v;
 			mmc-ddr-1_8v;
@@ -1307,17 +1355,23 @@
 
 				opp-100000000 {
 					opp-hz = /bits/ 64 <100000000>;
+					opp-peak-kBps = <400000>, <400000>;
+					opp-avg-kBps = <130718>, <65360>;
 					required-opps = <&rpmpd_opp_svs>;
 				};
 
 				opp-186400000 {
 					opp-hz = /bits/ 64 <186400000>;
+					opp-peak-kBps = <800000>, <600000>;
+					opp-avg-kBps = <261438>, <130718>;
 					required-opps = <&rpmpd_opp_nom>;
 				};
 
 
 				opp-372800000 {
 					opp-hz = /bits/ 64 <372800000>;
+					opp-peak-kBps = <800000>, <800000>;
+					opp-avg-kBps = <261438>, <300000>;
 					required-opps = <&rpmpd_opp_nom>;
 				};
 			};

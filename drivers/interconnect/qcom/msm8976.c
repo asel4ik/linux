@@ -200,7 +200,7 @@ static struct qcom_icc_node mas_usb_hs1 = {
 	.name = "mas_usb_hs1",
 	.id = QNOC_MASTER_USB_HS,
 	.buswidth = 4,
-	.mas_rpm_id = 0,
+	.mas_rpm_id = 42,
 	.slv_rpm_id = -1,
 	.num_links = ARRAY_SIZE(mas_usb_hs1_links),
 	.links = mas_usb_hs1_links,
@@ -319,11 +319,17 @@ static const u16 mas_spdm_links[] = {
 	QNOC_PNOC_M_0
 };
 
+/*
+* mas_spdm
+* Downstream: mas_rpm_id = 50
+* This node returns -6 error during probe
+*/
+
 static struct qcom_icc_node mas_spdm = {
 	.name = "mas_spdm",
 	.id = QNOC_MASTER_SPDM,
 	.buswidth = 4,
-	.mas_rpm_id = 50,
+	.mas_rpm_id = -1,
 	.slv_rpm_id = -1,
 	.num_links = ARRAY_SIZE(mas_spdm_links),
 	.links = mas_spdm_links,
@@ -333,11 +339,17 @@ static const u16 mas_dehr_links[] = {
 	QNOC_PNOC_M_0
 };
 
+/*
+* mas_dehr
+* Downstream: mas_rpm_id = 48
+* This node returns -6 error during probe
+*/
+
 static struct qcom_icc_node mas_dehr = {
 	.name = "mas_dehr",
 	.id = QNOC_MASTER_DEHR,
 	.buswidth = 4,
-	.mas_rpm_id = 48,
+	.mas_rpm_id = -1,
 	.slv_rpm_id = -1,
 	.num_links = ARRAY_SIZE(mas_dehr_links),
 	.links = mas_dehr_links,
@@ -347,11 +359,17 @@ static const u16 mas_xm_usb_hs1_links[] = {
 	QNOC_PNOC_INT_0
 };
 
+/*
+* mas_xm_usb_hs1
+* Downstream: mas_rpm_id = 137
+* This node returns -6 error during probe
+*/
+
 static struct qcom_icc_node mas_xm_usb_hs1 = {
 	.name = "mas_xm_usb_hs1",
 	.id = QNOC_MASTER_XM_USB_HS1,
 	.buswidth = 8,
-	.mas_rpm_id = 137,
+	.mas_rpm_id = -1,
 	.slv_rpm_id = -1,
 	.num_links = ARRAY_SIZE(mas_xm_usb_hs1_links),
 	.links = mas_xm_usb_hs1_links,
@@ -567,11 +585,17 @@ static const u16 mas_lpass_proc_links[] = {
 	QNOC_SNOC_BIMC_SLV
 };
 
+/*
+* mas_lpass_proc
+* Downstream: mas_rpm_id = 25
+* This node returns -6 when calling mas
+*/
+
 static struct qcom_icc_node mas_lpass_proc = {
 	.name = "mas_lpass_proc",
 	.id = QNOC_MASTER_LPASS_PROC,
 	.buswidth = 8,
-	.mas_rpm_id = 25,
+	.mas_rpm_id = -1,
 	.slv_rpm_id = -1,
 	.qos.qos_mode = NOC_QOS_MODE_BYPASS,
 	.qos.qos_port = 19,
@@ -631,11 +655,17 @@ static const u16 pcnoc_int_0_links[] = {
 	QNOC_PNOC_INT_2
 };
 
+/*
+* pcnoc_int_0
+* Downstream: mas_rpm_id = 85
+* This node returns -6 when calling mas
+*/
+
 static struct qcom_icc_node pcnoc_int_0 = {
 	.name = "pcnoc_int_0",
 	.id = QNOC_PNOC_INT_0,
 	.buswidth = 4,
-	.mas_rpm_id = 85,
+	.mas_rpm_id = -1,
 	.slv_rpm_id = 114,
 	.num_links = ARRAY_SIZE(pcnoc_int_0_links),
 	.links = pcnoc_int_0_links,
@@ -988,12 +1018,18 @@ static struct qcom_icc_node slv_blsp_1 = {
 	.slv_rpm_id = 39,
 };
 
+/*
+* slv_usb_hs
+* Downstream: slv_rpm_id = 38
+* This node returns -6 error.
+*/
+
 static struct qcom_icc_node slv_usb_hs = {
 	.name = "slv_usb_hs",
 	.id = QNOC_SLAVE_USB_HS,
 	.buswidth = 4,
 	.mas_rpm_id = -1,
-	.slv_rpm_id = 38,
+	.slv_rpm_id = -1,
 };
 
 static struct qcom_icc_node slv_sdcc_3 = {

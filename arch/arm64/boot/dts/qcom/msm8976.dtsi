@@ -15,13 +15,14 @@
 #include <dt-bindings/thermal/thermal.h>
 
 
-#define GPU_OPP(freq_khz, lvl, supp) \
+#define GPU_OPP(freq_khz, peakBW, lvl, supp)		\
 	opp-##freq_khz##000 {				\
 		opp-hz = /bits/ 64 <freq_khz##000>;	\
 		opp-supported-hw = <supp>;		\
-		required-opps = <&lvl>; \
+		opp-avg-kBps = <0>, <(peakBW/4)>;	\
+		opp-peak-kBps = <peakBW>, <(peakBW/2)>;	\
+		required-opps = <&lvl>;			\
 	}
-	
 
 / {
 	interrupt-parent = <&intc>;
@@ -1038,7 +1039,11 @@
 					      "vsync",
 					      "tbu",
 					      "tbu_rt";
-
+				
+				interconnects = <&snoc_mm MAS_MDP0 &bimc SLV_EBI>,
+						<&bimc MAS_APPS_PROC &pcnoc SLV_DISP_SS_CFG>;
+				interconnect-names = "mdp0-mem", "cpu-cfg";
+				
 				iommus = <&apps_iommu 0x17>;
 				iommu-defer-attach;
 
@@ -1127,7 +1132,7 @@
 
 					opp-161250000 {
 						opp-hz = /bits/ 64 <161250000>;
-						required-opps = <&rpmpd_opp_svs>;
+						required-opps = <&rpmpd_opp_svs_plus>;
 					};
 
 					opp-187500000 {
@@ -1258,19 +1263,23 @@
 			<&gcc OXILI_GX_GDSC>,
 			<&rpmpd MSM8976_VDDCX>;
 			power-domain-names = "cx", "gx", "pstate";
-
+			
+			interconnects = <&bimc MAS_OXILI &bimc SLV_EBI>,
+					<&bimc MAS_APPS_PROC &pcnoc SLV_GPU_CFG>; // Downstream doesn't handlde this,
+										  // so values are made up.
+			
 			iommus = <&gpu_iommu 0>;
 
 			operating-points-v2 = <&gpu_opp_table>;
 			
 			gpu_opp_table: opp-table {
 				compatible  ="operating-points-v2";
-
-				GPU_OPP(300000, rpmpd_opp_svs, 0xff);
-				GPU_OPP(366670, rpmpd_opp_svs_plus, 0xff);
-				GPU_OPP(432000, rpmpd_opp_nom, 0xff);
-				GPU_OPP(480000, rpmpd_opp_nom_plus, 0xff);
-				GPU_OPP(600000, rpmpd_opp_turbo, 0xff);
+				GPU_OPP(200000, 2227200, rpmpd_opp_low_svs, 0xff);
+				GPU_OPP(300000, 3072000, rpmpd_opp_svs, 0xff);
+				GPU_OPP(400000, 4300800, rpmpd_opp_nom, 0xff);
+				GPU_OPP(480000, 5990400 ,rpmpd_opp_nom_plus, 0xff);
+				GPU_OPP(550000, 7449600, rpmpd_opp_turbo, 0xff);
+				//GPU_OPP(600000, 7449600, rpmpd_opp_turbo, 0xff);
 			};
 		};
 

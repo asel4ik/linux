@@ -136,6 +136,8 @@
 			cpu-idle-states = <&LITTLE_CPU_SLEEP_0>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&L2_0>;
+			clocks = <&apcc_c0_mux>;
+			operating-points-v2 = <&cpu_opp_table_little>;
 			#cooling-cells = <2>;
 			L2_0: l2-cache {
 				compatible = "arm,arch-cache";
@@ -157,6 +159,8 @@
 			cpu-idle-states = <&LITTLE_CPU_SLEEP_0>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&L2_0>;
+			clocks = <&apcc_c0_mux>;
+			operating-points-v2 = <&cpu_opp_table_little>;
 			#cooling-cells = <2>;
 			L1_I_1: l1-icache {
 				compatible = "arm,arch-cache";
@@ -174,6 +178,8 @@
 			cpu-idle-states = <&LITTLE_CPU_SLEEP_0>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&L2_0>;
+			clocks = <&apcc_c0_mux>;
+			operating-points-v2 = <&cpu_opp_table_little>;
 			#cooling-cells = <2>;
 			L1_I_2: l1-icache {
 				compatible = "arm,arch-cache";
@@ -191,6 +197,8 @@
 			cpu-idle-states = <&LITTLE_CPU_SLEEP_0>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&L2_0>;
+			clocks = <&apcc_c0_mux>;
+			operating-points-v2 = <&cpu_opp_table_little>;
 			#cooling-cells = <2>;
 			L1_I_3: l1-icache {
 				compatible = "arm,arch-cache";
@@ -208,6 +216,8 @@
 			cpu-idle-states = <&BIG_CPU_SLEEP_0 &BIG_CPU_SLEEP_1>;
 			capacity-dmips-mhz = <1830>;
 			next-level-cache = <&L2_1>;
+			clocks = <&apcc_c0_mux>;
+			operating-points-v2 = <&cpu_opp_table_little>;
 			#cooling-cells = <2>;
 			L2_1: l2-cache {
 				compatible = "arm,arch-cache";
@@ -229,6 +239,8 @@
 			cpu-idle-states = <&BIG_CPU_SLEEP_0 &BIG_CPU_SLEEP_1>;
 			capacity-dmips-mhz = <1830>;
 			next-level-cache = <&L2_1>;
+			clocks = <&apcc_c1_mux>;
+			operating-points-v2 = <&cpu_opp_table_big>;
 			#cooling-cells = <2>;
 			L1_I_101: l1-icache {
 				compatible = "arm,arch-cache";
@@ -246,6 +258,8 @@
 			cpu-idle-states = <&BIG_CPU_SLEEP_0 &BIG_CPU_SLEEP_1>;
 			capacity-dmips-mhz = <1830>;
 			next-level-cache = <&L2_1>;
+			clocks = <&apcc_c1_mux>;
+			operating-points-v2 = <&cpu_opp_table_big>;
 			#cooling-cells = <2>;
 			L1_I_102: l1-icache {
 				compatible = "arm,arch-cache";
@@ -263,6 +277,8 @@
 			cpu-idle-states = <&BIG_CPU_SLEEP_0 &BIG_CPU_SLEEP_1>;
 			capacity-dmips-mhz = <1830>;
 			next-level-cache = <&L2_1>;
+			clocks = <&apcc_c1_mux>;
+			operating-points-v2 = <&cpu_opp_table_big>;
 			#cooling-cells = <2>;
 			L1_I_103: l1-icache {
 				compatible = "arm,arch-cache";
@@ -404,7 +420,122 @@
 		#size-cells = <1>;
 		ranges = <0 0 0 0xffffffff>;
 		compatible = "simple-bus";
+		
+	a53_pll: clock-controller@b116000 {
+		compatible = "qcom,hfpll-msm8976-a53", "qcom,hfpll2";
+		reg = <0xb116000 0x40>;
+		clocks = <&xo_board>;
+		clock-names = "xo";
+		clock-output-names = "hfpll_a53";
+		#clock-cells = <0>;
+	};
 
+	a72_pll: clock-controller@b016000 {
+		compatible = "qcom,hfpll-msm8976-a72", "qcom,hfpll2";
+		reg = <0xb016000 0x40>;
+		clocks = <&xo_board>;
+		clock-names = "xo";
+		clock-output-names = "hfpll_a72";
+		#clock-cells = <0>;
+	};
+	
+	apm: syscon@b111000 {
+			compatible = "syscon";
+			reg = <0xb111000 0x1000>;
+		};
+	
+	apcc_c1_mux: clock-controller@b011050 {
+			compatible = "qcom,cpu-mux-div-clock";
+			reg = <0xb011050 0x10>;
+			clocks = <&a72_pll>, <&gcc GPLL0>;
+			qcom,mux-values = <5>, <4>; //5 is main pll output 4 is aux clock=gpll0
+			qcom,safe-div = <3>;
+			clock-output-names = "apcc-c1-mux";
+			assigned-clocks = <&apcc_c1_mux>;
+			assigned-clock-parents = <&a72_pll>;
+			assigned-clock-rates = <1804800000>;
+			#clock-cells = <0>;
+		};
+		
+		apcc_c0_mux: clock-controller@b111050 {
+			compatible = "qcom,cpu-mux-div-clock";
+			reg = <0xb111050 0x10>;
+			clocks = <&a53_pll>, <&gcc GPLL0>;
+			qcom,mux-values = <5>, <4>;
+			qcom,safe-div = <3>;
+			clock-output-names = "apcc-c0-mux";
+			assigned-clocks = <&apcc_c0_mux>;
+			assigned-clock-parents = <&a53_pll>;
+			assigned-clock-rates = <1401600000>;
+			#clock-cells = <0>;
+		};
+		
+		cpu_opp_table_big: cpu-opp-table-big {
+		compatible = "operating-points-v2-qcom-cpu";
+		opp-shared;
+
+		opp-400000000 {
+			opp-hz = /bits/ 64 <400000000>;
+		};
+
+		opp-883200000 {
+			opp-hz = /bits/ 64 <883200000>;
+		};
+		opp-1056000000 {
+			opp-hz = /bits/ 64 <1056000000>;
+		};
+		/*
+		
+		opp-1382400000 {
+			opp-hz = /bits/ 64 <1382400000>;
+		};
+		
+		opp-1804800000 {
+		 	opp-hz = /bits/ 64 <1804800000>;
+		};
+		*/
+	};
+
+	cpu_opp_table_little: cpu-opp-table-little {
+		compatible = "operating-points-v2-qcom-cpu";
+		opp-shared;
+
+		opp-400000000 {
+			opp-hz = /bits/ 64 <400000000>;
+		};
+
+		opp-806400000 {
+			opp-hz = /bits/ 64 <806400000>;
+		};
+		opp-1190400000 {
+			opp-hz = /bits/ 64 <1190400000>;
+		};
+		/*
+		opp-1382400000 {
+			opp-hz = /bits/ 64 <1382400000>;
+		};
+		
+		opp-1440000000 {
+		 	opp-hz = /bits/ 64 <1440000000>;
+		};
+		*/
+	};
+
+/*
+		apcc_cci_mux: clock-controller@b1d1050 {
+			compatible = "qcom,cpu-mux-div-clock";
+			reg = <0xb1d1050 0x10>;
+			clocks = <&apcc_pll>, <&gcc GPLL0>;
+			qcom,mux-values = <5>, <4>;
+			qcom,safe-div = <4>;
+			clock-output-names = "apcc-cci-mux";
+			assigned-clocks = <&apcc_cci_mux>;
+			assigned-clock-parents = <&apcc_pll>;
+			assigned-clock-rates = <614400000>;
+			#clock-cells = <0>;
+		};
+	*/
+		
 		restart@4ab000 {
 			compatible = "qcom,pshold";
 			reg = <0x4ab000 0x4>;

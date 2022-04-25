@@ -1157,7 +1157,6 @@
 				interrupt-parent = <&mdss>;
 				interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
 
-				power-domains = <&gcc MDSS_GDSC>;
 				clocks = <&gcc GCC_MDSS_AHB_CLK>,
 					 <&gcc GCC_MDSS_AXI_CLK>,
 					 <&gcc GCC_MDSS_MDP_CLK>,
@@ -1172,8 +1171,11 @@
 					      "tbu_rt";
 				
 				interconnects = <&snoc_mm MAS_MDP0 &bimc SLV_EBI>,
+						<&snoc_mm MAS_MDP1 &bimc SLV_EBI>,
 						<&bimc MAS_APPS_PROC &pcnoc SLV_DISP_SS_CFG>;
-				interconnect-names = "mdp0-mem", "cpu-cfg";
+				interconnect-names = "mdp0-mem"," mdp1-mem", "rotator-mem";
+				operating-points-v2 = <&mdp_opp_table>;
+				power-domains = <&rpmpd MSM8976_VDDCX>;
 				
 				iommus = <&apps_iommu 0x17>;
 				iommu-defer-attach;
@@ -1194,6 +1196,32 @@
 						mdp5_intf2_out: endpoint {
 							remote-endpoint = <&dsi1_in>;
 						};
+					};
+				};
+				
+				mdp_opp_table: mdp-opp {
+					compatible = "operating-points-v2";
+
+					opp-177780000 {
+						opp-hz = /bits/ 64 <177780000>;
+						opp-peak-kBps = <320000 320000 76800>;
+						required-opps = <&rpmpd_opp_svs>;
+					};
+					opp-270000000 {
+						opp-hz = /bits/ 64 <270000000>;
+						opp-peak-kBps = <6400000 6400000 76800>;
+						required-opps = <&rpmpd_opp_svs_plus>;
+					};
+				
+					opp-320000000 {
+						opp-hz = /bits/ 64 <320000000>;
+						opp-peak-kBps = <6400000 6400000 76800>;
+						required-opps = <&rpmpd_opp_nom>;
+					};
+					opp-360000000 {
+						opp-hz = /bits/ 64 <360000000>;
+						opp-peak-kBps = <6400000 6400000 76800>;
+						required-opps = <&rpmpd_opp_turbo>;
 					};
 				};
 			};

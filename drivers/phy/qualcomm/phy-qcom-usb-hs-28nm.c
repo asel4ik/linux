@@ -16,12 +16,15 @@
 #include <linux/regulator/consumer.h>
 #include <linux/reset.h>
 #include <linux/slab.h>
+#include <linux/regmap.h>
+      
 
 /* PHY register and bit definitions */
 #define PHY_CTRL_COMMON0		0x078
 #define PHY_CTRL_COMMON2		0x080
 #define PLLITUNE_MASK			GENMASK(2, 1)
 #define PLLPTUNE_MASK			GENMASK(6, 3)
+#define VREGBYPASS			BIT(0)
 #define SIDDQ				BIT(2)
 #define PHY_IRQ_CMD			0x0d0
 #define PHY_INTR_MASK0			0x0d4
@@ -66,34 +69,16 @@ struct hsphy_priv {
 	struct regulator_bulk_data vregs[VREG_NUM];
 	const struct hsphy_data *data;
 	enum phy_mode mode;
+	struct regmap *map;
 };
 
-static inline void phy_write_mask(void __iomem *base, u32 offset,
-				    u32 val, u32 mask)
-{
-	u32 reg;
-
-	reg = readl(base + offset);
-	reg &= ~mask;
-	reg |= val & mask;
-	writel(reg, base + offset);
-
-	/* Ensure above write is completed */
-	readl(base + offset);
-}
-
-static inline void phy_setbits(void __iomem *base, u32 offset, u32 val)
-{
-	u32 reg;
-
-	reg = readl(base + offset);
-	reg |= val;
-	writel(reg, base + offset);
-
-	/* Ensure above write is completed */
-	readl(base + offset);
-}
-
+static const struct regmap_config phy_regmap_cfg = {
+	.reg_bits = 32,
+	.val_bits = 32,
+	.reg_stride = 4,
+	.max_register = 0x200,
+	.name = "phy_ctrl_common2",
+};
 
 static int qcom_snps_hsphy_set_mode(struct phy *phy, enum phy_mode mode,
 				    int submode)
@@ -342,6 +327,7 @@ static int qcom_snps_hsphy_probe(struct platform_device *pdev)
 	int ret;
 	int i;
 	u32 value;
+	
 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
@@ -350,13 +336,15 @@ static int qcom_snps_hsphy_probe(struct platform_device *pdev)
 	priv->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(priv->base))
 		return PTR_ERR(priv->base);
-
+		
+	priv->map  = devm_regmap_init_mmio(dev, priv->base , &phy_regmap_cfg);
+	
 	priv->num_clks = ARRAY_SIZE(qcom_snps_hsphy_clks);
 	priv->clks = devm_kcalloc(dev, priv->num_clks, sizeof(*priv->clks),
 				  GFP_KERNEL);
 	if (!priv->clks)
 		return -ENOMEM;
-
+	
 	for (i = 0; i < priv->num_clks; i++)
 		priv->clks[i].id = qcom_snps_hsphy_clks[i];
 
@@ -383,24 +371,21 @@ static int qcom_snps_hsphy_probe(struct platform_device *pdev)
 	/* Get device match data */
 	priv->data = device_get_match_data(dev);
 	
-	/* Overwrite settings */
+	/* Overwrite defaults if passed */
  	
  	if (!of_property_read_u32(dev->of_node, "qcom,pllptune-value",
 				  &value)) {
-		phy_write_mask(priv->base, PHY_CTRL_COMMON2,
-		value, PLLPTUNE_MASK);
+		regmap_update_bits(priv->map, PHY_CTRL_COMMON2, PLLPTUNE_MASK, value);
 	}
 	
 	if (!of_property_read_u32(dev->of_node, "qcom,pllitune-value",
 				  &value)) {
-		phy_write_mask(priv->base, PHY_CTRL_COMMON2,
-		value, PLLITUNE_MASK);
+		regmap_update_bits(priv->map, PHY_CTRL_COMMON2, PLLITUNE_MASK, value);
 	}
 	
 	if (!of_property_read_u32(dev->of_node, "qcom,vregbypass-value",
 				  &value)) {
-		phy_setbits(priv->base, PHY_CTRL_COMMON2,
-		value);
+		 regmap_update_bits(priv->map, PHY_CTRL_COMMON2, VREGBYPASS, value);	
 	}
 	
 	phy = devm_phy_create(dev, dev->of_node, &qcom_snps_hsphy_ops);

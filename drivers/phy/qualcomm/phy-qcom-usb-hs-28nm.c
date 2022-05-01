@@ -19,6 +19,9 @@
 
 /* PHY register and bit definitions */
 #define PHY_CTRL_COMMON0		0x078
+#define PHY_CTRL_COMMON2		0x080
+#define PLLITUNE_MASK			GENMASK(2, 1)
+#define PLLPTUNE_MASK			GENMASK(6, 3)
 #define SIDDQ				BIT(2)
 #define PHY_IRQ_CMD			0x0d0
 #define PHY_INTR_MASK0			0x0d4
@@ -64,6 +67,33 @@ struct hsphy_priv {
 	const struct hsphy_data *data;
 	enum phy_mode mode;
 };
+
+static inline void phy_write_mask(void __iomem *base, u32 offset,
+				    u32 val, u32 mask)
+{
+	u32 reg;
+
+	reg = readl(base + offset);
+	reg &= ~mask;
+	reg |= val & mask;
+	writel(reg, base + offset);
+
+	/* Ensure above write is completed */
+	readl(base + offset);
+}
+
+static inline void phy_setbits(void __iomem *base, u32 offset, u32 val)
+{
+	u32 reg;
+
+	reg = readl(base + offset);
+	reg |= val;
+	writel(reg, base + offset);
+
+	/* Ensure above write is completed */
+	readl(base + offset);
+}
+
 
 static int qcom_snps_hsphy_set_mode(struct phy *phy, enum phy_mode mode,
 				    int submode)
@@ -311,6 +341,7 @@ static int qcom_snps_hsphy_probe(struct platform_device *pdev)
 	struct phy *phy;
 	int ret;
 	int i;
+	u32 value;
 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
@@ -351,7 +382,27 @@ static int qcom_snps_hsphy_probe(struct platform_device *pdev)
 
 	/* Get device match data */
 	priv->data = device_get_match_data(dev);
-
+	
+	/* Overwrite settings */
+ 	
+ 	if (!of_property_read_u32(dev->of_node, "qcom,pllptune-value",
+				  &value)) {
+		phy_write_mask(priv->base, PHY_CTRL_COMMON2,
+		value, PLLPTUNE_MASK);
+	}
+	
+	if (!of_property_read_u32(dev->of_node, "qcom,pllitune-value",
+				  &value)) {
+		phy_write_mask(priv->base, PHY_CTRL_COMMON2,
+		value, PLLITUNE_MASK);
+	}
+	
+	if (!of_property_read_u32(dev->of_node, "qcom,vregbypass-value",
+				  &value)) {
+		phy_setbits(priv->base, PHY_CTRL_COMMON2,
+		value);
+	}
+	
 	phy = devm_phy_create(dev, dev->of_node, &qcom_snps_hsphy_ops);
 	if (IS_ERR(phy))
 		return PTR_ERR(phy);

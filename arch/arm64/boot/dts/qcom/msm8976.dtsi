@@ -691,7 +691,7 @@
 		
 			
 		usb_hs_phy: phy@6c000 {
-			compatible = "qcom,msm8976-s2-usb-hsphy";
+			compatible = "qcom,usb-hs-28nm-femtophy-generic";
 			reg = <0x0006c000 0x200>;
 			#phy-cells = <0>;
 			clocks = <&xo_board>,

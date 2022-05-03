@@ -566,8 +566,8 @@
 				compatible = "qcom,msm8976-snoc-mm";
 
 				clock-names = "bus", "bus_a";
-				clocks = <&rpmcc RPM_SMD_MMSSNOC_AHB_CLK>,
-					 <&rpmcc RPM_SMD_MMSSNOC_AHB_A_CLK>;
+				clocks = <&rpmcc RPM_SMD_SYSMMNOC_CLK>,
+					 <&rpmcc RPM_SMD_SYSMMNOC_A_CLK>;
 
 				#interconnect-cells = <1>;
 			};

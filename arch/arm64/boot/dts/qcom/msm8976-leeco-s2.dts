@@ -203,11 +203,10 @@
 	speaker_codec: audio-codec@34 {
 		compatible = "nxp,tfa9890";
 		reg = <0x34>;
-		reset-gpio = <&tlmm 129 GPIO_ACTIVE_HIGH>;
 		vddd-supply = <&pm8950_l5>;
-		sound-name-prefix = "Speaker";
-		#sound-dai-cells = <0>;
 		status = "okay";
+		#sound-dai-cells = <0>;
+
 	};
 	
 };
@@ -393,7 +392,14 @@ status = "ok";
 
 &sound_card {
 	status = "okay";
-
+	model = "leeco-s2";
+	
+	audio-routing =
+		
+		"AMIC1", "MIC BIAS External1",
+		"AMIC2", "MIC BIAS Internal2",
+		"AMIC3", "MIC BIAS External1";
+	
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act  &tlmm_pri_act &cross_con_sus &cdc_reset_active >;
 	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus  &tlmm_pri_sus &cross_con_act>;

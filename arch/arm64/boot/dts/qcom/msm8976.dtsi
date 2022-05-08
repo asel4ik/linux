@@ -1447,6 +1447,8 @@
 			reg = <0x4a9000 0x1000>, /* TM */
 			      <0x4a8000 0x1000>; /* SROT */
 			nvmem-cells = <&tsens_caldata>;
+			interrupts = <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "uplow";
 			nvmem-cell-names = "calib";
 			#qcom,sensors = <11>;
 			#thermal-sensor-cells = <1>;

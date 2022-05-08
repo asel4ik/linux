@@ -1366,9 +1366,9 @@
 				#clock-cells = <1>;
 				#phy-cells = <0>;
 
-				clocks = <&gcc GCC_MDSS_AHB_CLK>;
+				clocks = <&gcc GCC_MDSS_AHB_CLK>, <&xo_board>;
 					
-				clock-names = "iface";
+				clock-names = "iface", "ref";
 			};
 
 			dsi1_phy: dsi-phy@1a96a00 {
@@ -1383,8 +1383,8 @@
 				#clock-cells = <1>;
 				#phy-cells = <0>;
 
-				clocks = <&gcc GCC_MDSS_AHB_CLK>;
-				clock-names = "iface";
+				clocks = <&gcc GCC_MDSS_AHB_CLK>, <&xo_board>;
+				clock-names = "iface", "ref";
 
 				status="disabled";
 			};

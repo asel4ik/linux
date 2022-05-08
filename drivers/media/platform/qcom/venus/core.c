@@ -994,7 +994,7 @@ static const struct venus_resources sc7280_res = {
 static const struct of_device_id venus_dt_match[] = {
 	{ .compatible = "qcom,msm8916-venus", .data = &msm8916_res, },
 	{ .compatible = "qcom,msm8953-venus", .data = &msm8953_res, },
-	{.compatible = "qcom,msm8953-venus", .data = &msm8976_res, },
+	{ .compatible = "qcom,msm8976-venus", .data = &msm8976_res, },
 	{ .compatible = "qcom,msm8996-venus", .data = &msm8996_res, },
 	{ .compatible = "qcom,sdm660-venus", .data = &sdm660_res, },
 	{ .compatible = "qcom,sdm845-venus", .data = &sdm845_res, },

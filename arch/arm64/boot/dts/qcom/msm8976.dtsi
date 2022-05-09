@@ -105,7 +105,7 @@
 	 
 
 		venus_mem: memory@8f800000 {
-			reg = <0x0 0x8F800000 0x0 0x500000>;
+			reg = <0x0 0x8f800000 0x0 0x500000>;
 			no-map;
 		};
 		
@@ -1051,6 +1051,88 @@
 			reg = <0x1944130 0x04>;
 		};
 		
+		venus@1d00000 {
+			compatible = "qcom,msm8976-venus";
+			reg = <0x1d00000 0xff000>;
+
+			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
+
+			clocks = <&gcc GCC_VENUS0_VCODEC0_CLK>,
+				 <&gcc GCC_VENUS0_AHB_CLK>,
+				 <&gcc GCC_VENUS0_AXI_CLK>,
+				 <&gcc GCC_VENUS0_CORE0_VCODEC0_CLK>;
+			clock-names = "core", "iface", "bus", "vcodec0";
+
+			operating-points-v2 = <&venus_opp_table>;
+
+			power-domains = <&gcc VENUS_GDSC>,
+					<&rpmpd MSM8976_VDDCX>;
+			power-domain-names = "venus", "cx";
+
+			interconnects = <&snoc_mm MAS_VENUS_0 &bimc SLV_EBI>,
+					<&bimc MAS_APPS_PROC &pcnoc SLV_VENUS_CFG>;
+			interconnect-names = "video-mem", "cpu-cfg";
+
+			iommus = <&apps_iommu 0x16>;
+
+			memory-region = <&venus_mem>;
+
+			video-decoder {
+				compatible = "venus-decoder";
+				power-domains = <&gcc VENUS_CORE0_GDSC>;
+			};
+
+			video-encoder {
+				compatible = "venus-encoder";
+				power-domains = <&gcc VENUS_CORE0_GDSC>;
+			};
+
+			venus_opp_table: venus-opp-table {
+				compatible = "operating-points-v2";
+
+				opp-100000000 {
+					opp-hz = /bits/ 64 <100000000>;
+					required-opps = <&rpmpd_opp_svs>;
+				};
+				
+				opp-114290000 {
+					opp-hz = /bits/ 64 <114290000>;
+					required-opps = <&rpmpd_opp_svs>;
+				};
+				
+				opp-133333333 {
+					opp-hz = /bits/ 64 <133333333>;
+					required-opps = <&rpmpd_opp_svs>;
+				};
+
+				opp-228570000 {
+					opp-hz = /bits/ 64 <228570000>;
+					required-opps = <&rpmpd_opp_svs>;
+				};
+
+				opp-310667000 {
+					opp-hz = /bits/ 64 <310667000>;
+					required-opps = <&rpmpd_opp_svs_plus>;
+				};
+
+				opp-360000000 {
+					opp-hz = /bits/ 64 <360000000>;
+					required-opps = <&rpmpd_opp_nom>;
+				};
+
+				opp-400000000 {
+					opp-hz = /bits/ 64 <400000000>;
+					required-opps = <&rpmpd_opp_nom_plus>;
+				};
+
+				opp-466000000 {
+					opp-hz = /bits/ 64 <466000000>;
+					required-opps = <&rpmpd_opp_turbo>;
+				};
+
+			};
+		};
+		
 	apps_iommu: iommu@1e00000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -1064,6 +1146,17 @@
 			qcom,iommu-secure-id = <17>;
 			status = "ok";
 
+			iommu-ctx@15000 { // vfe
+				compatible = "qcom,msm-iommu-v1-sec";
+				reg = <0x15000 0x1000>;
+				interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>;
+			};
+			
+			iommu-ctx@16000 { // venus_ns
+				compatible = "qcom,msm-iommu-v1-sec";
+				reg = <0x16000 0x1000>;
+				interrupts = <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>;
+			};
 			
 			iommu-ctx@17000 { // mdp_0
 				compatible = "qcom,msm-iommu-v1-ns";
@@ -1205,12 +1298,12 @@
 					opp-177780000 {
 						opp-hz = /bits/ 64 <177780000>;
 						opp-peak-kBps = <320000 320000 76800>;
-						required-opps = <&rpmpd_opp_svs>;
+						required-opps = <&rpmpd_opp_svs>; //LOWER
 					};
 					opp-270000000 {
 						opp-hz = /bits/ 64 <270000000>;
 						opp-peak-kBps = <6400000 6400000 76800>;
-						required-opps = <&rpmpd_opp_svs_plus>;
+						required-opps = <&rpmpd_opp_svs_plus>; //LOW
 					};
 				
 					opp-320000000 {

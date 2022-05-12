@@ -56,6 +56,7 @@ static const int msm8953_bitclk_map[MI2S_COUNT] = {
 
 static int apq8016_dai_init(struct snd_soc_pcm_runtime *rtd, int mi2s)
 {
+	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
 	struct snd_soc_dai *codec_dai;
 	struct snd_soc_component *component;
 	struct snd_soc_card *card = rtd->card;
@@ -63,6 +64,14 @@ static int apq8016_dai_init(struct snd_soc_pcm_runtime *rtd, int mi2s)
 	int i, rval;
 	u32 value;
 
+	snd_soc_dai_set_sysclk(cpu_dai,
+				Q6AFE_LPASS_CLK_ID_INTERNAL_DIGITAL_CODEC_CORE,
+				DEFAULT_MCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+				
+	snd_soc_dai_set_sysclk(cpu_dai,
+				Q6AFE_LPASS_CLK_ID_INTERNAL_DIGITAL_CODEC_CORE,
+				DEFAULT_MCLK_RATE, SNDRV_PCM_STREAM_CAPTURE);
+				
 	switch (mi2s) {
 	case MI2S_PRIMARY:
 		writel(readl(pdata->spkr_iomux) | SPKR_CTL_PRI_WS_SLAVE_SEL_11,
@@ -294,7 +303,7 @@ static int msm8976_qdsp6_startup(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct apq8016_sbc_data *data = snd_soc_card_get_drvdata(card);
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-	int mi2s, ret;
+	int mi2s, ret, clk_id;
 
 	mi2s = qdsp6_dai_get_lpass_id(cpu_dai);
 	if (mi2s < 0)
@@ -317,6 +326,16 @@ static int msm8976_qdsp6_startup(struct snd_pcm_substream *substream)
 	return ret;
 	}
 	
+	clk_id = msm8953_bitclk_map[mi2s];
+
+	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id,
+			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+	if (ret) {
+		dev_err(card->dev, "Failed to enable bit clk (clk_id = %d): %d\n", clk_id, ret);
+		return ret;
+	}
+	
+	
 	return ret;
 		
 }
@@ -327,7 +346,7 @@ static void msm8976_qdsp6_shutdown(struct snd_pcm_substream *substream)
 	struct snd_soc_card *card = rtd->card;
 	struct apq8016_sbc_data *data = snd_soc_card_get_drvdata(card);
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-	int mi2s, ret;
+	int mi2s, ret, clk_id;
 
 	mi2s = qdsp6_dai_get_lpass_id(cpu_dai);
 	if (mi2s < 0)
@@ -346,7 +365,13 @@ static void msm8976_qdsp6_shutdown(struct snd_pcm_substream *substream)
 	{
 		dev_err(card->dev, "Failed to disable OSR bit clk: %d\n", ret);
 	}
+	
+	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id, 0, SNDRV_PCM_STREAM_PLAYBACK);
+	if (ret)
+		dev_err(card->dev, "Failed to disable bit clk (clk_id = %d): %d\n", clk_id, ret);
 }
+
+
 
 static const struct snd_soc_ops msm8976_qdsp6_be_ops = {
 	.startup = msm8976_qdsp6_startup,

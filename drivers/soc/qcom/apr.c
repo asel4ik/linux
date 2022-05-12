@@ -171,6 +171,12 @@ static struct f cmds[] =
 {"AVCS_CMD_SHARED_MEM_UNMAP_REGIONS                           ", 0x00012926},
 {"AVCS_CMD_REGISTER_TOPOLOGIES                                ", 0x00012923},
 {"AVCS_CMD_DEREGISTER_TOPOLOGIES                                ", 0x0001292a},
+{"AVCS_CMD_ADSP_EVENT_GET_STATE",		0x0001290C },
+{"AVCS_CMDRSP_ADSP_EVENT_GET_STATE",	0x0001290D },
+{"AVCS_GET_VERSIONS" ,      0x00012905 },
+{"AVCS_GET_VERSIONS_RSP" ,  0x00012906 },
+{"AVCS_CMD_GET_FWK_VERSION",	0x001292c } ,
+{"AVCS_CMDRSP_GET_FWK_VERSION",	0x001292d},
 };
 
 static const char *get_cmd_name(int cmd)

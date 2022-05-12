@@ -205,11 +205,11 @@
 			reg = <0xf000 0x200>;
 			reg-names = "pmic-codec-core";
 			status="disabled";
-			
+			/*
 			clocks = <&q6afecc LPASS_CLK_ID_INTERNAL_DIGITAL_CODEC_CORE
 				 LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
 			clock-names = "mclk";
-			
+			*/
 			interrupt-parent = <&spmi_bus>;
 			interrupts = <0x1 0xf0 0x0 IRQ_TYPE_NONE>,
 				     <0x1 0xf0 0x1 IRQ_TYPE_NONE>,

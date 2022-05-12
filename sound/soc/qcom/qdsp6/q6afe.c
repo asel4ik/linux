@@ -1069,7 +1069,10 @@ static int q6afe_port_set_param_v2(struct q6afe_port *port, void *data,
 	pdata->module_id = module_id;
 	pdata->param_id = param_id;
 	pdata->param_size = psize;
-
+	printk("apr packet port_id: %x", param->port_id);
+	printk("apr packet: param_id %x", pdata->param_id);
+	printk("apr packet: module_id %x", pdata->module_id);
+	printk("apr packet: param_size %x", pdata->param_size);
 	ret = afe_apr_send_pkt(afe, pkt, port, AFE_PORT_CMD_SET_PARAM_V2);
 	if (ret)
 		dev_err(afe->dev, "AFE enable for port 0x%x failed %d\n",

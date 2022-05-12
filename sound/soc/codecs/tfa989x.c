@@ -198,7 +198,7 @@ static int tfa9890_init(struct regmap *regmap)
 	value |=0x3;
 	regmap_write(regmap, 0x59, value);
 	regmap_write(regmap, 0x40, 0x0000);
-	regmap_write(regmap, TFA989X_CURRENTSENSE4, 0x7BE1);	
+	regmap_write(regmap, TFA989X_CURRENTSENSE2, 0x7BE1);	
 	return 0;
 	
 }

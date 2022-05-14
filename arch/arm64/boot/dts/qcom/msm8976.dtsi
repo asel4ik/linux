@@ -406,6 +406,13 @@
 			clock-frequency = <19200000>;
 			clock-output-names = "cxo";
 		};
+		
+		mclk: mclk {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <9600000>;
+			clock-output-names = "mclk";
+		};
 
 		sleep_clk: sleep_clk {
 			compatible = "fixed-clock";
@@ -2119,10 +2126,6 @@
 							};
 						};
 						
-						q6afecc: clock-controller {
-							compatible = "qcom,q6afe-clocks";
-							#clock-cells = <2>;
-						};
 					};
 
 					q6asm: q6asm {

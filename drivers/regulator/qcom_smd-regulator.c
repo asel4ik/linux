@@ -667,6 +667,15 @@ static const struct regulator_desc pm660l_bob = {
 	.ops = &rpm_bob_ops,
 };
 
+static const struct regulator_desc pm6125_ftsmps = {
+	.linear_ranges = (struct linear_range[]) {
+		REGULATOR_LINEAR_RANGE(300000, 0, 268, 4000),
+	},
+	.n_linear_ranges = 1,
+	.n_voltages = 269,
+	.ops = &rpm_smps_ldo_ops,
+};
+
 static const struct regulator_desc pms405_hfsmps3 = {
 	.linear_ranges = (struct linear_range[]) {
 		REGULATOR_LINEAR_RANGE(320000, 0, 215, 8000),
@@ -1167,6 +1176,36 @@ static const struct rpm_regulator_data rpm_pm660l_regulators[] = {
 	{ }
 };
 
+static const struct rpm_regulator_data rpm_pm6125_regulators[] = {
+	{ "s6", QCOM_SMD_RPM_SPMA, 6, &pm8998_hfsmps, "vdd_s6" }, 
+	{ "s7", QCOM_SMD_RPM_SPMA, 7, &pm8998_hfsmps, "vdd_s7" }, 
+	{ "s8", QCOM_SMD_RPM_SPMA, 8, &pm6125_ftsmps, "vdd_s8" }, 
+	{ "l1", qcom_smd_rpm_loda, 1, &pm660_nldo660, "vdd_l1_l7_l17_l18" },
+	{ "l2", qcom_smd_rpm_loda, 2, &pm660_nldo660, "vdd_l2_l3_l4" },
+	{ "l3", qcom_smd_rpm_loda, 3, &pm660_nldo660, "vdd_l2_l3_l4" },
+	{ "l4", qcom_smd_rpm_loda, 4, &pm660_nldo660, "vdd_l2_l3_l4" },
+	{ "l5", qcom_smd_rpm_loda, 5, &pm660_pldo660, "vdd_l5_l15_l19_l20_l21_l22" },
+	{ "l6", qcom_smd_rpm_loda, 6, &pm660_nldo660, "vdd_l6_l8" },
+	{ "l7", qcom_smd_rpm_loda, 7, &pm660_nldo660, "vdd_l1_l7_l17_l18" },
+	{ "l8", qcom_smd_rpm_loda, 8, &pm660_nldo660, "vdd_l6_l8" },
+	{ "l9", qcom_smd_rpm_loda, 9, &pm660_ht_lvpldo, "vdd_l9_l11" },
+	{ "l10", qcom_smd_rpm_loda, 10, &pm660_ht_lvpldo, "vdd_l10_l13_l14" },
+	{ "l11", qcom_smd_rpm_loda, 11, &pm660_ht_lvpldo, "vdd_l9_l11" },
+	{ "l12", qcom_smd_rpm_loda, 12, &pm660_ht_lvpldo, "vdd_l12_l16" },
+	{ "l13", qcom_smd_rpm_loda, 13, &pm660_ht_lvpldo, "vdd_l10_l13_l14" },
+	{ "l14", qcom_smd_rpm_loda, 14, &pm660_ht_lvpldo, "vdd_l10_l13_l14" },
+	{ "l15", qcom_smd_rpm_loda, 15, &pm660_pldo660, "vdd_l5_l15_l19_l20_l21_l22" },
+	{ "l16", qcom_smd_rpm_loda, 16, &pm660_ht_lvpldo, "vdd_l12_l16" },
+	{ "l17", qcom_smd_rpm_loda, 17, &pm660_nldo660, "vdd_l1_l7_l17_l18" },
+	{ "l18", qcom_smd_rpm_loda, 18, &pm660_nldo660, "vdd_l1_l7_l17_l18" },
+	{ "l19", qcom_smd_rpm_loda, 19, &pm660_pldo660, "vdd_l5_l15_l19_l20_l21_l22" },
+	{ "l20", qcom_smd_rpm_loda, 20, &pm660_pldo660, "vdd_l5_l15_l19_l20_l21_l22" },
+	{ "l21", qcom_smd_rpm_loda, 21, &pm660_pldo660, "vdd_l5_l15_l19_l20_l21_l22" },
+	{ "l22", qcom_smd_rpm_loda, 22, &pm660_pldo660, "vdd_l5_l15_l19_l20_l21_l22" },
+	{ "l23", qcom_smd_rpm_loda, 23, &pm660_pldo660, "vdd_l23_l24" },
+	{ "l24", qcom_smd_rpm_loda, 24, &pm660_pldo660, "vdd_l23_l24" },
+};
+
 static const struct rpm_regulator_data rpm_pms405_regulators[] = {
 	{ "s1", QCOM_SMD_RPM_SMPA, 1, &pms405_hfsmps3, "vdd_s1" },
 	{ "s2", QCOM_SMD_RPM_SMPA, 2, &pms405_hfsmps3, "vdd_s2" },
@@ -1231,6 +1270,7 @@ static const struct of_device_id rpm_of_match[] = {
 	{ .compatible = "qcom,rpm-pm8998-regulators", .data = &rpm_pm8998_regulators },
 	{ .compatible = "qcom,rpm-pm660-regulators", .data = &rpm_pm660_regulators },
 	{ .compatible = "qcom,rpm-pm660l-regulators", .data = &rpm_pm660l_regulators },
+	{ .compatible = "qcom,rpm-pm6125-regulators", .data = &rpm_pm6125_regulators },
 	{ .compatible = "qcom,rpm-pma8084-regulators", .data = &rpm_pma8084_regulators },
 	{ .compatible = "qcom,rpm-pmi8994-regulators", .data = &rpm_pmi8994_regulators },
 	{ .compatible = "qcom,rpm-pmi8998-regulators", .data = &rpm_pmi8998_regulators },

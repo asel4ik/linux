@@ -67,16 +67,12 @@ examples:
                <&dsi0_phy 0>,
                <&dsi0_phy 1>,
                <&dsi1_phy 1>,
-               <&dp_phy 0>,
-               <&dp_phy 1>,
-               <&gcc GCC_DISP_AHB_CLK>;
+               <&gcc GCC_DISP_GPLL0_DIV_CLK_SRC>;
       clock-names = "bi_tcxo",
                     "dsi0_phy_pll_out_byteclk",
                     "dsi0_phy_pll_out_dsiclk",
                     "dsi1_phy_pll_out_dsiclk",
-                    "dp_phy_pll_link_clk",
-                    "dp_phy_pll_vco_div_clk",
-                    "cfg_ahb_clk";
+		     "gcc_disp_gpll0_div_clk_src",
       #clock-cells = <1>;
       #power-domain-cells = <1>;
     };

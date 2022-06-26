@@ -764,6 +764,39 @@
 			reg = <0x04690000 0x10000>;
 		};
 
+		/* SMMU HLOS1 clock removed */
+		adreno_smmu: iommu@59a0000 {
+			compatible = "qcom,sm6115-smmu-500", "qcom,adreno-smmu", "arm,mmu-500";
+			reg = <0x59a0000 0x10000>;
+			#iommu-cells = <2>;
+			#global-interrupts = <1>;
+
+			status = "okay";
+			interrupts =	<GIC_SPI 163 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 167 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 168 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 171 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 172 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 173 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 174 IRQ_TYPE_LEVEL_HIGH>;
+				
+			clocks = <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
+				 <&gcc GCC_GPU_SNOC_DVM_GFX_CLK>,
+				 <&gpucc GPU_CC_AHB_CLK>,
+				 <&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>,
+				 <&gcc GCC_BIMC_GPU_AXI_CLK>;
+			 
+			clock-names = "gcc_gpu_memnoc_gfx",
+			      "gcc_gpu_snoc_dvm_gfx",
+			      "gpu_cc_ahb",
+			      "gpu_cc_hlos1_vote_gpu_smmu_clk",
+			      "mem_clk";
+			      
+			power-domains = <&gpucc GPU_CX_GDSC>;
+		};
+
 		rng: rng@1b53000 {
 			compatible = "qcom,prng-ee";
 			reg = <0x1b53000 0x1000>;

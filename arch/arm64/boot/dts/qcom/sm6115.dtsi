@@ -540,7 +540,7 @@
 			status = "disabled";
 		};
 		
-		cpufreq_hw: cpufreq@18323000 {
+		cpufreq_hw: cpufreq@f523000 {
 			compatible = "qcom,cpufreq-hw";
 			reg = <0 0xf521000 0 0x1000>, <0 0xf523000 0 0x1000>;
 			

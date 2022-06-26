@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include <dt-bindings/clock/qcom,gcc-sm6115.h>
+#include <dt-bindings/clock/qcom,dispcc-sm6115.h>
 #include <dt-bindings/clock/qcom,rpmcc.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
@@ -763,6 +764,28 @@
 			compatible = "qcom,rpm-stats";
 			reg = <0x04690000 0x10000>;
 		};
+
+		dispcc: clock-controller@5f00000 {
+			compatible = "qcom,sm6115-dispcc";
+			reg = <0x5f00000 0x20000>;
+          		  clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
+                  	   <&gcc GCC_DISP_GPLL0_CLK_SRC>,
+                 	    <&gcc GCC_DISP_GPLL0_DIV_CLK_SRC>,
+			<&dsi_phy0 0>,
+			<&dsi_phy0 1>,
+			<&sleep_clk>;
+			
+			clock-names = "bi_tcxo",
+				 	"gcc_disp_gpll0_clk_src",
+				 	 "gcc_disp_gpll0_div_clk_src",
+				      "dsi0_phy_pll_out_byteclk",
+				      "dsi0_phy_pll_out_dsiclk",
+				      "sleep";
+				     
+			#clock-cells = <1>;
+			#reset-cells = <1>;
+			#power-domain-cells = <1>;
+    };
 
 		/* SMMU HLOS1 clock removed */
 		adreno_smmu: iommu@59a0000 {

@@ -29,47 +29,11 @@ enum {
 	P_BI_TCXO,
 	P_GPLL0_OUT_MAIN,
 	P_GPLL0_OUT_MAIN_DIV,
-	P_GPU_CC_PLL0_2X_DIV_CLK_SRC,
 	P_GPU_CC_PLL0_OUT_AUX2,
 	P_GPU_CC_PLL0_OUT_MAIN,
 	P_GPU_CC_PLL1_OUT_AUX,
 	P_GPU_CC_PLL1_OUT_AUX2,
 	P_GPU_CC_PLL1_OUT_MAIN,
-};
-
-static const struct parent_map gpu_cc_parent_map_0[] = {
-	{ P_BI_TCXO, 0 },
-	{ P_GPU_CC_PLL0_OUT_MAIN, 1 },
-	{ P_GPU_CC_PLL1_OUT_MAIN, 3 },
-	{ P_GPLL0_OUT_MAIN, 5 },
-	{ P_GPLL0_OUT_MAIN_DIV, 6 },
-
-};
-
-static const struct clk_parent_data gpu_cc_parent_data_0[] = {
-	{ .fw_name = "bi_tcxo" },
-	{ .hw = &gpu_cc_pll0_out_main.clkr.hw },
-	{ .hw = &gpu_cc_pll1_out_main.clkr.hw },
-	{ .fw_name = "gcc_gpu_gpll0_clk_src" },
-	{ .fw_name = "gcc_gpu_gpll0_div_clk_src" },
-};
-
-static const struct parent_map gpu_cc_parent_map_1[] = {
-	{ P_BI_TCXO, 0 },
-	{ P_GPU_CC_PLL0_2X_DIV_CLK_SRC, 1 },
-	{ P_GPU_CC_PLL0_OUT_AUX2, 2 },
-	{ P_GPU_CC_PLL1_OUT_AUX, 3 },
-	{ P_GPU_CC_PLL1_OUT_AUX2, 4 },
-	{ P_GPLL0_OUT_MAIN, 5 },
-};
-
-static const struct clk_parent_data gpu_cc_parent_data_1[] = {
-	{ .fw_name = "bi_tcxo" },
-	{ .hw = &gpu_cc_pll0_out_aux.clkr.hw },
-	{ .hw = &gpu_cc_pll0_out_aux2.clkr.hw },
-	{ .hw = &gpu_cc_pll1_out_aux.clkr.hw },
-	{ .hw = &gpu_cc_pll1_out_aux2.clkr.hw },
-	{ .fw_name = "gpll0" },
 };
 
 static struct pll_vco default_vco[] = {
@@ -92,7 +56,6 @@ static const struct alpha_pll_config gpu_cc_pll0_config = {
 	.aux2_output_mask = BIT(2),
 	.config_ctl_val = 0x4001055b,
 	.test_ctl_hi1_val = 0x1,
-	.test_ctl_hi_mask = 0x1,
 };
 
 /* 1200MHz configuration */
@@ -147,7 +110,6 @@ static const struct alpha_pll_config gpu_cc_pll1_config = {
 	.aux_output_mask = BIT(1),
 	.config_ctl_val = 0x4001055b,
 	.test_ctl_hi1_val = 0x1,
-	.test_ctl_hi_mask = 0x1,
 };
 
 static struct clk_alpha_pll gpu_cc_pll1 = {
@@ -188,6 +150,39 @@ static struct clk_alpha_pll_postdiv gpu_cc_pll1_out_aux = {
 	},
 };
 
+static const struct parent_map gpu_cc_parent_map_0[] = {
+	{ P_BI_TCXO, 0 },
+	{ P_GPU_CC_PLL0_OUT_MAIN, 1 },
+	{ P_GPU_CC_PLL1_OUT_MAIN, 3 },
+	{ P_GPLL0_OUT_MAIN, 5 },
+	{ P_GPLL0_OUT_MAIN_DIV, 6 },
+
+};
+
+static const struct clk_parent_data gpu_cc_parent_data_0[] = {
+	{ .fw_name = "bi_tcxo" },
+	{ .fw_name=  "gpu_cc_pll0_out_main" },
+	{ .fw_name = "gpu_cc_pll1_out_main" },
+	{ .fw_name = "gcc_gpu_gpll0_clk_src" },
+	{ .fw_name = "gcc_gpu_gpll0_div_clk_src" },
+};
+
+static const struct parent_map gpu_cc_parent_map_1[] = {
+	{ P_BI_TCXO, 0 },
+	{ P_GPU_CC_PLL0_OUT_AUX2, 2 },
+	{ P_GPU_CC_PLL1_OUT_AUX, 3 },
+	{ P_GPU_CC_PLL1_OUT_AUX2, 4 },
+	{ P_GPLL0_OUT_MAIN, 5 },
+};
+
+static const struct clk_parent_data gpu_cc_parent_data_1[] = {
+	{ .fw_name = "bi_tcxo" },
+	{ .hw = &gpu_cc_pll0_out_aux2.clkr.hw },
+	{ .hw = &gpu_cc_pll1_out_aux.clkr.hw },
+	{ .fw_name = "gpu_cc_pll1_out_aux2" },
+	{ .fw_name = "gpll0" },
+};
+
 static const struct freq_tbl ftbl_gpu_cc_gmu_clk_src[] = {
 	F(200000000, P_GPLL0_OUT_MAIN, 3, 0, 0),
 	{ }
@@ -199,7 +194,7 @@ static struct clk_rcg2 gpu_cc_gmu_clk_src = {
 	.hid_width = 5,
 	.parent_map = gpu_cc_parent_map_0,
 	.freq_tbl = ftbl_gpu_cc_gmu_clk_src,
-	.enable_safe_config = true,
+	//.enable_safe_config = true,
 	.clkr.hw.init = &(struct clk_init_data){
 		.name = "gpu_cc_gmu_clk_src",
 		.parent_data = gpu_cc_parent_data_0,
@@ -272,7 +267,7 @@ static struct clk_branch gpu_cc_cx_gfx3d_clk = {
 		.hw.init = &(struct clk_init_data){
 			.name = "gpu_cc_cx_gfx3d_clk",
 			.parent_hws = (const struct clk_hw* []){
-				gpu_cc_gx_gfx3d_clk_src.clkr.hw,
+				&gpu_cc_gx_gfx3d_clk_src.clkr.hw,
 			},
 			.num_parents = 1,
 			.flags = CLK_SET_RATE_PARENT,
@@ -453,6 +448,8 @@ static const struct qcom_cc_desc gpu_cc_sm6115_desc = {
 	.config = &gpu_cc_sm6115_regmap_config,
 	.clks = gpu_cc_sm6115_clocks,
 	.num_clks = ARRAY_SIZE(gpu_cc_sm6115_clocks),
+	.gdscs = gpu_cc_sm6115_gdscs,
+	.num_gdscs = ARRAY_SIZE(gpu_cc_sm6115_gdscs),
 };
 
 static const struct of_device_id gpucc_sm6115_match_table[] = {
@@ -465,7 +462,6 @@ static int gpucc_sm6115_probe(struct platform_device *pdev)
 {
 	struct regmap *regmap;
 	unsigned int value, mask;
-	int ret;
 
 	regmap = qcom_cc_map(pdev, &gpu_cc_sm6115_desc);
 	if (IS_ERR(regmap))

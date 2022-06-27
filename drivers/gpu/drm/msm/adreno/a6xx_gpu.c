@@ -252,7 +252,7 @@ static void a6xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
 	a6xx_flush(gpu, ring);
 }
 
-+/* For a610 family (a610, a612) */
+/* For a610 family (a610, a612) */
 static const struct adreno_reglist a610_hwcg_regs[] = {
 	{REG_A6XX_RBBM_CLOCK_CNTL_SP0, 0x22222222},
 	{REG_A6XX_RBBM_CLOCK_CNTL2_SP0, 0x02222220},

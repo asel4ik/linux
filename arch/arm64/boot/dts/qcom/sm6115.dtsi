@@ -626,7 +626,7 @@
 			resets = <&gcc GCC_UFS_PHY_BCR>;
 			reset-names = "rst";
 
-			power-domains = <&gcc UFS_PHY_GDSC>;
+			power-domains = <&gcc GCC_UFS_PHY_GDSC>;
 
 			iommus = <&apps_smmu 0x80 0x0>;
 
@@ -710,7 +710,7 @@
 					  <&gcc GCC_USB30_PRIM_MASTER_CLK>;
 			assigned-clock-rates = <19200000>, <66666667>;
 
-			power-domains = <&gcc USB30_PRIM_GDSC>;
+			power-domains = <&gcc GCC_USB30_PRIM_GDSC>;
 			qcom,select-utmi-as-pipe-clk;
 			status = "disabled";
 

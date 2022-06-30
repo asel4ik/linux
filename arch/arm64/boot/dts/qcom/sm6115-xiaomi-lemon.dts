@@ -1,0 +1,194 @@
+/dts-v1/;
+
+#include "sm6115.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/input/gpio-keys.h>
+/ {
+	model = "Xiaomi Redmi 9T NFC";
+	compatible = "xiaomi,lemon","qcom,sm6115";
+	qcom,msm-id = <0x1a1 0x10000 0x1bc 0x10000>;
+	qcom,board-id = <0x22 0x00>;
+	chassis-type = "handset";
+
+	chosen {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		stdout-path = "framebuffer0";
+		framebuffer0: framebuffer@5c000000 {
+			compatible = "simple-framebuffer";
+			reg = <0 0x5c000000 0 (2340 * 1080 * 4)>;
+			width = <1080>;
+			height = <2340>;
+			stride = <(1080 * 4)>;
+			format = "a8r8g8b8";
+		};
+	};
+	reserved-memory {
+		ramoops@64000000 {
+			compatible = "ramoops";
+			reg = <0x00 0x64000000 0x00 0x400000>;
+			console-size = <0x100000>;
+			record-size = <0x100000>;
+			pmsg-size = <0x200000>;
+			phandle = <0x1e5>;
+			};
+	};
+
+};
+&hsusb_phy1
+{
+status= "okay";
+};
+&ufs_mem_hc
+{
+status= "okay";
+};
+&ufs_mem_phy
+{
+status= "okay";
+};
+&usb3
+{
+status= "okay";
+};
+/*
+&mdss{
+status= "okay";
+};
+&mdp{
+status= "okay";
+};
+&dsi0
+{
+status= "okay";
+};
+&dsi_phy
+{
+status= "okay";
+};
+*/
+&tlmm {
+gpio-reserved-ranges = <0 4>,<14 4>;
+};
+&rpm_requests {
+	smd_rpm_regulators: pm6125-regulators {
+		compatible = "qcom,rpm-pm6125-regulators";
+		/*
+		vdd_s6-supply=;
+		vdd_s7-supply=;
+		vdd_s8-supply=;
+		vdd_l1_l7_l17_l18-supply=;
+		vdd_l2_l3_l4-supply=;
+		vdd_l5_l15_l19_l20_l21_l22-supply=;
+		vdd_l6_l8-supply=;
+		vdd_l9_l11-supply=;
+		vdd_l10_l13_l14-supply=;
+		vdd_l12_l16-supply=;
+		vdd_l23_l24-supply=;
+		*/
+		pm6125_s6: s6 {
+			regulator-min-microvolt = <304000>;
+			regulator-max-microvolt = <1456000>;
+		};
+		pm6125_s7: s7 {
+			regulator-min-microvolt = <1280000>;
+			regulator-max-microvolt = <2080000>;
+		};
+		pm6125_s8: s8 {
+			regulator-min-microvolt = <1064000>;
+			regulator-max-microvolt = <1304000>;
+		};
+		
+		pm6125_l1: l1 {
+			regulator-min-microvolt = <952000>;
+			regulator-max-microvolt = <1152000>;
+		};
+		pm6125_l4: l4 {
+			regulator-min-microvolt = <488000>;
+			regulator-max-microvolt = <1000000>;
+		};
+		pm6125_l5: l5 {
+			regulator-min-microvolt = <1648000>;
+			regulator-max-microvolt = <3056000>;
+		};
+		pm6125_l6: l6 {
+			regulator-min-microvolt = <576000>;
+			regulator-max-microvolt = <656000>;
+		};
+		pm6125_l7: l7 {
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1304000>;
+		};
+		pm6125_l8: l8 
+		{
+			regulator-min-microvolt = <400000>;
+			regulator-max-microvolt = <728000>;
+		};
+		pm6125_l9: l9 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <2000000>;
+		};
+		pm6125_l10: l10 {
+			regulator-min-microvolt = <1704000>;
+			regulator-max-microvolt = <1904000>;
+		};
+		pm6125_l11: l11 {
+			regulator-min-microvolt = <1704000>;
+			regulator-max-microvolt = <1952000>;
+			};
+		pm6125_l12: l12 {
+			regulator-min-microvolt = <1624000>;
+			regulator-max-microvolt = <1984000>;
+			};
+		pm6125_l13: l13 {
+			regulator-min-microvolt = <1504000>;
+			regulator-max-microvolt = <1952000>;
+		};
+		pm6125_l14: l14 {
+			regulator-min-microvolt = <1704000>;
+			regulator-max-microvolt = <1904000>;
+			};
+		pm6125_l15: l15 {
+			regulator-min-microvolt = <2920000>;
+			regulator-max-microvolt = <3232000>;
+			};
+		pm6125_l16: l16 {
+			regulator-min-microvolt = <1704000>;
+			regulator-max-microvolt = <1904000>;
+		};
+		pm6125_l17: l17 {
+			regulator-min-microvolt = <1152000>;
+			regulator-max-microvolt = <1384000>;
+			};
+		pm6125_l18: l18 {
+			regulator-min-microvolt = <1104000>;
+			regulator-max-microvolt = <1312000>;
+			};
+		pm6125_l19: l19 {
+			regulator-min-microvolt = <1624000>;
+			regulator-max-microvolt = <3304000>;
+			};
+		pm6125_l20: l20 {
+			regulator-min-microvolt = <1624000>;
+			regulator-max-microvolt = <3304000>;
+		};
+		pm6125_l21: l21 {
+			regulator-min-microvolt = <2400000>;
+			regulator-max-microvolt = <3600000>;
+			};
+		pm6125_l22: l22 {
+			regulator-min-microvolt = <2952000>;
+			regulator-max-microvolt = <3304000>;
+			};
+		pm6125_l23: l23 {
+			regulator-min-microvolt = <3200000>;
+			regulator-max-microvolt = <3400000>;
+		};
+		pm6125_l24: l24 {
+			regulator-min-microvolt = <2704000>;
+			regulator-max-microvolt = <3600000>;
+		};
+	};
+}

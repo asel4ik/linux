@@ -870,7 +870,7 @@
 
 		mdss: mdss@5e00000 {
 			compatible = "qcom,sm6115-mdss";
-			reg = <0 0x05e00000 0 0x1000>;
+			reg = <0x05e00000 0x1000>;
 			reg-names = "mdss";
 
 			power-domains = <&dispcc MDSS_GDSC>;
@@ -889,16 +889,16 @@
 
 			//iommus = <&apps_smmu 0x800 0x2>;
 
-			#address-cells = <2>;
-			#size-cells = <2>;
+			#address-cells = <1>;
+			#size-cells = <1>;
 			ranges;
 
 			status = "disabled";
 
 			mdp: mdp@5e01000 {
 				compatible = "qcom,sm6115-dpu";
-				reg = <0 0x05e01000 0 0x8f000>,
-				      <0 0x05eb0000 0 0x2008>;
+				reg = <0x05e01000 0x8f000>,
+				      <0x05eb0000 0x2008>;
 				reg-names = "mdp", "vbif";
 
 				clocks = <&gcc GCC_DISP_HF_AXI_CLK>,
@@ -971,7 +971,7 @@
 
 			dsi0: dsi@5e94000 {
 				compatible = "qcom,mdss-dsi-ctrl";
-				reg = <0 0x05e94000 0 0x400>;
+				reg = <0x05e94000 0x400>;
 				reg-names = "dsi_ctrl";
 
 				interrupt-parent = <&mdss>;
@@ -1044,9 +1044,9 @@
 
 			dsi_phy: dsi-phy@5e94400 {
 				compatible = "qcom,dsi-phy-14nm-6115";
-				reg = <0 0x05e94400 0 0x100>,
-				      <0 0x05e94500 0 0x300>,
-				      <0 0x05e94800 0 0x188>;
+				reg = <0x05e94400 0x100>,
+				      <0x05e94500 0x300>,
+				      <0x05e94800 0x188>;
 				reg-names = "dsi_phy",
 					    "dsi_phy_lane",
 					    "dsi_pll";

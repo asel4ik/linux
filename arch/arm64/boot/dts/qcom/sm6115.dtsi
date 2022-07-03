@@ -764,8 +764,8 @@
 
 		gpu: gpu@5900000 {
 			compatible = "qcom,adreno-610.0", "qcom,adreno";
-			reg = <0 0x05900000 0 0x90000>,
-			      <0 0x05961000 0 0x800>;
+			reg = <0x05900000 0x90000>,
+			      <0x05961000 0x800>;
 			reg-names = "kgsl_3d0_reg_memory",
 				    "cx_dbgc";
 			interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;

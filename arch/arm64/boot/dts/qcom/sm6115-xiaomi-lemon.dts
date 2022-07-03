@@ -5,13 +5,32 @@
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/input/gpio-keys.h>
 / {
-	model = "Xiaomi Redmi 9T NFC";
-	compatible = "xiaomi,lemon","qcom,sm6115";
+
+	model = "Qualcomm Technologies, Inc. BENGAL IDP";
+	compatible = "qcom,bengal-idp\0qcom,bengal\0qcom,idp";
 	qcom,msm-id = <0x1a1 0x10000 0x1bc 0x10000>;
 	qcom,board-id = <0x22 0x00>;
 	chassis-type = "handset";
 
+	memory {
+		ddr_device_hbb_ch0_rank0 = <0x0e>;
+		ddr_device_rank_ch0 = <0x01>;
+		ddr_device_type = <0x07>;
+		device_type = "memory";
+		reg = <0x00 0x40000000 0x00 0x3dd00000 0x00 0x80000000 0x00 0xc0000000>;
+	};
+
+	mem-offline {
+		compatible = "qcom,mem-offline";
+		offline-sizes = <0x01 0x40000000 0x00 0x40000000 0x01 0xc0000000 0x00 0x80000000 0x02 0xc0000000 0x01 0x40000000>;
+		granule = <0x200>;
+	};
+	
 	chosen {
+		linux,initrd-end = <0x00 0x456fe974>;
+		linux,initrd-start = <0x00 0x43b87000>;
+
+		bootargs = "console=tty0 earlycon=simplefb,0x5c000000,1080,2340 clk_ignore_unused pd_ignore_unused";
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
@@ -23,45 +42,82 @@
 			height = <2340>;
 			stride = <(1080 * 4)>;
 			format = "a8r8g8b8";
+		
+				
 		};
 	};
 	reserved-memory {
 		ramoops@64000000 {
-			compatible = "ramoops";
+			compatible = "removed-dma-pool", "ramoops";
+			no-map;
 			reg = <0x00 0x64000000 0x00 0x400000>;
 			console-size = <0x100000>;
 			record-size = <0x100000>;
 			pmsg-size = <0x200000>;
+			ftrace-size = <0x10000>;
 			phandle = <0x1e5>;
+			ecc-size = <16>;
+			status = "ok";
 			};
 	};
 
 };
 &hsusb_phy1
 {
-status= "okay";
+	vdd-supply = <&pm6125_l4>;
+	vdda-pll-supply = <&pm6125_l12>;
+	vdda-phy-dpdm-supply = <&pm6125_l15>;
+	status= "disabled";
 };
 &ufs_mem_hc
 {
-status= "okay";
+           vcc-supply = <&pm6125_l24>;
+            vcc-max-microamp = <9600000>;
+            vccq2-supply = <&pm6125_l11>;
+            vccq2-max-microamp = <9600000>;
+
+	status= "disabled";
 };
 &ufs_mem_phy
 {
-status= "okay";
+ 	vdda-phy-supply = <&pm6125_l12>;
+	vdda-pll-supply = <&pm6125_l4>;
+	vddp-ref-clk-supply = <&pm6125_l18>;
+status= "disabled";
 };
 &usb3
 {
-status= "okay";
+status = "disabled";
+};
+
+
+
+
+&adreno_smmu {
+status= "disabled";
+};
+
+
+&tlmm {
+status= "disabled";
+};
+
+&gpucc {
+status= "disabled";
+};
+&dispcc {
+status = "disabled";
 };
 /*
 &mdss{
-status= "okay";
+status = "okay";
 };
 &mdp{
-status= "okay";
+status = "okay";
 };
 &dsi0
 {
+vdda-supply = <&pm6125_l18>;
 status= "okay";
 };
 &dsi_phy
@@ -74,6 +130,7 @@ gpio-reserved-ranges = <0 4>,<14 4>;
 };
 &rpm_requests {
 	smd_rpm_regulators: pm6125-regulators {
+		status = "disabled";
 		compatible = "qcom,rpm-pm6125-regulators";
 		/*
 		vdd_s6-supply=;

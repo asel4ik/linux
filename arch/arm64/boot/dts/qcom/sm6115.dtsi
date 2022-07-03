@@ -838,7 +838,7 @@
 
 		adreno_smmu: iommu@59a0000 {
 			compatible = "qcom,sm6115-smmu-500", "qcom,adreno-smmu", "arm,mmu-500";
-			reg = <0 0x59a0000 0 0x10000>;
+			reg = <0x59a0000 0x10000>;
 			#iommu-cells = <2>;
 			#global-interrupts = <1>;
 

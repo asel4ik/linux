@@ -1068,7 +1068,7 @@
 
 		rng: rng@1b53000 {
 			compatible = "qcom,prng-ee";
-			reg = <0 0x1b53000 0 0x1000>;
+			reg = <0x1b53000 0x1000>;
 			clocks = <&gcc GCC_PRNG_AHB_CLK>;
 			clock-names = "core";
 		};

@@ -234,22 +234,22 @@
 		};
 
 		pil_adsp_mem: memory@53800000 {
-			reg = <0x0 0x53800000 0x0 0x2800000>;
+			reg = <0x0 0x53800000 0x0 0x2200000>;
 			no-map;
 		};
 
-		pil_ipa_fw_mem: memory@56100000 {
-			reg = <0x0 0x56100000 0x0 0x10000>;
+		pil_ipa_fw_mem: memory@55a00000 {
+			reg = <0x0 0x55a00000 0x0 0x10000>;
 			no-map;
 		};
 
-		pil_ipa_gsi_mem: memory@56110000 {
-			reg = <0x0 0x56110000 0x0 0x5000>;
+		pil_ipa_gsi_mem: memory@55A10000 {
+			reg = <0x0 0x55A10000 0x0 0x5000>;
 			no-map;
 		};
 
-		pil_gpu_mem: memory@56115000 {
-			reg = <0x0 0x56115000 0x0 0x2000>;
+		pil_gpu_mem: memory@55A15000 {
+			reg = <0x0 0x55A15000 0x0 0x2000>;
 			no-map;
 		};
 

@@ -4214,6 +4214,36 @@ static const struct drm_display_mode boe_tv080wum_nl0_mode = {
 	.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
 };
 
+static const struct drm_display_mode nt36672a_truly_v2_mode = {
+	.clock = (1080 + 76 + 12 + 56) * (2340 + 32 + 2 + 15) * 60 / 1000,
+	.hdisplay = 1080,
+	.hsync_start = 1080 + 76,
+	.hsync_end = 1080 + 76 + 12,
+	.htotal = 1080 + 76 + 12 + 56,
+	.vdisplay = 2340,
+	.vsync_start = 2340 + 32,
+	.vsync_end = 2340 + 32 + 2,
+	.vtotal = 2340 + 32 + 2 + 15,
+	.width_mm = 65,
+	.height_mm = 129,
+};
+
+static const struct panel_desc_dsi nt36672a_truly_v2 = {
+	.desc = {
+		.modes = &nt36672a_truly_v2_mode,
+		.num_modes = 1,
+		.bpc = 8,
+		.size = {
+			.width = 65,
+			.height = 129,
+		},
+		.connector_type = DRM_MODE_CONNECTOR_DSI,
+	},
+	.flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_CLOCK_NON_CONTINUOUS,
+	.format = MIPI_DSI_FMT_RGB888,
+	.lanes = 4,
+};
+
 static const struct panel_desc_dsi boe_tv080wum_nl0 = {
 	.desc = {
 		.modes = &boe_tv080wum_nl0_mode,
@@ -4386,6 +4416,9 @@ static const struct of_device_id dsi_of_match[] = {
 		.compatible = "lg,ld070wx3-sl01",
 		.data = &lg_ld070wx3_sl01
 	}, {
+		.compatible = "simple,nt36672a-truly-v2",
+		.data = &nt36672a_truly_v2
+	},{
 		.compatible = "lg,lh500wx1-sd03",
 		.data = &lg_lh500wx1_sd03
 	}, {

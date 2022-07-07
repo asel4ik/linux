@@ -802,6 +802,80 @@
 			#power-domain-cells = <1>;
     };
 
+		gpu: gpu@5900000 {
+			compatible = "qcom,adreno-610.0", "qcom,adreno";
+			reg = <0x05900000 0x90000>,
+			      <0x05961000 0x800>;
+			reg-names = "kgsl_3d0_reg_memory",
+				    "cx_dbgc";
+			interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;
+			
+			//iommus = <&adreno_smmu 0 0x401>;
+			
+			operating-points-v2 = <&gpu_opp_table>;
+
+			#cooling-cells = <2>;
+			
+			clocks = <&gpucc GPU_CC_GX_GFX3D_CLK>,
+			<&gpucc GPU_CC_CXO_CLK>,
+			<&gcc GCC_BIMC_GPU_AXI_CLK>,
+			<&gpucc GPU_CC_AHB_CLK>,
+			<&gcc GCC_GPU_MEMNOC_GFX_CLK>,
+			<&gpucc GPU_CC_CX_GMU_CLK>,
+			<&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>;
+			
+			clock-names = "core", "rbbmtimer", "mem",
+				"iface", "mem_iface", "gmu",
+				"smmu_vote";
+			
+			status = "disabled";
+			gpu_opp_table: opp-table {
+				compatible = "operating-points-v2";
+
+				opp-320000000 {
+					opp-hz = /bits/ 64 <320000000>;
+					opp-level = <RPM_SMD_LEVEL_LOW_SVS>;
+					opp-supported-hw = <0xff>;
+				};
+
+				opp-465000000 {
+					opp-hz = /bits/ 64 <465000000>;
+					opp-level = <RPM_SMD_LEVEL_SVS>;
+					opp-supported-hw = <0xff>;
+				};
+
+				opp-600000000 {
+					opp-hz = /bits/ 64 <600000000>;
+					opp-level = <RPM_SMD_LEVEL_SVS_PLUS>;
+					opp-supported-hw = <0xff>;
+				};
+
+				opp-745000000 {
+					opp-hz = /bits/ 64 <745000000>;
+					opp-level = <RPM_SMD_LEVEL_NOM>;
+					opp-supported-hw = <0xff>;
+				};
+
+				opp-820000000 {
+					opp-hz = /bits/ 64 <820000000>;
+					opp-level = <RPM_SMD_LEVEL_NOM_PLUS>;
+					opp-supported-hw = <0xff>;
+				};
+
+				opp-900000000 {
+					opp-hz = /bits/ 64 <900000000>;
+					opp-level = <RPM_SMD_LEVEL_TURBO>;
+					opp-supported-hw = <0xff>;
+				};
+
+				opp-980000000 {
+					opp-hz = /bits/ 64 <980000000>;
+					opp-level = <RPM_SMD_LEVEL_TURBO_NO_CPR>;
+					opp-supported-hw = <0xff>;
+				};
+			};
+		};
+
 		/* SMMU HLOS1 clock removed */
 		adreno_smmu: iommu@59a0000 {
 			compatible = "qcom,sm6115-smmu-500", "qcom,adreno-smmu", "arm,mmu-500";

@@ -109,7 +109,7 @@ static const struct parent_map disp_cc_parent_map_2[] = {
 };
 
 static const struct clk_parent_data disp_cc_parent_data_2[] = {
-	{ .fw_name = "bi_tcxo_ao" },
+	{ .fw_name = "bi_tcxo" },
 	{ .fw_name = "gcc_disp_gpll0_div_clk_src" },
 };
 
@@ -265,7 +265,7 @@ static struct clk_rcg2 disp_cc_mdss_rot_clk_src = {
 	.cmd_rcgr = 0x208c,
 	.mnd_width = 0,
 	.hid_width = 5,
-	.parent_map = disp_cc_parent_map_1,
+	.parent_map = disp_cc_parent_map_3,
 	.freq_tbl = ftbl_disp_cc_mdss_rot_clk_src,
 	//.enable_safe_config = true,
 	.clkr.hw.init = &(struct clk_init_data){

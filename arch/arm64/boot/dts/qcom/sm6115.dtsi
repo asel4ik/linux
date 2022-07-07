@@ -53,7 +53,7 @@
 			enable-method = "psci";
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&L2_0>;
-			operating-points-v2 = <&cpu0_opp_table>;
+		
 			qcom,freq-domain = <&cpufreq_hw 0>;
 			L2_0: l2-cache {
 				compatible = "cache";
@@ -67,7 +67,7 @@
 			enable-method = "psci";
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&L2_0>;
-			operating-points-v2 = <&cpu0_opp_table>;
+			
 			qcom,freq-domain = <&cpufreq_hw 0>;
 		};
 
@@ -78,7 +78,7 @@
 			enable-method = "psci";
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&L2_0>;
-			operating-points-v2 = <&cpu0_opp_table>;
+	
 			qcom,freq-domain = <&cpufreq_hw 0>;
 		};
 
@@ -89,7 +89,7 @@
 			enable-method = "psci";
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&L2_0>;
-			operating-points-v2 = <&cpu0_opp_table>;
+		
 			qcom,freq-domain = <&cpufreq_hw 0>;
 		};
 
@@ -100,7 +100,7 @@
 			enable-method = "psci";
 			capacity-dmips-mhz = <1638>;
 			next-level-cache = <&L2_1>;
-			operating-points-v2 = <&cpu4_opp_table>;
+		
 			qcom,freq-domain = <&cpufreq_hw 1>;
 			L2_1: l2-cache {
 				compatible = "cache";
@@ -114,7 +114,7 @@
 			enable-method = "psci";
 			capacity-dmips-mhz = <1638>;
 			next-level-cache = <&L2_1>;
-			operating-points-v2 = <&cpu4_opp_table>;
+			
 			qcom,freq-domain = <&cpufreq_hw 1>;
 		};
 
@@ -125,7 +125,7 @@
 			enable-method = "psci";
 			capacity-dmips-mhz = <1638>;
 			next-level-cache = <&L2_1>;
-			operating-points-v2 = <&cpu4_opp_table>;
+			
 			qcom,freq-domain = <&cpufreq_hw 1>;
 		};
 
@@ -136,7 +136,7 @@
 			enable-method = "psci";
 			capacity-dmips-mhz = <1638>;
 			next-level-cache = <&L2_1>;
-			operating-points-v2 = <&cpu4_opp_table>;
+		
 			qcom,freq-domain = <&cpufreq_hw 1>;
 		};
 
@@ -178,57 +178,76 @@
 			};
 		};
 	};
-
+//300000 614400 864000 1017600 1305600 1420800 1612800 1804800 
 	cpu0_opp_table: cpu0_opp_table {
 		compatible = "operating-points-v2";
 		opp-shared;
-			
-		cpu0_opp1: opp-614400000 {
+		cpu0_opp1: opp-300000000 {
+			opp-hz = /bits/ 64 <300000000>;
+		};
+		cpu0_opp2: opp-614400000 {
 			opp-hz = /bits/ 64 <614400000>;
 		};
 		
-		cpu0_opp2: opp-864000000 {
+		cpu0_opp3: opp-864000000 {
 			opp-hz = /bits/ 64 <864000000>;
 		};
 		
-		cpu0_opp3: opp-1017600000 {
+		cpu0_opp4: opp-1017600000 {
 			opp-hz = /bits/ 64 <1017600000>;	
 		};
 		
-		cpu0_opp4: opp-1305600000 {
+		cpu0_opp5: opp-1305600000 {
 			opp-hz = /bits/ 64 <1305600000>;	
 		};
 
-		cpu0_opp5: opp-1420000000 {
-			opp-hz = /bits/ 64 <1420000000>;
+		cpu0_opp6: opp-1420800000 {
+			opp-hz = /bits/ 64 <1420800000>;
+		};
+		
+		cpu0_opp7: opp-1612800000 {
+			opp-hz = /bits/ 64 <1612800000>;
 		};
 
-		cpu0_opp6: opp-1804800000 {
+		cpu0_opp8: opp-1804800000 {
 			opp-hz = /bits/ 64 <1804800000>;
 		};
 	};
-	
-		cpu4_opp_table: cpu0_opp_table {
+//300000 652800 902400 1056000 1401600 1536000 1612800 1804800 2016000	
+		cpu4_opp_table: cpu4_opp_table {
 		compatible = "operating-points-v2";
 		opp-shared;
-			
-		cpu4_opp1: opp-902400000 {
+		cpu4_opp1: opp-300000000 {
+			opp-hz = /bits/ 64 <300000000>;
+		};
+		cpu4_opp2: opp-652800000 {
+			opp-hz = /bits/ 64 <652800000>;
+		};
+		cpu4_opp3: opp-902400000 {
 			opp-hz = /bits/ 64 <902400000>;
 		};
 		
-		cpu4_opp2: opp-1056000000 {
+		cpu4_opp4: opp-1056000000 {
 			opp-hz = /bits/ 64 <1056000000>;
 		};
 		
-		cpu4_opp3: opp-1401680000 {
-			opp-hz = /bits/ 64 <1401680000>;	
+		cpu4_opp5: opp-1401600000 {
+			opp-hz = /bits/ 64 <1401600000>;	
 		};
 		
-		cpu4_opp4: opp-1804800000 {
+		cpu4_opp6: opp-1536000000 {
+			opp-hz = /bits/ 64 <1536000000>;	
+		};
+		
+		cpu4_opp7: opp-1612800000 {
+			opp-hz = /bits/ 64 <1612800000>;	
+		};
+
+		cpu4_opp8: opp-1804800000 {
 			opp-hz = /bits/ 64 <1804800000>;	
 		};
 
-		cpu4_opp5: opp-2016000000 {
+		cpu4_opp9: opp-2016000000 {
 			opp-hz = /bits/ 64 <2016000000>;
 		};
 	};
@@ -646,7 +665,7 @@
 			reg = <0x01613000 0x180>;
 			#phy-cells = <0>;
 
-			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
+			clocks = <&xo_board>,
 				 <&gcc GCC_AHB2PHY_USB_CLK>;
 			clock-names = "ref", "cfg_ahb";
 

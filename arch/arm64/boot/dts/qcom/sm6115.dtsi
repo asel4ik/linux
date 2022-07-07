@@ -973,7 +973,7 @@
 
 				opp-820000000 {
 					opp-hz = /bits/ 64 <820000000>;
-					opp-level = <RPM_SMD_LEVEL_NOM_L1>;
+					opp-level = <RPM_SMD_LEVEL_NOM_PLUS>;
 					opp-supported-hw = <0xff>;
 				};
 

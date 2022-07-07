@@ -12,8 +12,19 @@
 	interrupt-parent = <&intc>;
 	#address-cells = <2>;
 	#size-cells = <2>;
-
-	chosen { };
+	
+	aliases {
+		
+		mmc0 = &sdhc_1;
+		mmc1 = &sdhc_2;
+	};
+	
+	chosen {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		
+	 };
 
 	clocks {
 		xo_board: xo-board {
@@ -601,7 +612,8 @@
 				 <&gcc GCC_SDCC2_APPS_CLK>,
 				 <&xo_board>;
 			clock-names = "iface", "core", "xo";
-
+			qcom,dll-config = <0x0007642c>;
+			qcom,ddr-config = <0x80040868>;
 			pinctrl-0 = <&sdc2_state_on>;
 			pinctrl-1 = <&sdc2_state_off>;
 			pinctrl-names = "default", "sleep";
@@ -652,7 +664,6 @@
 				<0 0>,
 				<37500000 150000000>,
 				<75000000 300000000>,
-				<0 0>,
 				<0 0>,
 				<0 0>,
 				<0 0>;

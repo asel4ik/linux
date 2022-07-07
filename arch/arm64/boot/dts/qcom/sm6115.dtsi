@@ -897,7 +897,7 @@
 			#power-domain-cells = <1>;
 	};
 	
-		disp_cc: clock-controller@5f00000 {
+		dispcc: clock-controller@5f00000 {
 			compatible = "qcom,sm6115-dispcc";
 			reg = <0x5f00000 0x20000>;
           		  clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,

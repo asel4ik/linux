@@ -7,7 +7,7 @@
 / {
 
 	model = "Qualcomm Technologies, Inc. BENGAL IDP";
-	compatible = "qcom,bengal-idp\0qcom,bengal\0qcom,idp";
+	compatible = "xiaomi,lemon", "qcom,sm6115";
 	qcom,msm-id = <0x1a1 0x10000 0x1bc 0x10000>;
 	qcom,board-id = <0x22 0x00>;
 	chassis-type = "handset";
@@ -29,12 +29,9 @@
 	chosen {
 		linux,initrd-end = <0x00 0x456fe974>;
 		linux,initrd-start = <0x00 0x43b87000>;
-
 		bootargs = "console=tty0 earlycon=simplefb,0x5c000000,1080,2340 clk_ignore_unused pd_ignore_unused";
-		#address-cells = <2>;
-		#size-cells = <2>;
-		ranges;
-		stdout-path = "framebuffer0";
+	
+			stdout-path = "framebuffer0";
 		framebuffer0: framebuffer@5c000000 {
 			compatible = "simple-framebuffer";
 			reg = <0 0x5c000000 0 (2340 * 1080 * 4)>;
@@ -42,9 +39,12 @@
 			height = <2340>;
 			stride = <(1080 * 4)>;
 			format = "a8r8g8b8";
+
 		
-				
-		};
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+	};
 	};
 	reserved-memory {
 		ramoops@64000000 {
@@ -53,21 +53,20 @@
 			reg = <0x00 0x64000000 0x00 0x400000>;
 			console-size = <0x100000>;
 			record-size = <0x100000>;
-			pmsg-size = <0x200000>;
-			ftrace-size = <0x10000>;
-			phandle = <0x1e5>;
+			pmsg-size = <0x200000>;	
 			ecc-size = <16>;
 			status = "ok";
 			};
 	};
 
 };
+
 &hsusb_phy1
 {
 	vdd-supply = <&pm6125_l4>;
 	vdda-pll-supply = <&pm6125_l12>;
 	vdda-phy-dpdm-supply = <&pm6125_l15>;
-	status= "disabled";
+	status= "okay";
 };
 &ufs_mem_hc
 {
@@ -75,40 +74,68 @@
             vcc-max-microamp = <9600000>;
             vccq2-supply = <&pm6125_l11>;
             vccq2-max-microamp = <9600000>;
-
-	status= "disabled";
+          //  vdd-hba-supply
+         //   vccq-supply
+            status = "okay";
 };
 &ufs_mem_phy
 {
  	vdda-phy-supply = <&pm6125_l12>;
 	vdda-pll-supply = <&pm6125_l4>;
 	vddp-ref-clk-supply = <&pm6125_l18>;
-status= "disabled";
+	     status = "okay";
+
 };
 &usb3
 {
+status = "okay";
+};
+
+&cpufreq_hw {
 status = "disabled";
 };
 
-
-
-
-&adreno_smmu {
-status= "disabled";
+&sdhc_2 {
+status = "okay";
+vmmc-supply = <&pm6125_l22>;
+vqmmc-supply = <&pm6125_l5>;
+pinctrl-names = "default", "sleep";
+pinctrl-0 = <&sdc2_state_on>;
+pinctrl-1 = <&sdc2_state_off>;
 };
 
-
 &tlmm {
-status= "disabled";
+gpio-reserved-ranges = <0 4>,<14 4>;
+	
+	pmx_sde_default: pmx-sde-default-pins {
+		pins = "gpio85";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+		output-high;
+	};
+
+	pmx_sde_sleep: pmx-sde-sleep-pins {
+		pins = "gpio85";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+	sde_te_default: sde-te-pins {
+				pins = "gpio81";
+				function = "mdp_vsync";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
 };
 
 &gpucc {
 status= "disabled";
 };
 &dispcc {
-status = "disabled";
+status = "okay";
 };
-/*
+
 &mdss{
 status = "okay";
 };
@@ -118,19 +145,34 @@ status = "okay";
 &dsi0
 {
 vdda-supply = <&pm6125_l18>;
+vddio-supply = <&pm6125_l17>;
 status= "okay";
+	panel: panel@0 {
+		compatible = "simple,nt36672a-truly-v2";
+		reg = <0>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&dsi0_out>;
+			};
+		};
+	};
+
+
 };
-&dsi_phy
+&dsi_phy0
 {
 status= "okay";
 };
-*/
-&tlmm {
-gpio-reserved-ranges = <0 4>,<14 4>;
+
+&dsi0_out {
+	data-lanes = <0 1 2 3>;
+	remote-endpoint = <&panel_in>;
 };
+
 &rpm_requests {
 	smd_rpm_regulators: pm6125-regulators {
-		status = "disabled";
+		
 		compatible = "qcom,rpm-pm6125-regulators";
 		/*
 		vdd_s6-supply=;
@@ -166,17 +208,28 @@ gpio-reserved-ranges = <0 4>,<14 4>;
 			regulator-min-microvolt = <488000>;
 			regulator-max-microvolt = <1000000>;
 		};
+		
 		pm6125_l5: l5 {
 			regulator-min-microvolt = <1648000>;
-			regulator-max-microvolt = <3056000>;
+			regulator-max-microvolt = <2696000>;
+			regulator-enable-ramp-delay = <250>;
+			regulator-ramp-delay = <0>;
+			regulator-allow-set-load;
+			regulator-system-load = <22000>;
 		};
 		pm6125_l6: l6 {
 			regulator-min-microvolt = <576000>;
 			regulator-max-microvolt = <656000>;
 		};
 		pm6125_l7: l7 {
-			regulator-min-microvolt = <1200000>;
-			regulator-max-microvolt = <1304000>;
+		 // 1.2V-1.304V downstream sets it as vdd-io-bias for sdhci2
+			regulator-min-microvolt = <1256000>;
+			regulator-max-microvolt = <1256000>;
+			regulator-always-on;
+			regulator-enable-ramp-delay = <250>;
+			regulator-ramp-delay = <0>;
+			regulator-allow-set-load;
+			regulator-system-load = <6000>;
 		};
 		pm6125_l8: l8 
 		{
@@ -238,6 +291,10 @@ gpio-reserved-ranges = <0 4>,<14 4>;
 		pm6125_l22: l22 {
 			regulator-min-microvolt = <2952000>;
 			regulator-max-microvolt = <3304000>;
+			regulator-enable-ramp-delay = <250>;
+			regulator-ramp-delay = <0>;
+			regulator-allow-set-load;
+			regulator-system-load = <800000>;
 			};
 		pm6125_l23: l23 {
 			regulator-min-microvolt = <3200000>;

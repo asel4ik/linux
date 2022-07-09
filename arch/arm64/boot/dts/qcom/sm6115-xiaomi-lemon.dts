@@ -97,6 +97,7 @@
 
 &sdhc_2 {
 	status = "okay";
+	cd-gpios = <&tlmm 88 GPIO_ACTIVE_HIGH>;
 	vmmc-supply = <&pm6125_l22>;
 	vqmmc-supply = <&pm6125_l5>;
 	pinctrl-names = "default", "sleep";

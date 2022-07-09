@@ -212,7 +212,7 @@ gpio-reserved-ranges = <0 4>,<14 4>;
 		
 		pm6125_l5: l5 {
 			regulator-min-microvolt = <1648000>;
-			regulator-max-microvolt = <2696000>;
+			regulator-max-microvolt = <3056000>;
 			regulator-enable-ramp-delay = <250>;
 			regulator-ramp-delay = <0>;
 			regulator-allow-set-load;

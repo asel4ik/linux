@@ -1056,7 +1056,8 @@
 			interrupt-controller;
 			#interrupt-cells = <1>;
 
-			iommus = <&apps_smmu 0x420 0x2>;
+			iommus = <&apps_smmu 0x420 0x2>,
+             			 <&apps_smmu 0x421 0x0>;
 			  
 
 			#address-cells = <1>;

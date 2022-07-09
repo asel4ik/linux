@@ -659,11 +659,27 @@
 			pinctrl-0 = <&sdc2_state_on>;
 			pinctrl-1 = <&sdc2_state_off>;
 			pinctrl-names = "default", "sleep";
-
+			cd-gpios = <&tlmm 88 GPIO_ACTIVE_HIGH>;
 			power-domains = <&rpmpd SM6115_VDDCX>;
-
+			operating-points-v2 = <&sdhc2_opp_table>;
+			iommus = <&apps_smmu 0x00a0 0x0>;
+			resets = <&gcc GCC_SDCC2_BCR>;
 			bus-width = <4>;
 			status = "disabled";
+			
+			sdhc2_opp_table: sdhc2-opp-table {
+				compatible = "operating-points-v2";
+
+				opp-100000000 {
+					opp-hz = /bits/ 64 <100000000>;
+					required-opps = <&rpmpd_opp_low_svs>;
+				};
+
+				opp-202000000 {
+					opp-hz = /bits/ 64 <202000000>;
+					required-opps = <&rpmpd_opp_nom>;
+				};
+			};
 		};
 		
 		ufs_mem_hc: ufs@4804000 {
@@ -682,7 +698,7 @@
 
 			power-domains = <&gcc GCC_UFS_PHY_GDSC>;
 
-			iommus = <&apps_smmu 0x80 0x0>;
+			iommus = <&apps_smmu 0x100 0x0>;
 
 			clock-names = "core_clk",
 				      "bus_aggr_clk",

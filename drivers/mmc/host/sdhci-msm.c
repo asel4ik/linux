@@ -2456,6 +2456,7 @@ static const struct of_device_id sdhci_msm_dt_match[] = {
 	{.compatible = "qcom,sdx55-sdhci",  .data = &sdhci_msm_v5_var},
 	{.compatible = "qcom,sdx65-sdhci",  .data = &sdhci_msm_v5_var},
 	{.compatible = "qcom,sdm630-sdhci", .data = &sdhci_msm_v5_var},
+	{.compatible = "qcom,sm6115-sdhci", .data = &sdhci_msm_v5_var},
 	{.compatible = "qcom,sm6125-sdhci", .data = &sdhci_msm_v5_var},
 	{.compatible = "qcom,sm6350-sdhci", .data = &sdhci_msm_v5_var},
 	{.compatible = "qcom,sm8150-sdhci", .data = &sdhci_msm_v5_var},

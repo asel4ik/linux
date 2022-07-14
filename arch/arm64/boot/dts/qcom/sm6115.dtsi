@@ -1339,6 +1339,9 @@
 				 <&gcc GCC_DISP_HF_AXI_CLK>,
 				 <&dispcc DISP_CC_MDSS_MDP_CLK>;
 			clock-names = "iface", "bus", "core";
+			
+			assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>;
+			assigned-clock-rates = <256000000>;
 
 			interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-controller;
@@ -1368,6 +1371,14 @@
 					 <&dispcc DISP_CC_MDSS_VSYNC_CLK>;
 				clock-names = "bus", "iface", "rot", "lut", "core",
 					      "vsync";
+				assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>,
+						  <&dispcc DISP_CC_MDSS_VSYNC_CLK>,
+						  <&dispcc DISP_CC_MDSS_ROT_CLK>,
+						  <&dispcc DISP_CC_MDSS_AHB_CLK>;
+				assigned-clock-rates = <256000000>,
+						       <19200000>,
+						       <19200000>,
+						       <19200000>;
 
 				operating-points-v2 = <&mdp_opp_table>;
 				power-domains = <&rpmpd SM6115_VDDCX>;
@@ -1479,17 +1490,17 @@
 
 					opp-19200000 {
 						opp-hz = /bits/ 64 <19200000>;
-						required-opps = <&rpmpd_opp_min_svs>;
+						required-opps = <&rpmpd_opp_nom>;
 					};
 
 					opp-164000000 {
 						opp-hz = /bits/ 64 <164000000>;
-						required-opps = <&rpmpd_opp_low_svs>;
+						required-opps = <&rpmpd_opp_nom>;
 					};
 
 					opp-187500000 {
 						opp-hz = /bits/ 64 <187500000>;
-						required-opps = <&rpmpd_opp_svs>;
+						required-opps = <&rpmpd_opp_nom>;
 					};
 				};
 			};
@@ -1507,7 +1518,7 @@
 				#phy-cells = <0>;
 
 				clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
-					 <&xo_board>;
+					 <&rpmcc RPM_SMD_XO_CLK_SRC>;
 				clock-names = "iface", "ref";
 
 				status = "disabled";

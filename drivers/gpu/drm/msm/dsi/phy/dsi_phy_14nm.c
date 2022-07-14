@@ -1068,12 +1068,8 @@ const struct msm_dsi_phy_cfg dsi_phy_14nm_660_cfgs = {
 
 const struct msm_dsi_phy_cfg dsi_phy_14nm_6115_cfgs = {
 	.has_phy_lane = true,
-	.reg_cfg = {
-		.num = 1,
-		.regs = {
-			{"vcca", 17000, 32},
-		},
-	},
+	.has_phy_regulator = false,
+	
 	.ops = {
 		.enable = dsi_14nm_phy_enable,
 		.disable = dsi_14nm_phy_disable,

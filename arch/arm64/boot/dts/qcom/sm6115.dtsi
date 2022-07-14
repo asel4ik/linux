@@ -638,7 +638,7 @@
 			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>;
 			clock-names = "xo";
 
-			power-domains = <&rpmpd SM6115_CX>;
+			power-domains = <&rpmpd SM6115_VDDCX>;
 			power-domain-names = "cx";
 
 			memory-region = <&pil_modem_mem>;
@@ -748,7 +748,7 @@
 			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>;
 			clock-names = "xo";
 
-			power-domains = <&rpmhpd SM6115_CX>;
+			power-domains = <&rpmpd SM6115_VDDCX>;
 			power-domain-names = "cx";
 
 			memory-region = <&pil_cdsp_mem>;
@@ -824,7 +824,7 @@
 			compatible = "qcom,wcn3990-wifi";
 			reg = <0 0xc800000 0 0x800000>;
 			reg-names = "membase";
-			memory-region = <&wlan_fw_mem>;
+			memory-region = <&wlan_msa_mem>;
 			interrupts = <GIC_SPI 358 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 359 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 360 IRQ_TYPE_LEVEL_HIGH>,

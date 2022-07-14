@@ -29,22 +29,7 @@
 	chosen {
 		linux,initrd-end = <0x00 0x456fe974>;
 		linux,initrd-start = <0x00 0x43b87000>;
-		bootargs = "console=tty0 earlycon=simplefb,0x5c000000,1080,2340 clk_ignore_unused pd_ignore_unused";
-	
-			stdout-path = "framebuffer0";
-		framebuffer0: framebuffer@5c000000 {
-			compatible = "simple-framebuffer";
-			reg = <0 0x5c000000 0 (2340 * 1080 * 4)>;
-			width = <1080>;
-			height = <2340>;
-			stride = <(1080 * 4)>;
-			format = "a8r8g8b8";
-
-		
-		#address-cells = <2>;
-		#size-cells = <2>;
-		ranges;
-	};
+		bootargs = "pd_ignore_unused";
 	};
 	reserved-memory {
 		ramoops@64000000 {
@@ -92,7 +77,7 @@
 };
 
 &cpufreq_hw {
-	status = "disabled";
+	status = "okay";
 };
 
 &sdhc_2 {
@@ -128,6 +113,14 @@ gpio-reserved-ranges = <0 4>,<14 4>;
 				drive-strength = <2>;
 				bias-pull-down;
 			};
+			
+			
+	lcm_power_enable_active: lcm_power_enable_actives {
+		pins = "gpio99";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-up;
+	};
 };
 
 &gpucc {
@@ -149,9 +142,12 @@ gpio-reserved-ranges = <0 4>,<14 4>;
 	vddio-supply = <&pm6125_l17>;
 	status= "okay";
 	panel: panel@0 {
-		compatible = "simple,nt36672a-truly-v2";
+		compatible = "mdss,nt36672a-truly-v2";
 		reg = <0>;
-
+		reset-gpios = <&tlmm 85 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&pmx_sde_default &sde_te_default &lcm_power_enable_active>;
+		pinctrl-1 = <&pmx_sde_sleep &sde_te_default &lcm_power_enable_active>;
 		port {
 			panel_in: endpoint {
 				remote-endpoint = <&dsi0_out>;
@@ -275,7 +271,8 @@ gpio-reserved-ranges = <0 4>,<14 4>;
 			regulator-max-microvolt = <1384000>;
 			};
 		pm6125_l18: l18 {
-			regulator-min-microvolt = <1104000>;
+		//1p2 requires 1.232V should we bump?
+			regulator-min-microvolt = <1232000>;
 			regulator-max-microvolt = <1312000>;
 			};
 		pm6125_l19: l19 {

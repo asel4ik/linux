@@ -173,7 +173,7 @@ gpio-reserved-ranges = <0 4>,<14 4>;
 &dsi0
 {
 	vdda-supply = <&pm6125_l18>;
-	vddio-supply = <&pm6125_l17>;
+	vddio-supply = <&pm6125_l9>;
 	status= "okay";
 	panel: panel@0 {
 		compatible = "mdss,nt36672a-truly-v2";

@@ -454,6 +454,17 @@
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
+		
+		ipa_smp2p_out: ipa-ap-to-modem {
+			qcom,entry-name = "ipa";
+			#qcom,smem-state-cells = <1>;
+		};
+
+		ipa_smp2p_in: ipa-modem-to-ap {
+			qcom,entry-name = "ipa";
+			interrupt-controller;
+			#interrupt-cells = <2>;
+		};
 	};
 	
 	soc {
@@ -1322,7 +1333,39 @@
 			compatible = "qcom,rpm-stats";
 			reg = <0x04690000 0x10000>;
 		};
+		
+		ipa: ipa@5804000 {
+			compatible = "qcom,sc7180-ipa";
+			
+			iommus = <&apps_smmu 0x140 0x0>,
+				 <&apps_smmu 0x142 0x0>;
+			reg = <0x5840000 0x34000>, 
+			      <0x5847000 0 0x2000>,
+			      <0x5804000 0x28000>;
+			reg-names = "ipa-reg",
+				    "ipa-shared",
+				    "gsi";
 
+			interrupts-extended = <&intc GIC_SPI 257 IRQ_TYPE_EDGE_RISING>,
+					      <&intc GIC_SPI 259 IRQ_TYPE_LEVEL_HIGH>,
+					      <&ipa_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
+					      <&ipa_smp2p_in 1 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "ipa",
+					  "gsi",
+					  "ipa-clock-query",
+					  "ipa-setup-ready";
+
+			clocks = <&rpmcc RPM_SMD_IPA_CLK>;
+			clock-names = "core";
+
+			qcom,smem-states = <&ipa_smp2p_out 0>,
+					   <&ipa_smp2p_out 1>;
+			qcom,smem-state-names = "ipa-clock-enabled-valid",
+						"ipa-clock-enabled";
+
+			status = "disabled";
+		};
+		
 		gpucc: qcom,gpucc@5990000 {
 			compatible = "qcom,sm6115-gpucc";
 			reg = <0x5990000 0x9000>;

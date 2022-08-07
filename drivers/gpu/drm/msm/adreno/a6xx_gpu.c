@@ -1958,7 +1958,7 @@ struct msm_gpu *a6xx_gpu_init(struct drm_device *dev)
 	if (info && (info->revn == 618))
 		gpu->clamp_to_idle = true;
 
-	a6xx_llc_slices_init(pdev, a6xx_gpu);
+	//a6xx_llc_slices_init(pdev, a6xx_gpu);
 
 	ret = a6xx_set_supported_hw(&pdev->dev, config->rev);
 	if (ret) {
@@ -1974,13 +1974,15 @@ struct msm_gpu *a6xx_gpu_init(struct drm_device *dev)
 
 	/* Check if there is a GMU phandle and set it up */
 	node = of_parse_phandle(pdev->dev.of_node, "qcom,gmu", 0);
-
+	
+	pr_err("going to bug?");
 	/* FIXME: How do we gracefully handle this? */
 	BUG_ON(!node);
 
 	ret = a6xx_gmu_init(a6xx_gpu, node);
 	of_node_put(node);
 	if (ret) {
+		pr_err("failed to setup gmu destroying");
 		a6xx_destroy(&(a6xx_gpu->base.base));
 		return ERR_PTR(ret);
 	}

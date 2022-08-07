@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2010 - 2018 Novatek, Inc.
- * Copyright (C) 2021 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
- * $Revision: 68983 $
- * $Date: 2020-09-17 09:43:23 +0800 (週四, 17 九月 2020) $
+ * $Revision: 52752 $
+ * $Date: 2019-11-06 18:05:46 +0800 (周三, 06 11月 2019) $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 #define NVT_DUMP_PARTITION_LEN  (1024)
 #define NVT_DUMP_PARTITION_PATH "/data/local/tmp"
 
-static ktime_t start, end;
+static struct timeval start, end;
 const struct firmware *fw_entry = NULL;
 static size_t fw_need_write_size = 0;
 static uint8_t *fwbuf = NULL;
@@ -139,7 +139,6 @@ return:
 *******************************************************/
 static uint32_t partition = 0;
 static uint8_t ilm_dlm_num = 2;
-static uint8_t cascade_2nd_header_info = 0;
 static int32_t nvt_bin_header_parser(const u8 *fwdata, size_t fwsize)
 {
 	uint32_t list = 0;
@@ -148,29 +147,13 @@ static int32_t nvt_bin_header_parser(const u8 *fwdata, size_t fwsize)
 	uint8_t info_sec_num = 0;
 	uint8_t ovly_sec_num = 0;
 	uint8_t ovly_info = 0;
-	uint8_t find_bin_header = 0;
 
 	/* Find the header size */
 	end = fwdata[0] + (fwdata[1] << 8) + (fwdata[2] << 16) + (fwdata[3] << 24);
-
-	/* check cascade next header */
-	cascade_2nd_header_info = (fwdata[0x20] & 0x02) >> 1;
-	NVT_LOG("cascade_2nd_header_info = %d\n", cascade_2nd_header_info);
-
-	if (cascade_2nd_header_info) {
-		pos = 0x30;	// info section start at 0x30 offset
-		while (pos < (end / 2)) {
-			info_sec_num ++;
-			pos += 0x10;	/* each header info is 16 bytes */
-		}
-
-		info_sec_num = info_sec_num + 1; //next header section
-	} else {
-		pos = 0x30;	// info section start at 0x30 offset
-		while (pos < end) {
-			info_sec_num ++;
-			pos += 0x10;	/* each header info is 16 bytes */
-		}
+	pos = 0x30;	// info section start at 0x30 offset
+	while (pos < end) {
+		info_sec_num ++;
+		pos += 0x10;	/* each header info is 16 bytes */
 	}
 
 	/*
@@ -228,13 +211,8 @@ static int32_t nvt_bin_header_parser(const u8 *fwdata, size_t fwsize)
 		 * SRAM_addr : size : BIN_addr : crc (16-bytes)
 		 */
 		if ((list >= ilm_dlm_num) && (list < (ilm_dlm_num + info_sec_num))) {
-			if (find_bin_header == 0) {
-				/* others partition located at 0x30 offset */
-				pos = 0x30 + (0x10 * (list - ilm_dlm_num));
-			} else if (find_bin_header && cascade_2nd_header_info) {
-				/* cascade 2nd header info */
-				pos = end - 0x10;
-			}
+			/* others partition located at 0x30 offset */
+			pos = 0x30 + (0x10 * (list - ilm_dlm_num));
 
 			bin_map[list].SRAM_addr = byte_to_word(&fwdata[pos]);
 			bin_map[list].size = byte_to_word(&fwdata[pos+4]);
@@ -251,9 +229,8 @@ static int32_t nvt_bin_header_parser(const u8 *fwdata, size_t fwsize)
 				}
 			} //ts->hw_crc
 			/* detect header end to protect parser function */
-			if ((bin_map[list].BIN_addr < end) && (bin_map[list].size != 0)) {
+			if ((bin_map[list].BIN_addr == 0) && (bin_map[list].size != 0)) {
 				sprintf(bin_map[list].name, "Header");
-				find_bin_header = 1;
 			} else {
 				sprintf(bin_map[list].name, "Info-%d", (list - ilm_dlm_num));
 			}
@@ -322,7 +299,7 @@ Description:
 return:
 	Executive outcomes. 0---succeed. -1,-22---failed.
 *******************************************************/
-static int32_t update_firmware_request(const char *filename)
+static int32_t update_firmware_request(char *filename)
 {
 	uint8_t retry = 0;
 	int32_t ret = 0;
@@ -827,37 +804,17 @@ static int32_t nvt_download_firmware_hw_crc(void)
 	uint8_t retry = 0;
 	int32_t ret = 0;
 
-	start = ktime_get();
+	do_gettimeofday(&start);
 
 	while (1) {
 		/* bootloader reset to reset MCU */
 		nvt_bootloader_reset();
 
-		/* set ilm & dlm reg bank */
-		nvt_set_bld_hw_crc();
-
 		/* Start to write firmware process */
-		if (cascade_2nd_header_info) {
-			/* for cascade */
-			nvt_tx_auto_copy_mode();
-
-			ret = nvt_write_firmware(fw_entry->data, fw_entry->size);
-			if (ret) {
-				NVT_ERR("Write_Firmware failed. (%d)\n", ret);
-				goto fail;
-			}
-
-			ret = nvt_check_spi_dma_tx_info();
-			if (ret) {
-				NVT_ERR("spi dma tx info failed. (%d)\n", ret);
-				goto fail;
-			}
-		} else {
-			ret = nvt_write_firmware(fw_entry->data, fw_entry->size);
-			if (ret) {
-				NVT_ERR("Write_Firmware failed. (%d)\n", ret);
-				goto fail;
-			}
+		ret = nvt_write_firmware(fw_entry->data, fw_entry->size);
+		if (ret) {
+			NVT_ERR("Write_Firmware failed. (%d)\n", ret);
+			goto fail;
 		}
 
 #if NVT_DUMP_PARTITION
@@ -866,6 +823,9 @@ static int32_t nvt_download_firmware_hw_crc(void)
 			NVT_ERR("nvt_dump_partition failed, ret = %d\n", ret);
 		}
 #endif
+
+		/* set ilm & dlm reg bank */
+		nvt_set_bld_hw_crc();
 
 		/* enable hw bld crc function */
 		nvt_bld_crc_enable();
@@ -893,7 +853,7 @@ fail:
 		}
 	}
 
-	end = ktime_get();
+	do_gettimeofday(&end);
 
 	return ret;
 }
@@ -911,7 +871,7 @@ static int32_t nvt_download_firmware(void)
 	uint8_t retry = 0;
 	int32_t ret = 0;
 
-	start = ktime_get();
+	do_gettimeofday(&start);
 
 	while (1) {
 		/*
@@ -972,7 +932,7 @@ fail:
 		}
 	}
 
-	end = ktime_get();
+	do_gettimeofday(&end);
 
 	return ret;
 }
@@ -984,7 +944,7 @@ Description:
 return:
 	n.a.
 *******************************************************/
-int32_t nvt_update_firmware(const char *firmware_name)
+int32_t nvt_update_firmware(char *firmware_name)
 {
 	int32_t ret = 0;
 
@@ -1013,7 +973,7 @@ int32_t nvt_update_firmware(const char *firmware_name)
 	}
 
 	NVT_LOG("Update firmware success! <%ld us>\n",
-			(long) ktime_us_delta(end, start));
+			(end.tv_sec - start.tv_sec)*1000000L + (end.tv_usec - start.tv_usec));
 
 	/* Get FW Info */
 	ret = nvt_get_fw_info();
@@ -1043,17 +1003,8 @@ return:
 *******************************************************/
 void Boot_Update_Firmware(struct work_struct *work)
 {
-	nvt_match_fw();
 	mutex_lock(&ts->lock);
-	if (nvt_get_dbgfw_status()) {
-		if (nvt_update_firmware(DEFAULT_DEBUG_FW_NAME) < 0) {
-			NVT_ERR("use built-in fw");
-			nvt_update_firmware(ts->fw_name);
-		}
-	} else {
-		nvt_update_firmware(ts->fw_name);
-	}
-	nvt_get_fw_info();
+	nvt_update_firmware(BOOT_UPDATE_FIRMWARE_NAME);
 	mutex_unlock(&ts->lock);
 }
 #endif /* BOOT_UPDATE_FIRMWARE */

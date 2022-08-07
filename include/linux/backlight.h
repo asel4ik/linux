@@ -83,6 +83,14 @@ enum backlight_notification {
 	BACKLIGHT_UNREGISTERED,
 };
 
+enum backlight_hbm_mode {
+	HBM_MODE_UN_SET,
+	HBM_MODE_DEFAULT = 1,
+	HBM_MODE_LEVEL1,	//CURRENT = HBM_MODE_DEFAULT*112.5%
+	HBM_MODE_LEVEL2,	//CURRENT = HBM_MODE_DEFAULT*125%
+	HBM_MODE_LEVEL_MAX
+};
+
 /** enum backlight_scale - the type of scale used for brightness values
  *
  * The type of scale used for brightness values.

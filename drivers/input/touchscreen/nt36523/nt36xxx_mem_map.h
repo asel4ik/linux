@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2010 - 2018 Novatek, Inc.
- * Copyright (C) 2021 XiaoMi, Inc.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
- * $Revision: 57674 $
- * $Date: 2020-03-02 11:16:20 +0800 (週一, 02 三月 2020) $
+ * $Revision: 64629 $
+ * $Date: 2020-06-18 14:53:58 +0800 (周四, 18 6月 2020) $
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
  * more details.
  *
  */
-
 #define CHIP_VER_TRIM_ADDR 0x3F004
 #define CHIP_VER_TRIM_OLD_ADDR 0x1F64E
 
@@ -32,29 +31,11 @@ struct nvt_ts_mem_map {
 	uint32_t RAW_BTN_PIPE1_ADDR;
 	uint32_t DIFF_BTN_PIPE0_ADDR;
 	uint32_t DIFF_BTN_PIPE1_ADDR;
-	uint32_t PEN_2D_BL_TIP_X_ADDR;
-	uint32_t PEN_2D_BL_TIP_Y_ADDR;
-	uint32_t PEN_2D_BL_RING_X_ADDR;
-	uint32_t PEN_2D_BL_RING_Y_ADDR;
-	uint32_t PEN_2D_DIFF_TIP_X_ADDR;
-	uint32_t PEN_2D_DIFF_TIP_Y_ADDR;
-	uint32_t PEN_2D_DIFF_RING_X_ADDR;
-	uint32_t PEN_2D_DIFF_RING_Y_ADDR;
-	uint32_t PEN_2D_RAW_TIP_X_ADDR;
-	uint32_t PEN_2D_RAW_TIP_Y_ADDR;
-	uint32_t PEN_2D_RAW_RING_X_ADDR;
-	uint32_t PEN_2D_RAW_RING_Y_ADDR;
-	uint32_t PEN_1D_DIFF_TIP_X_ADDR;
-	uint32_t PEN_1D_DIFF_TIP_Y_ADDR;
-	uint32_t PEN_1D_DIFF_RING_X_ADDR;
-	uint32_t PEN_1D_DIFF_RING_Y_ADDR;
 	uint32_t READ_FLASH_CHECKSUM_ADDR;
 	uint32_t RW_FLASH_DATA_ADDR;
 	/* Phase 2 Host Download */
 	uint32_t BOOT_RDY_ADDR;
 	uint32_t POR_CD_ADDR;
-	uint32_t TX_AUTO_COPY_EN;
-	uint32_t SPI_DMA_TX_INFO;
 	/* BLD CRC */
 	uint32_t BLD_LENGTH_ADDR;
 	uint32_t ILM_LENGTH_ADDR;
@@ -70,64 +51,11 @@ struct nvt_ts_mem_map {
 	uint32_t DMA_CRC_EN_ADDR;
 	uint32_t BLD_ILM_DLM_CRC_ADDR;
 	uint32_t DMA_CRC_FLAG_ADDR;
-	uint32_t FW_HISTORY_ADDR;
 };
 
 struct nvt_ts_hw_info {
 	uint8_t carrier_system;
 	uint8_t hw_crc;
-};
-
-static const struct nvt_ts_mem_map NT36523_memory_map = {
-	.EVENT_BUF_ADDR           = 0x2FE00,
-	.RAW_PIPE0_ADDR           = 0x30FA0,
-	.RAW_PIPE1_ADDR           = 0x30FA0,
-	.BASELINE_ADDR            = 0x36510,
-	.BASELINE_BTN_ADDR        = 0,
-	.DIFF_PIPE0_ADDR          = 0x373E8,
-	.DIFF_PIPE1_ADDR          = 0x38068,
-	.RAW_BTN_PIPE0_ADDR       = 0,
-	.RAW_BTN_PIPE1_ADDR       = 0,
-	.DIFF_BTN_PIPE0_ADDR      = 0,
-	.DIFF_BTN_PIPE1_ADDR      = 0,
-	.PEN_2D_BL_TIP_X_ADDR     = 0x2988A,
-	.PEN_2D_BL_TIP_Y_ADDR     = 0x29A1A,
-	.PEN_2D_BL_RING_X_ADDR    = 0x29BAA,
-	.PEN_2D_BL_RING_Y_ADDR    = 0x29D3A,
-	.PEN_2D_DIFF_TIP_X_ADDR   = 0x29ECA,
-	.PEN_2D_DIFF_TIP_Y_ADDR   = 0x2A05A,
-	.PEN_2D_DIFF_RING_X_ADDR  = 0x2A1EA,
-	.PEN_2D_DIFF_RING_Y_ADDR  = 0x2A37A,
-	.PEN_2D_RAW_TIP_X_ADDR    = 0x2A50A,
-	.PEN_2D_RAW_TIP_Y_ADDR    = 0x2A69A,
-	.PEN_2D_RAW_RING_X_ADDR   = 0x2A82A,
-	.PEN_2D_RAW_RING_Y_ADDR   = 0x2A9BA,
-	.PEN_1D_DIFF_TIP_X_ADDR   = 0x2AB4A,
-	.PEN_1D_DIFF_TIP_Y_ADDR   = 0x2ABAE,
-	.PEN_1D_DIFF_RING_X_ADDR  = 0x2AC12,
-	.PEN_1D_DIFF_RING_Y_ADDR  = 0x2AC76,
-	.READ_FLASH_CHECKSUM_ADDR = 0x24000,
-	.RW_FLASH_DATA_ADDR       = 0x24002,
-	/* Phase 2 Host Download */
-	.BOOT_RDY_ADDR            = 0x3F10D,
-	.TX_AUTO_COPY_EN          = 0x3F7E8,
-	.SPI_DMA_TX_INFO          = 0x3F7F1,
-	/* BLD CRC */
-	.BLD_LENGTH_ADDR          = 0x3F138,	//0x3F138 ~ 0x3F13A	(3 bytes)
-	.ILM_LENGTH_ADDR          = 0x3F118,	//0x3F118 ~ 0x3F11A	(3 bytes)
-	.DLM_LENGTH_ADDR          = 0x3F130,	//0x3F130 ~ 0x3F132	(3 bytes)
-	.BLD_DES_ADDR             = 0x3F114,	//0x3F114 ~ 0x3F116	(3 bytes)
-	.ILM_DES_ADDR             = 0x3F128,	//0x3F128 ~ 0x3F12A	(3 bytes)
-	.DLM_DES_ADDR             = 0x3F12C,	//0x3F12C ~ 0x3F12E	(3 bytes)
-	.G_ILM_CHECKSUM_ADDR      = 0x3F100,	//0x3F100 ~ 0x3F103	(4 bytes)
-	.G_DLM_CHECKSUM_ADDR      = 0x3F104,	//0x3F104 ~ 0x3F107	(4 bytes)
-	.R_ILM_CHECKSUM_ADDR      = 0x3F120,	//0x3F120 ~ 0x3F123 (4 bytes)
-	.R_DLM_CHECKSUM_ADDR      = 0x3F124,	//0x3F124 ~ 0x3F127 (4 bytes)
-	.BLD_CRC_EN_ADDR          = 0x3F30E,
-	.DMA_CRC_EN_ADDR          = 0x3F136,
-	.BLD_ILM_DLM_CRC_ADDR     = 0x3F133,
-	.DMA_CRC_FLAG_ADDR        = 0x3F134,
-	.FW_HISTORY_ADDR          = 0x38D54,
 };
 
 static const struct nvt_ts_mem_map NT36526_memory_map = {
@@ -196,7 +124,6 @@ static const struct nvt_ts_mem_map NT36675_memory_map = {
 	.BLD_ILM_DLM_CRC_ADDR     = 0x3F133,
 	.DMA_CRC_FLAG_ADDR        = 0x3F134,
 };
-
 
 static const struct nvt_ts_mem_map NT36672A_memory_map = {
 	.EVENT_BUF_ADDR           = 0x21C00,
@@ -289,11 +216,6 @@ static const struct nvt_ts_mem_map NT36676F_memory_map = {
 	.RW_FLASH_DATA_ADDR       = 0x14002,
 };
 
-static struct nvt_ts_hw_info NT36523_hw_info = {
-	.carrier_system = 2,
-	.hw_crc         = 2,
-};
-
 static struct nvt_ts_hw_info NT36526_hw_info = {
 	.carrier_system = 2,
 	.hw_crc         = 2,
@@ -333,16 +255,14 @@ struct nvt_ts_trim_id_table {
 };
 
 static const struct nvt_ts_trim_id_table trim_id_table[] = {
-	{.id = {0x20, 0xFF, 0xFF, 0x23, 0x65, 0x03}, .mask = {1, 0, 0, 1, 1, 1},
-		.mmap = &NT36523_memory_map,  .hwinfo = &NT36523_hw_info},
-	{.id = {0x0C, 0xFF, 0xFF, 0x23, 0x65, 0x03}, .mask = {1, 0, 0, 1, 1, 1},
-		.mmap = &NT36523_memory_map,  .hwinfo = &NT36523_hw_info},
-	{.id = {0x0B, 0xFF, 0xFF, 0x23, 0x65, 0x03}, .mask = {1, 0, 0, 1, 1, 1},
-		.mmap = &NT36523_memory_map,  .hwinfo = &NT36523_hw_info},
-	{.id = {0x0A, 0xFF, 0xFF, 0x23, 0x65, 0x03}, .mask = {1, 0, 0, 1, 1, 1},
-		.mmap = &NT36523_memory_map,  .hwinfo = &NT36523_hw_info},
-	{.id = {0xFF, 0xFF, 0xFF, 0x23, 0x65, 0x03}, .mask = {0, 0, 0, 1, 1, 1},
-		.mmap = &NT36523_memory_map,  .hwinfo = &NT36523_hw_info},
+	{.id = {0x20, 0xFF, 0xFF, 0x72, 0x66, 0x03}, .mask = {1, 0, 0, 1, 1, 1},
+		.mmap = &NT36675_memory_map,  .hwinfo = &NT36675_hw_info},
+	{.id = {0x00, 0xFF, 0xFF, 0x80, 0x66, 0x03}, .mask = {1, 0, 0, 1, 1, 1},
+		.mmap = &NT36675_memory_map,  .hwinfo = &NT36675_hw_info},
+	{.id = {0x0C, 0xFF, 0xFF, 0x25, 0x65, 0x03}, .mask = {1, 0, 0, 1, 1, 1},
+		.mmap = &NT36672A_memory_map, .hwinfo = &NT36672A_hw_info},
+	{.id = {0x0E, 0xFF, 0xFF, 0x72, 0x66, 0x03}, .mask = {1, 0, 0, 1, 1, 1},
+		.mmap = &NT36675_memory_map,  .hwinfo = &NT36675_hw_info},
 	{.id = {0x0C, 0xFF, 0xFF, 0x72, 0x66, 0x03}, .mask = {1, 0, 0, 1, 1, 1},
 		.mmap = &NT36675_memory_map,  .hwinfo = &NT36675_hw_info},
 	{.id = {0xFF, 0xFF, 0xFF, 0x26, 0x65, 0x03}, .mask = {0, 0, 0, 1, 1, 1},

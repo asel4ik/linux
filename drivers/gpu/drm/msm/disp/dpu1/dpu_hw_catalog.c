@@ -323,7 +323,7 @@ static const struct dpu_caps sm6115_dpu_caps = {
 	.ubwc_version = DPU_HW_UBWC_VER_10,
 	.has_dim_layer = true,
 	.has_idle_pc = true,
-	.max_linewidth = 2160,
+	.max_linewidth = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
 };
 
@@ -1917,8 +1917,10 @@ static void sm6115_cfg_init(struct dpu_mdss_cfg *dpu_cfg)
 		.pingpong = qcm2290_pp,
 		.intf_count = ARRAY_SIZE(qcm2290_intf),
 		.intf = qcm2290_intf,
-		.vbif_count = ARRAY_SIZE(sm6115_vbif),
-		.vbif = sm6115_vbif,
+		.vbif_count = ARRAY_SIZE(sdm845_vbif),
+		.vbif = sdm845_vbif,
+		.reg_dma_count = 1,
+		.dma_cfg = sdm845_regdma,
 		.perf = sm6115_perf_data,
 		.mdss_irqs = IRQ_SC7180_MASK,
 	};

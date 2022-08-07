@@ -1410,7 +1410,7 @@
 				    "cx_dbgc";
 			interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;
 			
-			//iommus = <&adreno_smmu 0 0x401>;
+			iommus = <&adreno_smmu 0 1>;
 			
 			operating-points-v2 = <&gpu_opp_table>;
 
@@ -1423,62 +1423,66 @@
 			<&gcc GCC_GPU_MEMNOC_GFX_CLK>,
 			<&gpucc GPU_CC_CX_GMU_CLK>,
 			<&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>;
-			
 			clock-names = "core", "rbbmtimer", "mem",
 				"iface", "mem_iface", "gmu",
 				"smmu_vote";
 			
+			 power-domains = <&gpucc GPU_GX_GDSC>;
+			 power-domain-names = "gx";
+			 
 			status = "disabled";
 			gpu_opp_table: opp-table {
 				compatible = "operating-points-v2";
 
 				opp-320000000 {
 					opp-hz = /bits/ 64 <320000000>;
-					opp-level = <RPM_SMD_LEVEL_LOW_SVS>;
-					opp-supported-hw = <0xff>;
+					opp-level = <RPM_SMD_LEVEL_NOM>;
+					//opp-level = <RPM_SMD_LEVEL_LOW_SVS>;
+					//opp-supported-hw = <0xff>;
 				};
-
+/*
 				opp-465000000 {
 					opp-hz = /bits/ 64 <465000000>;
 					opp-level = <RPM_SMD_LEVEL_SVS>;
-					opp-supported-hw = <0xff>;
+				//	opp-supported-hw = <0xff>;
 				};
 
 				opp-600000000 {
 					opp-hz = /bits/ 64 <600000000>;
 					opp-level = <RPM_SMD_LEVEL_SVS_PLUS>;
-					opp-supported-hw = <0xff>;
+				//	opp-supported-hw = <0xff>;
 				};
 
 				opp-745000000 {
 					opp-hz = /bits/ 64 <745000000>;
 					opp-level = <RPM_SMD_LEVEL_NOM>;
-					opp-supported-hw = <0xff>;
+					//opp-supported-hw = <0xff>;
 				};
 
 				opp-820000000 {
 					opp-hz = /bits/ 64 <820000000>;
 					opp-level = <RPM_SMD_LEVEL_NOM_PLUS>;
-					opp-supported-hw = <0xff>;
+					//opp-supported-hw = <0xff>;
 				};
 
 				opp-900000000 {
 					opp-hz = /bits/ 64 <900000000>;
 					opp-level = <RPM_SMD_LEVEL_TURBO>;
-					opp-supported-hw = <0xff>;
+					//opp-supported-hw = <0xff>;
 				};
 
 				opp-980000000 {
 					opp-hz = /bits/ 64 <980000000>;
 					opp-level = <RPM_SMD_LEVEL_TURBO_NO_CPR>;
-					opp-supported-hw = <0xff>;
+					//opp-supported-hw = <0xff>;
 				};
+				*/
 			};
 		};
 
 		/* SMMU HLOS1 clock removed */
 		adreno_smmu: iommu@59a0000 {
-			compatible = "qcom,sm6115-smmu-500", "qcom,adreno-smmu", "arm,mmu-500";
+			compatible = "qcom,sm8150-smmu-500", "arm,mmu-500";
 			reg = <0x59a0000 0x10000>;
 			#iommu-cells = <2>;
 			#global-interrupts = <1>;
@@ -1496,15 +1500,11 @@
 				
 			clocks = <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
 				 <&gcc GCC_GPU_SNOC_DVM_GFX_CLK>,
-				 <&gpucc GPU_CC_AHB_CLK>,
-				 <&gpucc GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK>,
-				 <&gcc GCC_BIMC_GPU_AXI_CLK>;
+				 <&gpucc GPU_CC_AHB_CLK>;
+				
 			 
-			clock-names = "gcc_gpu_memnoc_gfx",
-			      "gcc_gpu_snoc_dvm_gfx",
-			      "gpu_cc_ahb",
-			      "gpu_cc_hlos1_vote_gpu_smmu_clk",
-			      "mem_clk";
+			clock-names = "bus", "iface", "ahb";
+			      
 			      
 			power-domains = <&gpucc GPU_CX_GDSC>;
 		};
@@ -1522,7 +1522,7 @@
 			clock-names = "iface", "bus", "core";
 			
 			assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>;
-			assigned-clock-rates = <256000000>;
+			assigned-clock-rates = <307200000>;
 
 			interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-controller;
@@ -1555,11 +1555,11 @@
 				assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>,
 						  <&dispcc DISP_CC_MDSS_VSYNC_CLK>,
 						  <&dispcc DISP_CC_MDSS_ROT_CLK>,
-						  <&dispcc DISP_CC_MDSS_AHB_CLK>;
+						  <&dispcc DISP_CC_MDSS_MDP_LUT_CLK>;
 				assigned-clock-rates = <256000000>,
 						       <19200000>,
-						       <19200000>,
-						       <19200000>;
+						       <192000000>,
+						       <192000000>;
 
 				operating-points-v2 = <&mdp_opp_table>;
 				power-domains = <&rpmpd SM6115_VDDCX>;

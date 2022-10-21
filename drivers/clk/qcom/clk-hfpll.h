@@ -28,8 +28,21 @@ struct hfpll_data {
 	unsigned long max_rate;
 };
 
+struct hfpll_config {
+ 	bool mn_en;
+	bool vco_val;
+	bool pre_div_val;
+	u32 post_div_val;
+	bool out_inv_en;
+	bool early_output_en;
+	bool aux2_output_en;
+	bool aux_output_en;
+	bool main_output_en;
+};
+
 struct clk_hfpll {
 	struct hfpll_data const *d;
+	struct hfpll_config const *c;
 	int init_done;
 
 	struct clk_regmap clkr;

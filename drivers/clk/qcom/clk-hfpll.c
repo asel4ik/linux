@@ -16,11 +16,23 @@
 #define PLL_BYPASSNL	BIT(1)
 #define PLL_RESET_N	BIT(2)
 
+/* Layout of PLL_USER_CTL register */
+#define MN_EN_MASK BIT(24)
+#define VCO_SEL_BIT BIT(20)
+#define PRE_DIV_BIT BIT(12)
+#define POST_DIV_MASK GENMASK(9,8)
+#define OUTPUT_INV_BIT BIT(7)
+#define PLLOUT_EARLY_BIT BIT(3)
+#define PLLOUT_AUX2_BIT BIT(2)
+#define PLLOUT_AUX_BIT BIT(1)
+#define PLLOUT_MAIN_BIT BIT(0)
+
 /* Initialize a HFPLL at a given rate and enable it. */
 static void __clk_hfpll_init_once(struct clk_hw *hw)
 {
 	struct clk_hfpll *h = to_clk_hfpll(hw);
 	struct hfpll_data const *hd = h->d;
+	struct hfpll_config const *hc = hd->c;
 	struct regmap *regmap = h->clkr.regmap;
 
 	if (likely(h->init_done))
@@ -29,21 +41,41 @@ static void __clk_hfpll_init_once(struct clk_hw *hw)
 	/* Configure PLL parameters for integer mode. */
 	if (hd->config_val)
 		regmap_write(regmap, hd->config_reg, hd->config_val);
+	/* Write M and N only if MN_EN is enabled. */
+	if (hc->mn_en) {
 	regmap_write(regmap, hd->m_reg, 0);
 	regmap_write(regmap, hd->n_reg, 1);
-
+	};
+	
 	if (hd->user_reg) {
-		u32 regval = hd->user_val;
+		
+		u32 val;
+		if(hc->mn_en)
+			val |= MN_EN_MASK;
+		if(hc->vco_val)
+			val|= VCO_SEL_BIT;
+		if(hc->pre_div_val)
+			val|= PRE_DIV_BIT;
+		if(hc->out_inv_en)
+			val|= OUTPUT_INV_BIT;
+		if(hc->early_output_en)
+			val|= PLLOUT_EARLY_BIT;
+		if(hc->aux2_output_en)
+			val|= PLLOUT_AUX2_BIT;
+		if(hc->aux_output_en)
+			val|= PLLOUT_AUX_BIT;
+		if(hc->main_output_en)
+			val|= PLLOUT_MAIN_BIT;
+		 regmap_write(regmap, hd->user_reg, val);
+		if(hc->post_div_val)
+		regmap_update_bits(regmap, hd->user_reg, POST_DIV_MASK, hc->post_div_val);
+		
 		unsigned long rate;
-
 		rate = clk_hw_get_rate(hw);
-
 		/* Pick the right VCO. */
 		if (hd->user_vco_mask && rate > hd->low_vco_max_rate)
-			regval |= hd->user_vco_mask;
-		regmap_write(regmap, hd->user_reg, regval);
+			regmap_update_bits(regmap, hd->user_reg, VCO_SEL_BIT, 1);
 	}
-
 	if (hd->droop_reg)
 		regmap_write(regmap, hd->droop_reg, hd->droop_val);
 

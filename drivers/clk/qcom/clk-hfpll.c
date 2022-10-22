@@ -32,7 +32,7 @@ static void __clk_hfpll_init_once(struct clk_hw *hw)
 {
 	struct clk_hfpll *h = to_clk_hfpll(hw);
 	struct hfpll_data const *hd = h->d;
-	struct hfpll_config const *hc = hd->c;
+	struct hfpll_config const *hc = &hd->c;
 	struct regmap *regmap = h->clkr.regmap;
 
 	if (likely(h->init_done))
@@ -66,6 +66,14 @@ static void __clk_hfpll_init_once(struct clk_hw *hw)
 			val|= PLLOUT_AUX_BIT;
 		if(hc->main_output_en)
 			val|= PLLOUT_MAIN_BIT;
+			
+		pr_err("mn_en: %d",hc->mn_en);	
+		pr_err("vco_val: %d",hc->vco_val);	
+		pr_err("pre_div_val: %d",hc->pre_div_val);
+		pr_err("early_output_en: %d",hc->early_output_en);
+		pr_err("hc->post_div_val: %d",hc->post_div_val);
+		while(1);
+		
 		 regmap_write(regmap, hd->user_reg, val);
 		if(hc->post_div_val)
 		regmap_update_bits(regmap, hd->user_reg, POST_DIV_MASK, hc->post_div_val);

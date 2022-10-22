@@ -24,16 +24,36 @@ static const struct hfpll_data hdata = {
 	.config_val = 0x430405d,
 	.status_reg = 0x1c,
 	.lock_bit = 16,
-
 	.user_val = 0x8,
 	.user_vco_mask = 0x100000,
 	.low_vco_max_rate = 1248000000,
 	.min_rate = 537600000UL,
 	.max_rate = 2900000000UL,
+	
+};
+
+static const struct hfpll_data msm8976_a53 = {
+	.mode_reg = 0x00,
+	.l_reg = 0x04,
+	.m_reg = 0x08,
+	.n_reg = 0x0c,
+	.user_reg = 0x10,
+	.config_reg = 0x14,
+	.config_val = 0x341600,
+	.status_reg = 0x1c,
+	.lock_bit = 16,
+	//.user_val = 0x109,
+	.c.vco_val = 1,
+	.c.post_div_val = 1,
+	.c.main_output_en = true,
+	.c.early_output_en = true,
+	.min_rate = 902400000UL,
+	.max_rate = 1478400000UL,
 };
 
 static const struct of_device_id qcom_hfpll_match_table[] = {
 	{ .compatible = "qcom,hfpll", &hdata },
+	{ .compatible = "qcom,hfpll-msm8976-a53", &msm8976_a53 },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, qcom_hfpll_match_table);

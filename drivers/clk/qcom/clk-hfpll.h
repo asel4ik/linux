@@ -39,7 +39,7 @@ struct hfpll_data {
 	unsigned long min_rate;
 	unsigned long max_rate;
 	
-	struct hfpll_config const *c;
+	struct hfpll_config const c;
 };
 
 

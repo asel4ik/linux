@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 // Copyright (c) 2018, The Linux Foundation. All rights reserved.
 
-// HF2 PLL implementation for new-gen HFPLL adaptation
-// Copyright (C) 2018 AngeloGioacchino Del Regno <kholk11@gmail.com>
-
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/regmap.h>
@@ -12,7 +9,6 @@
 #include <linux/clk-provider.h>
 #include <linux/spinlock.h>
 
-#include "common.h"
 #include "clk-regmap.h"
 #include "clk-hfpll.h"
 
@@ -20,11 +16,23 @@
 #define PLL_BYPASSNL	BIT(1)
 #define PLL_RESET_N	BIT(2)
 
+/* Layout of PLL_USER_CTL register */
+#define MN_EN_MASK BIT(24)
+#define VCO_SEL_BIT BIT(20)
+#define PRE_DIV_BIT BIT(12)
+#define POST_DIV_MASK GENMASK(9,8) // 
+#define OUTPUT_INV_BIT BIT(7)
+#define PLLOUT_EARLY_BIT BIT(3)
+#define PLLOUT_AUX2_BIT BIT(2)
+#define PLLOUT_AUX_BIT BIT(1)
+#define PLLOUT_MAIN_BIT BIT(0)
+
 /* Initialize a HFPLL at a given rate and enable it. */
 static void __clk_hfpll_init_once(struct clk_hw *hw)
 {
 	struct clk_hfpll *h = to_clk_hfpll(hw);
 	struct hfpll_data const *hd = h->d;
+	struct hfpll_config const *hc = &hd->c;
 	struct regmap *regmap = h->clkr.regmap;
 
 	if (likely(h->init_done))
@@ -33,80 +41,59 @@ static void __clk_hfpll_init_once(struct clk_hw *hw)
 	/* Configure PLL parameters for integer mode. */
 	if (hd->config_val)
 		regmap_write(regmap, hd->config_reg, hd->config_val);
+	/* Write M and N only if MN_EN is enabled. */
+	if (hc->mn_en) {
 	regmap_write(regmap, hd->m_reg, 0);
 	regmap_write(regmap, hd->n_reg, 1);
-
+	};
+	
 	if (hd->user_reg) {
-		u32 regval = hd->user_val;
+		
+		u32 val;
+		if(hc->mn_en)
+			val |= MN_EN_MASK;
+		if(hc->vco_val)
+			val|= VCO_SEL_BIT;
+		if(hc->pre_div_val)
+			val|= PRE_DIV_BIT;
+		if(hc->out_inv_en)
+			val|= OUTPUT_INV_BIT;
+		if(hc->early_output_en)
+			val|= PLLOUT_EARLY_BIT;
+		if(hc->aux2_output_en)
+			val|= PLLOUT_AUX2_BIT;
+		if(hc->aux_output_en)
+			val|= PLLOUT_AUX_BIT;
+		if(hc->main_output_en)
+			val|= PLLOUT_MAIN_BIT;
+			
+		pr_err("mn_en: %d",hc->mn_en);	
+		pr_err("vco_val: %d",hc->vco_val);	
+		pr_err("pre_div_val: %d",hc->pre_div_val);
+		pr_err("early_output_en: %d",hc->early_output_en);
+		pr_err("hc->post_div_val: %d",hc->post_div_val);
+		pr_err("register write: %x",val);
+		
+		
+		 regmap_write(regmap, hd->user_reg, val);
+		if(hc->post_div_val)
+		regmap_update_bits(regmap, hd->user_reg, POST_DIV_MASK, hc->post_div_val);
+		udelay(60);
+		int resulting;
+		regmap_read(regmap, hd->user_reg, &resulting);
+		pr_err("reading final register:%x",resulting);
+		
 		unsigned long rate;
-
 		rate = clk_hw_get_rate(hw);
-
 		/* Pick the right VCO. */
 		if (hd->user_vco_mask && rate > hd->low_vco_max_rate)
-			regval |= hd->user_vco_mask;
-		regmap_write(regmap, hd->user_reg, regval);
+			regmap_set_bits(regmap, hd->user_reg, VCO_SEL_BIT);
 	}
-
 	if (hd->droop_reg)
 		regmap_write(regmap, hd->droop_reg, hd->droop_val);
 
 	h->init_done = true;
 }
-
-static void __clk_hf2_pll_init_once(struct clk_hw *hw)
-{
-	struct clk_hfpll *h = to_clk_hfpll(hw);
-	struct hfpll_data const *hd = h->d;
-	struct regmap *regmap = h->clkr.regmap;
-	u32 regval = 0;
-
-	if (likely(h->init_done)) {
-		return;
-	}
-
-	if (hd->user_reg) {
-		regmap_read(regmap, hd->user_reg, &regval);
-
-		if (hd->post_div_mask) {
-			regval &= ~hd->post_div_mask;
-			regval |= hd->post_div_masked;
-		}
-
-		if (hd->pre_div_mask) {
-			regval &= ~hd->pre_div_mask;
-			regval |= hd->pre_div_masked;
-		}
-
-		if (hd->user_vco_mask) {
-			regval &= ~hd->user_vco_mask;
-			regval |= hd->vco_mode_masked;
-		}
-
-		if (hd->main_output_mask)
-			regval |= hd->main_output_mask;
-
-		if (hd->early_output_mask)
-			regval |= hd->early_output_mask;
-
-		regmap_write(regmap, hd->user_reg, regval);
-	}
-
-	/* Configure PLL parameters for integer mode. */
-	if (hd->config_val)
-		regmap_write(regmap, hd->config_reg, hd->config_val);
-
-	regmap_write(regmap, hd->m_reg, 0);
-	regmap_write(regmap, hd->n_reg, 0);
-
-	if (hd->l_val)
-		regmap_write(regmap, hd->l_reg, hd->l_val);
-
-	h->init_done = true;
-}
-
-
-
 
 static void __clk_hfpll_enable(struct clk_hw *hw)
 {
@@ -130,13 +117,16 @@ static void __clk_hfpll_enable(struct clk_hw *hw)
 	regmap_update_bits(regmap, hd->mode_reg, PLL_RESET_N, PLL_RESET_N);
 
 	/* Wait for PLL to lock. */
-	if (hd->status_reg) {
-		do {
-			regmap_read(regmap, hd->status_reg, &val);
-		} while (!(val & BIT(hd->lock_bit)));
-	} else {
+	if (hd->status_reg)
+		/*
+		 * Busy wait. Should never timeout, we add a timeout to
+		 * prevent any sort of stall.
+		 */
+		regmap_read_poll_timeout(regmap, hd->status_reg, val,
+					 !(val & BIT(hd->lock_bit)), 0,
+					 100 * USEC_PER_MSEC);
+	else
 		udelay(60);
-	}
 
 	/* Enable PLL output. */
 	regmap_update_bits(regmap, hd->mode_reg, PLL_OUTCTRL, PLL_OUTCTRL);
@@ -171,118 +161,6 @@ static void __clk_hfpll_disable(struct clk_hfpll *h)
 	 */
 	regmap_update_bits(regmap, hd->mode_reg,
 			   PLL_BYPASSNL | PLL_RESET_N | PLL_OUTCTRL, 0);
-			   mb();
-}
-
-static void __clk_hf2_pll_enable(struct clk_hw *hw)
-{
-	struct clk_hfpll *h = to_clk_hfpll(hw);
-	struct hfpll_data const *hd = h->d;
-	struct regmap *regmap = h->clkr.regmap;
-	u32 val, mode;
-	int count, ret;
-	bool retried = false, lock = false;
-
-begin:
-	__clk_hf2_pll_init_once(hw);
-
-	
-
-	ret = regmap_read(regmap, hd->mode_reg, &mode);
-	if (ret)
-		goto out;
-
-	/* Disable PLL bypass mode. */
-	ret = regmap_update_bits(regmap, hd->mode_reg, PLL_BYPASSNL,
-				 PLL_BYPASSNL);
-	if (ret)
-		goto out;
-
-	/*
-	 * H/W requires a 5us delay between disabling the bypass and
-	 * de-asserting the reset. Delay 10us just to be safe.
-	 */
-	mb();
-	udelay(10);
-
-	/* De-assert active-low PLL reset. */
-	ret = regmap_update_bits(regmap, hd->mode_reg, PLL_RESET_N,
-				 PLL_RESET_N);
-	if (ret)
-		goto out;
-
-	mb();
-	udelay(75);
-
-	/*
-	 * The PLL needs at least 50uS to lock, so be extremely cautious
-	 * and wait for 75uS, then check and repeat every 1uS for PLL lock.
-	 * Note that this PLL can suffer of "phantom" locking, meaning that
-	 * it shows the lock is acquired, but then spins again and retries
-	 * to get a lock (because either gets lost or bad register read),
-	 * so it's mentally sane to recheck the lock status for once after
-	 * getting a positive result. One more uS will not hurt anybody.
-	 */
-	if (hd->status_reg) {	
-		for (count = 500; count > 0; count--) {
-			ret = regmap_read(regmap, hd->status_reg, &val);
-				if (ret)
-				pr_err("WARNING: cannot read status_reg error: %d \n",ret);
-			if (val & BIT(hd->lock_bit)) {
-				if (lock)
-					goto out;
-				lock = true;
-				} else {
-				/*
-				 * Extremely paranoid branch:
-				 * If it was a phantom lock reset the lock
-				 * status so that we recheck twice, just to
-				 * be extremely sure that we will not lock
-				 * up the processors.
-				 */
-				lock = false;
-			}
-			udelay(1);
-		}
-	} else {
-		udelay(60);
-	}
-out:
-	if (!lock) {
-		if (!retried) {
-			retried = true;
-
-			/* Restore PLL disable state */
-			__clk_hfpll_disable(h);
-			udelay(75);
-
-			/* Then retry and hope for the best... */
-			goto begin;
-		}
-		pr_err("WARNING: HFPLL DID NOT LOCK!!!!\n");
-		pr_err("CLK NAME: %s\n", clk_hw_get_name(hw));
-	}
-
-	/* Enable PLL output. */
-	ret = regmap_update_bits(regmap, hd->mode_reg, PLL_OUTCTRL,
-		PLL_OUTCTRL);
-
-	mb();
-	udelay(2);
-
-}
-
-/* Enable an already-configured HF2-PLL. */
-static int clk_hf2_pll_enable(struct clk_hw *hw)
-{
-	unsigned long flags;
-	struct clk_hfpll *h = to_clk_hfpll(hw);
-
-	spin_lock_irqsave(&h->lock, flags);
-	__clk_hf2_pll_enable(hw);
-	spin_unlock_irqrestore(&h->lock, flags);
-
-	return 0;
 }
 
 static void clk_hfpll_disable(struct clk_hw *hw)
@@ -292,26 +170,6 @@ static void clk_hfpll_disable(struct clk_hw *hw)
 
 	spin_lock_irqsave(&h->lock, flags);
 	__clk_hfpll_disable(h);
-	spin_unlock_irqrestore(&h->lock, flags);
-}
-
-static void clk_hf2_pll_disable(struct clk_hw *hw)
-{
-	struct clk_hfpll *h = to_clk_hfpll(hw);
-	struct hfpll_data const *hd = h->d;
-	struct regmap *regmap = h->clkr.regmap;
-	unsigned long flags;
-
-	spin_lock_irqsave(&h->lock, flags);
-	__clk_hfpll_disable(h);
-
-	/* Park the PLL at a safe frequency to avoid undervolting on enable */
-	if (hd->safe_parking_enabled) {
-		regmap_update_bits(regmap, hd->l_reg, 0x3ff, hd->l_park_val);
-		regmap_update_bits(regmap, hd->m_reg, 0x7ffff, 0);
-		regmap_update_bits(regmap, hd->n_reg, 0x7ffff, 1);
-	}
-
 	spin_unlock_irqrestore(&h->lock, flags);
 }
 
@@ -327,27 +185,6 @@ static long clk_hfpll_round_rate(struct clk_hw *hw, unsigned long rate,
 	rrate = DIV_ROUND_UP(rate, *parent_rate) * *parent_rate;
 	if (rrate > hd->max_rate)
 		rrate -= *parent_rate;
-
-	return rrate;
-}
-
-static long clk_hf2_pll_round_rate(struct clk_hw *hw, unsigned long rate,
-				 unsigned long *parent_rate)
-{
-	struct clk_hfpll *h = to_clk_hfpll(hw);
-	struct hfpll_data const *hd = h->d;
-	unsigned long rrate;
-
-	if (!parent_rate)
-		return 0;
-
-	if (rate < hd->min_rate)
-		rate = hd->min_rate;
-	if (rate > hd->max_rate)
-		rate = hd->max_rate;
-
-	rrate = min(hd->max_rate,
-		DIV_ROUND_UP(rate, (*parent_rate)) * (*parent_rate));
 
 	return rrate;
 }
@@ -384,63 +221,10 @@ static int clk_hfpll_set_rate(struct clk_hw *hw, unsigned long rate,
 		regmap_write(regmap, hd->user_reg, val);
 	}
 
-	regmap_update_bits(regmap, hd->l_reg, 0x3ff, l_val);
-	regmap_update_bits(regmap, hd->m_reg, 0x7ffff, 0);
-	regmap_update_bits(regmap, hd->n_reg, 0x7ffff, 1);
-
-	if (enabled)
-		__clk_hfpll_enable(hw);
-
-	spin_unlock_irqrestore(&h->lock, flags);
-
-	return 0;
-}
-
-static int clk_hf2_pll_set_rate(struct clk_hw *hw, unsigned long rate,
-			      unsigned long parent_rate)
-{
-	struct clk_hfpll *h = to_clk_hfpll(hw);
-	struct hfpll_data const *hd = h->d;
-	struct regmap *regmap = h->clkr.regmap;
-	unsigned long flags;
-	u32 l_val, val, mode;
-	bool enabled;
-	u32 enable_mask = PLL_OUTCTRL | PLL_BYPASSNL | PLL_RESET_N;
-
-	if (rate < hd->min_rate)
-		rate = hd->min_rate;
-	if (rate > hd->max_rate)
-		rate = hd->max_rate;
-
-	l_val = rate / parent_rate;
-
-	spin_lock_irqsave(&h->lock, flags);
-
-	regmap_read(regmap, hd->mode_reg, &mode);
-	enabled = (mode & enable_mask) == enable_mask;
-	if (enabled)
-		__clk_hfpll_disable(h);
-
-	/* Pick the right VCO. */
-	if (hd->user_reg && hd->user_vco_val) {
-		regmap_read(regmap, hd->user_reg, &val);
-		if ( (rate <= hd->low_vco_max_rate) &&
-		     (rate >= hd->min_rate) ) {
-			val |= hd->vco_mode_masked;
-			regmap_write(regmap, hd->config_reg,
-				hd->user_vco_val);
-		} else {
-			val &= ~hd->vco_mode_masked;
-			regmap_write(regmap, hd->config_reg,
-				hd->config_val);
-		}
-		regmap_write(regmap, hd->user_reg, val);
-	}
-
 	regmap_write(regmap, hd->l_reg, l_val);
 
 	if (enabled)
-		__clk_hf2_pll_enable(hw);
+		__clk_hfpll_enable(hw);
 
 	spin_unlock_irqrestore(&h->lock, flags);
 
@@ -507,14 +291,4 @@ const struct clk_ops clk_ops_hfpll = {
 	.recalc_rate = clk_hfpll_recalc_rate,
 	.init = clk_hfpll_init,
 };
-const struct clk_ops clk_ops_hf2_pll = {
-	.enable = clk_hf2_pll_enable,
-	.disable = clk_hf2_pll_disable,
-	.is_enabled = hfpll_is_enabled,
-	.round_rate = clk_hf2_pll_round_rate,
-	.set_rate = clk_hf2_pll_set_rate,
-	.recalc_rate = clk_hfpll_recalc_rate,
-	
-};
 EXPORT_SYMBOL_GPL(clk_ops_hfpll);
-EXPORT_SYMBOL_GPL(clk_ops_hf2_pll);

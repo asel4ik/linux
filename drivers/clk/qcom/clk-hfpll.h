@@ -7,6 +7,18 @@
 #include <linux/spinlock.h>
 #include "clk-regmap.h"
 
+struct hfpll_config {
+ 	bool mn_en;
+	u32 vco_val;
+	u32 pre_div_val;
+	u32 post_div_val;
+	bool out_inv_en;
+	bool early_output_en;
+	bool aux2_output_en;
+	bool aux_output_en;
+	bool main_output_en;
+};
+
 struct hfpll_data {
 	u32 mode_reg;
 	u32 l_reg;
@@ -21,32 +33,19 @@ struct hfpll_data {
 	u32 droop_val;
 	u32 config_val;
 	u32 user_val;
-	u32 user_vco_val;
 	u32 user_vco_mask;
-	
-	/* masks */
-	u32 pre_div_mask;
-	u32 post_div_mask;
-	u32 early_output_mask;
-	u32 main_output_mask;
-
-	/* vals */
-	u32 l_val;
-	u32 pre_div_masked;
-	u32 post_div_masked;
-	u32 vco_mode_masked;
-	
 	unsigned long low_vco_max_rate;
 
 	unsigned long min_rate;
 	unsigned long max_rate;
 	
-	u32 l_park_val;
-	bool safe_parking_enabled;
+	struct hfpll_config const c;
 };
+
 
 struct clk_hfpll {
 	struct hfpll_data const *d;
+	
 	int init_done;
 
 	struct clk_regmap clkr;
@@ -57,6 +56,5 @@ struct clk_hfpll {
 	container_of(to_clk_regmap(_hw), struct clk_hfpll, clkr)
 
 extern const struct clk_ops clk_ops_hfpll;
-extern const struct clk_ops clk_ops_hf2_pll;
 
 #endif

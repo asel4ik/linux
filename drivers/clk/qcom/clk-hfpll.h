@@ -8,6 +8,7 @@
 #include "clk-regmap.h"
 
 struct hfpll_config {
+	u32 l_val;
  	bool mn_en;
 	u32 vco_val;
 	u32 pre_div_val;

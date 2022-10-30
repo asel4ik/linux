@@ -91,7 +91,8 @@ static void __clk_hfpll_init_once(struct clk_hw *hw)
 	}
 	if (hd->droop_reg)
 		regmap_write(regmap, hd->droop_reg, hd->droop_val);
-
+		
+	regmap_write(regmap, hd->l_reg, hc->l_val);
 	h->init_done = true;
 }
 

@@ -166,3 +166,5 @@ sphinx_*/
 
 # Rust analyzer configuration
 /rust-project.json
+
+fetch_stable.sh

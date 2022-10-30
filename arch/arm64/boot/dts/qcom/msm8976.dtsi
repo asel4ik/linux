@@ -217,8 +217,8 @@
 			cpu-idle-states = <&BIG_CPU_SLEEP_0 &BIG_CPU_SLEEP_1>;
 			capacity-dmips-mhz = <1830>;
 			next-level-cache = <&L2_1>;
-			//clocks = <&apcc_c1_mux>;
-			//operating-points-v2 = <&cpu_opp_table_big>;
+			clocks = <&apcc_c1_mux>;
+			operating-points-v2 = <&cpu_opp_table_big>;
 			#cooling-cells = <2>;
 			L2_1: l2-cache {
 				compatible = "arm,arch-cache";
@@ -240,8 +240,8 @@
 			cpu-idle-states = <&BIG_CPU_SLEEP_0 &BIG_CPU_SLEEP_1>;
 			capacity-dmips-mhz = <1830>;
 			next-level-cache = <&L2_1>;
-			//clocks = <&apcc_c1_mux>;
-			//operating-points-v2 = <&cpu_opp_table_big>;
+			clocks = <&apcc_c1_mux>;
+			operating-points-v2 = <&cpu_opp_table_big>;
 			#cooling-cells = <2>;
 			L1_I_101: l1-icache {
 				compatible = "arm,arch-cache";
@@ -259,8 +259,8 @@
 			cpu-idle-states = <&BIG_CPU_SLEEP_0 &BIG_CPU_SLEEP_1>;
 			capacity-dmips-mhz = <1830>;
 			next-level-cache = <&L2_1>;
-			//clocks = <&apcc_c1_mux>;
-			//operating-points-v2 = <&cpu_opp_table_big>;
+			clocks = <&apcc_c1_mux>;
+			operating-points-v2 = <&cpu_opp_table_big>;
 			#cooling-cells = <2>;
 			L1_I_102: l1-icache {
 				compatible = "arm,arch-cache";
@@ -278,8 +278,8 @@
 			cpu-idle-states = <&BIG_CPU_SLEEP_0 &BIG_CPU_SLEEP_1>;
 			capacity-dmips-mhz = <1830>;
 			next-level-cache = <&L2_1>;
-			//clocks = <&apcc_c1_mux>;
-			//operating-points-v2 = <&cpu_opp_table_big>;
+			clocks = <&apcc_c1_mux>;
+			operating-points-v2 = <&cpu_opp_table_big>;
 			#cooling-cells = <2>;
 			L1_I_103: l1-icache {
 				compatible = "arm,arch-cache";
@@ -424,32 +424,41 @@
 		
 	a53_pll: clock-controller@b116000 {
 		compatible = "qcom,hfpll-msm8976-a53";
-		reg = <0xb116000 0x30>;
+		reg = <0xb116000 0x40>;
 		clocks = <&xo_board>;
 		clock-names = "xo";
 		clock-output-names = "hfpll_a53";
 		#clock-cells = <0>;
 	};
-/*
+
 	a72_pll: clock-controller@b016000 {
-		compatible = "qcom,hfpll-msm8976-a72", "qcom,hfpll2";
+		compatible = "qcom,hfpll-msm8976-a72";
 		reg = <0xb016000 0x40>;
 		clocks = <&xo_board>;
 		clock-names = "xo";
 		clock-output-names = "hfpll_a72";
 		#clock-cells = <0>;
 	};
-	*/
+	
+	cci_pll: clock-controller@b1d0000 {
+		compatible = "qcom,hfpll-msm8976-cci";
+		reg = <0xb1d0000 0x40>;
+		clocks = <&xo_board>;
+		clock-names = "xo";
+		clock-output-names = "hfpll_cci";
+		#clock-cells = <0>;
+	};
+	
 	apm: syscon@b111000 {
 			compatible = "syscon";
 			reg = <0xb111000 0x1000>;
 		};
-	/*
+	
 	apcc_c1_mux: clock-controller@b011050 {
 			compatible = "qcom,cpu-mux-div-clock";
 			reg = <0xb011050 0x10>;
 			clocks = <&a72_pll>, <&gcc GPLL0>;
-			qcom,mux-values = <5>, <4>; //5 is main pll output 4 is aux clock=gpll0
+			qcom,mux-values = <5>, <4>; 
 			qcom,safe-div = <3>;
 			clock-output-names = "apcc-c1-mux";
 			assigned-clocks = <&apcc_c1_mux>;
@@ -457,7 +466,7 @@
 			assigned-clock-rates = <1804800000>;
 			#clock-cells = <0>;
 		};
-		*/
+		
 		apcc_c0_mux: clock-controller@b111050 {
 			compatible = "qcom,cpu-mux-div-clock";
 			reg = <0xb111050 0x10>;
@@ -470,7 +479,7 @@
 			assigned-clock-rates = <1017600000>;
 			#clock-cells = <0>;
 		};
-		/*
+		
 		cpu_opp_table_big: cpu-opp-table-big {
 		compatible = "operating-points-v2-qcom-cpu";
 		opp-shared;
@@ -496,7 +505,7 @@
 		};
 		
 	};
-*/
+
 	cpu_opp_table_little: cpu-opp-table-little {
 		compatible = "operating-points-v2";
 		opp-shared;
@@ -510,20 +519,20 @@
 		};				
 	};
 
-/*
+
 		apcc_cci_mux: clock-controller@b1d1050 {
 			compatible = "qcom,cpu-mux-div-clock";
 			reg = <0xb1d1050 0x10>;
-			clocks = <&apcc_pll>, <&gcc GPLL0>;
+			clocks = <&cci_pll>, <&gcc GPLL0>;
 			qcom,mux-values = <5>, <4>;
 			qcom,safe-div = <4>;
 			clock-output-names = "apcc-cci-mux";
 			assigned-clocks = <&apcc_cci_mux>;
-			assigned-clock-parents = <&apcc_pll>;
+			assigned-clock-parents = <&cci_pll>;
 			assigned-clock-rates = <614400000>;
 			#clock-cells = <0>;
 		};
-	*/
+	
 		
 		restart@4ab000 {
 			compatible = "qcom,pshold";
@@ -555,8 +564,8 @@
 				compatible = "qcom,msm8976-snoc-mm";
 
 				clock-names = "bus", "bus_a";
-				clocks = <&rpmcc RPM_SMD_MMSSNOC_AHB_CLK>,
-					 <&rpmcc RPM_SMD_MMSSNOC_AHB_A_CLK>;
+				clocks = <&rpmcc RPM_SMD_SYSMMNOC_CLK>,
+					 <&rpmcc RPM_SMD_SYSMMNOC_A_CLK>;
 
 				#interconnect-cells = <1>;
 			};

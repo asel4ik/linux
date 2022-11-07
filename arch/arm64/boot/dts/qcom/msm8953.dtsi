@@ -917,7 +917,7 @@
 			clock-names = "iface", "core", "xo";
 
 			power-domains = <&rpmpd MSM8953_VDDCX>;
-			operating-points-v2 = <&sdhc2_opp_table>;
+			//operating-points-v2 = <&sdhc2_opp_table>;
 
 			pinctrl-names = "default", "sleep";
 			pinctrl-0 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on>;

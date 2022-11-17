@@ -4,6 +4,7 @@
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/input/gpio-keys.h>
+#include <dt-bindings/spmi/spmi.h>
 / {
 
 	model = "Qualcomm Technologies, Inc. BENGAL IDP";
@@ -61,7 +62,7 @@
 
 };
 
-&hsusb_phy1
+&usb_1_hsphy
 {
 	vdd-supply = <&pm6125_l4>;
 	vdda-pll-supply = <&pm6125_l12>;
@@ -86,7 +87,7 @@
 	status = "okay";
 
 };
-&usb3
+&usb_1
 {
 	status = "okay";
 };
@@ -130,9 +131,6 @@ gpio-reserved-ranges = <0 4>,<14 4>;
 			};
 };
 
-&gpucc {
-	status= "disabled";
-};
 &dispcc {
 	status = "okay";
 };
@@ -195,7 +193,7 @@ gpio-reserved-ranges = <0 4>,<14 4>;
 
 
 };
-&dsi_phy0
+&dsi0_phy
 {
 	status= "okay";
 	//vcca-supply = <&pm6125_s5>; VDD_MX handled

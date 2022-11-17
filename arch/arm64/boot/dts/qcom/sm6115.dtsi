@@ -797,6 +797,11 @@
 				     <GIC_SPI 151 IRQ_TYPE_LEVEL_HIGH>;
 		};
 
+		sram@4690000 {
+			compatible = "qcom,rpm-stats";
+			reg = <0x04690000 0x10000>;
+		};
+		
 		rng: rng@1b53000 {
 			compatible = "qcom,prng-ee";
 			reg = <0x1b53000 0x1000>;

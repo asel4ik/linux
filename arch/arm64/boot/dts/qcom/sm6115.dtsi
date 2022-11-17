@@ -1059,8 +1059,8 @@
 			reg = <0x5f00000 0x20000>;
 			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
 				 <&sleep_clk>,
-				 <&dsi_phy0 0>,
-				 <&dsi_phy0 1>,
+				 <&dsi0_phy 0>,
+				 <&dsi0_phy 1>,
 				 <&gcc GCC_DISP_GPLL0_DIV_CLK_SRC>;
 			#clock-cells = <1>;
 			#reset-cells = <1>;

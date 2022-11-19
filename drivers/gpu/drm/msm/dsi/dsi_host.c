@@ -400,7 +400,7 @@ int dsi_link_clk_set_rate_6g(struct msm_dsi_host *msm_host)
 {
 	unsigned long byte_intf_rate;
 	int ret;
-
+	bool is_sm6115 = true;
 	DBG("Set clk rates: pclk=%d, byteclk=%lu",
 		msm_host->mode->clock, msm_host->byte_clk_rate);
 
@@ -419,7 +419,7 @@ int dsi_link_clk_set_rate_6g(struct msm_dsi_host *msm_host)
 
 	if (msm_host->byte_intf_clk) {
 		/* For CPHY, byte_intf_clk is same as byte_clk */
-		if (msm_host->cphy_mode)
+		if (msm_host->cphy_mode || is_sm6115)
 			byte_intf_rate = msm_host->byte_clk_rate;
 		else
 			byte_intf_rate = msm_host->byte_clk_rate / 2;

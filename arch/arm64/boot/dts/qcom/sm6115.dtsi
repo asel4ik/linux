@@ -295,6 +295,8 @@
 
 			rpmcc: clock-controller {
 				compatible = "qcom,rpmcc-sm6115", "qcom,rpmcc";
+				clocks = <&xo_board>;
+				clock-names = "xo";
 				#clock-cells = <1>;
 			};
 
@@ -573,7 +575,7 @@
 			clock-names = "cfg_ahb", "ref";
 
 			resets = <&gcc GCC_QUSB2PHY_PRIM_BCR>;
-			nvmem-cells = <&qusb2_hstx_trim>;
+			//nvmem-cells = <&qusb2_hstx_trim>;
 
 			status = "disabled";
 		};
@@ -977,7 +979,7 @@
 		};
 
 		apps_smmu: iommu@c600000 {
-			compatible = "qcom,sm6115-smmu-500", "arm,mmu-500";
+			compatible = "qcom,qcm2290-smmu-500", "arm,mmu-500";
 			reg = <0x0c600000 0x80000>;
 			#iommu-cells = <2>;
 			#global-interrupts = <1>;
@@ -1342,5 +1344,6 @@
 			     <GIC_PPI 2 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
 			     <GIC_PPI 3 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
 			     <GIC_PPI 0 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+			     clock-frequency = <19200000>;
 	};
 };

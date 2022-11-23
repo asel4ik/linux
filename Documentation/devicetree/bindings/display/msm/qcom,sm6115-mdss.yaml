@@ -57,10 +57,6 @@ patternProperties:
 
 required:
   - compatible
-  - reg
-  - reg-names
-  - clocks
-  - clock-names
 
 unevaluatedProperties: false
 

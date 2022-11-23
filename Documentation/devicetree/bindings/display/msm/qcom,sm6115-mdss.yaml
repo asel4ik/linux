@@ -151,7 +151,6 @@ examples:
             operating-points-v2 = <&dsi_opp_table>;
             power-domains = <&rpmpd SM6115_VDDCX>;
             phys = <&dsi0_phy>;
-            phy-names = "dsi";
 
             #address-cells = <1>;
             #size-cells = <0>;

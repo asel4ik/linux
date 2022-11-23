@@ -18,8 +18,8 @@ properties:
 
   reg:
     items:
-      - description: Address offset and size for mdp register set
-      - description: Address offset and size for vbif register set
+      - description: MDP register set
+      - description: VBIF register set
 
   reg-names:
     items:
@@ -28,12 +28,12 @@ properties:
 
   clocks:
     items:
-      - description: Display AXI clock from gcc
-      - description: Display AHB clock from dispcc
-      - description: Display core clock from dispcc
-      - description: Display lut clock from dispcc
-      - description: Display rotator clock from dispcc
-      - description: Display vsync clock from dispcc
+      - description: Display AXI clock
+      - description: Display AHB clock
+      - description: Display core clock
+      - description: Display lut clock
+      - description: Display rotator clock
+      - description: Display vsync clock
 
   clock-names:
     items:
@@ -43,6 +43,13 @@ properties:
       - const: lut
       - const: rot
       - const: vsync
+      
+required:
+  - compatible
+  - reg
+  - reg-names
+  - clocks
+  - clock-names
 
 unevaluatedProperties: false
 

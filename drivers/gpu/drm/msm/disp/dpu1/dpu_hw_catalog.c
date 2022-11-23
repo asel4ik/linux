@@ -494,9 +494,9 @@ static const struct dpu_mdp_cfg sm6115_mdp[] = {
 	.features = 0,
 	.highest_bank_bit = 0x1,
 	.clk_ctrls[DPU_CLK_CTRL_VIG0] = {
-		.reg_off = 0x2AC, .bit_off = 0},
+		.reg_off = 0x2ac, .bit_off = 0},
 	.clk_ctrls[DPU_CLK_CTRL_DMA0] = {
-		.reg_off = 0x2AC, .bit_off = 8},
+		.reg_off = 0x2ac, .bit_off = 8},
 	},
 };
 

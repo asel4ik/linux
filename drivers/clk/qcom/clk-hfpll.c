@@ -32,6 +32,7 @@ static void __clk_hfpll_init_once(struct clk_hw *hw)
 {
 	struct clk_hfpll *h = to_clk_hfpll(hw);
 	struct hfpll_data const *hd = h->d;
+	struct hfpll_config const *hc = &hd->c;
 	struct regmap *regmap = h->clkr.regmap;
 
 	if (likely(h->init_done))
@@ -40,15 +41,42 @@ static void __clk_hfpll_init_once(struct clk_hw *hw)
 	/* Configure PLL parameters for integer mode. */
 	if (hd->config_val)
 		regmap_write(regmap, hd->config_reg, hd->config_val);
-	regmap_write(regmap, hd->m_reg, 0);
-	regmap_write(regmap, hd->n_reg, 1);
-
+		
+	/* Write M and N only if MN_EN is enabled. */
+	if (hc->mn_en) {
+		regmap_write(regmap, hd->m_reg, 0);
+		regmap_write(regmap, hd->n_reg, 1);
+	}
 	if (hd->user_reg) {
 		u32 regval = hd->user_val;
 		unsigned long rate;
-
+		u32 val;
 		rate = clk_hw_get_rate(hw);
 
+		if(hc->mn_en)
+			val |= MN_EN_MASK;
+		if(hc->vco_val)
+			val|= VCO_SEL_BIT;
+		if(hc->pre_div_val)
+			val|= PRE_DIV_BIT;
+		if(hc->out_inv_en)
+			val|= OUTPUT_INV_BIT;
+		if(hc->early_output_en)
+			val|= PLLOUT_EARLY_BIT;
+		if(hc->aux2_output_en)
+			val|= PLLOUT_AUX2_BIT;
+		if(hc->aux_output_en)
+			val|= PLLOUT_AUX_BIT;
+		if(hc->main_output_en)
+			val|= PLLOUT_MAIN_BIT;
+
+		regmap_write(regmap, hd->user_reg, val);
+		if(hc->post_div_val)
+		regmap_update_bits(regmap, hd->user_reg, POST_DIV_MASK, hc->post_div_val);
+
+		/* Write L_VAL from conf if it exist */
+		regmap_write(regmap, hd->l_reg, hc->l_val);
+		
 		/* Pick the right VCO. */
 		if (hd->user_vco_mask && rate > hd->low_vco_max_rate)
 			regmap_set_bits(regmap, hd->user_reg, hd->user_vco_mask);

@@ -16,6 +16,17 @@
 #define PLL_BYPASSNL	BIT(1)
 #define PLL_RESET_N	BIT(2)
 
+/* Layout of PLL_USER_CTL register */
+#define MN_EN_MASK BIT(24)
+#define VCO_SEL_BIT BIT(20)
+#define PRE_DIV_BIT BIT(12)
+#define POST_DIV_MASK GENMASK(9,8) 
+#define OUTPUT_INV_BIT BIT(7)
+#define PLLOUT_EARLY_BIT BIT(3)
+#define PLLOUT_AUX2_BIT BIT(2)
+#define PLLOUT_AUX_BIT BIT(1)
+#define PLLOUT_MAIN_BIT BIT(0)
+
 /* Initialize a HFPLL at a given rate and enable it. */
 static void __clk_hfpll_init_once(struct clk_hw *hw)
 {

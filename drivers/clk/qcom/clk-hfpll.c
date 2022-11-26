@@ -40,8 +40,7 @@ static void __clk_hfpll_init_once(struct clk_hw *hw)
 
 		/* Pick the right VCO. */
 		if (hd->user_vco_mask && rate > hd->low_vco_max_rate)
-			regval |= hd->user_vco_mask;
-		regmap_write(regmap, hd->user_reg, regval);
+			regmap_set_bits(regmap, hd->user_reg, hd->user_vco_mask);
 	}
 
 	if (hd->droop_reg)
@@ -170,10 +169,9 @@ static int clk_hfpll_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (hd->user_reg && hd->user_vco_mask) {
 		regmap_read(regmap, hd->user_reg, &val);
 		if (rate <= hd->low_vco_max_rate)
-			val &= ~hd->user_vco_mask;
+			regmap_clear_bits(regmap, hd->user_reg, hd->user_vco_mask);
 		else
-			val |= hd->user_vco_mask;
-		regmap_write(regmap, hd->user_reg, val);
+			regmap_set_bits(regmap, hd->user_reg, hd->user_vco_mask);
 	}
 
 	regmap_write(regmap, hd->l_reg, l_val);

@@ -7,6 +7,19 @@
 #include <linux/spinlock.h>
 #include "clk-regmap.h"
 
+struct hfpll_config {
+ 	bool mn_en;
+ 	u32 l_val;
+	u32 vco_val;
+	u32 pre_div_val;
+	u32 post_div_val;
+	bool out_inv_en;
+	bool early_output_en;
+	bool aux2_output_en;
+	bool aux_output_en;
+	bool main_output_en;
+};
+
 struct hfpll_data {
 	u32 mode_reg;
 	u32 l_reg;
@@ -26,6 +39,7 @@ struct hfpll_data {
 
 	unsigned long min_rate;
 	unsigned long max_rate;
+	struct hfpll_config const c;
 };
 
 struct clk_hfpll {

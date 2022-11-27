@@ -3160,7 +3160,6 @@ static struct platform_driver gcc_sm7150_driver = {
 	.driver = {
 		.name = "gcc-sm7150",
 		.of_match_table = gcc_sm7150_match_table,
-		.probe_type = PROBE_FORCE_SYNCHRONOUS,
 	},
 };
 
@@ -3176,5 +3175,5 @@ static void __exit gcc_sm7150_exit(void)
 }
 module_exit(gcc_sm7150_exit);
 
-MODULE_DESCRIPTION("QTI GCC sm7150 Driver");
-MODULE_LICENSE("GPL v2");
+MODULE_DESCRIPTION("QTI GCC SM7150 Driver");
+MODULE_LICENSE("GPL");

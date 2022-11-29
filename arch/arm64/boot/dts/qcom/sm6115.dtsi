@@ -1025,7 +1025,7 @@
 			};
 		};
 
-		mdss: mdss@5e00000 {
+		mdss: display-subsystem@5e00000 {
 			compatible = "qcom,sm6115-mdss";
 			reg = <0x05e00000 0x1000>;
 			reg-names = "mdss";

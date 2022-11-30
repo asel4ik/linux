@@ -101,7 +101,7 @@
 };
 
 &cpufreq_hw {
-	status = "disabled";
+	status = "okay";
 };
 
 &sdhc_2 {

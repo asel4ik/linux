@@ -150,6 +150,10 @@ gpio-reserved-ranges = <0 4>,<14 4>;
 	status = "okay";
 };
 
+&wifi {
+	status = "okay";
+};
+
 &spmi_bus {
 
 	pmic@0 {

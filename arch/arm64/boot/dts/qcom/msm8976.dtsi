@@ -611,8 +611,7 @@
 					drive-strength = <2>;
 				};
 			};
-		};
-		
+					
 			spi1_default: spi0-default-state {
 				spi-pins {
 					pins = "gpio0", "gpio1", "gpio3";

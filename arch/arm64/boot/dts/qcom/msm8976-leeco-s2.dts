@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-
+/dts-v1/;
 #include "msm8976.dtsi"
 #include "pm8950.dtsi"
 #include "pm8004.dtsi"
@@ -75,13 +75,10 @@
 	
 	status = "okay";
 
-	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&sdc1_clk_on &sdc1_cmd_on &sdc1_data_on  &sdc1_rclk_on>;
-	pinctrl-1 = <&sdc1_clk_off &sdc1_cmd_off &sdc1_data_off &sdc1_rclk_off>;
 
 };
 
-&blsp_i2c4 {
+&blsp1_i2c4 {
 	status = "okay";
 
 	rmi4-i2c-dev@4b {
@@ -112,7 +109,7 @@
 	};
 };
 
-&blsp_i2c6 {
+&blsp2_i2c2 {
 
 	status = "okay";
 	
@@ -132,7 +129,7 @@
         };
 };
 
-&blsp_i2c8 {
+&blsp2_i2c4 {
 	status = "okay";
 	led-controller@45 {
 		#address-cells = <1>;
@@ -375,5 +372,5 @@
 			regulator-max-microvolt = <1200000>;
 		};
 	};
-
+};
 

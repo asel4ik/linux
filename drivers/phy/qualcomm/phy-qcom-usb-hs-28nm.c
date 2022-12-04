@@ -420,6 +420,7 @@ static const struct hsphy_data hsphy_data_mdm9607 = {
 
 static const struct of_device_id qcom_snps_hsphy_match[] = {
 	{ .compatible = "qcom,usb-hs-28nm-femtophy", .data = &hsphy_data_femtophy, },
+	{ .compatible = "qcom,usb-hs-28nm-generic", },
 	{ .compatible = "qcom,usb-hs-28nm-mdm9607", .data = &hsphy_data_mdm9607, },
 	{ },
 };

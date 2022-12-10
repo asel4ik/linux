@@ -13,16 +13,14 @@
 
 #include <dt-bindings/clock/qcom,gcc-msm8937.h>
 
-//#include <dt-bindings/clock/qcom,gcc-sdm429w.h>
+//#include <dt-bindings/clock/qcom,gcc-msm8937.h>
 
 #include "clk-alpha-pll.h"
 #include "clk-branch.h"
 #include "clk-pll.h"
 #include "clk-rcg.h"
-#include "clk-voter.h"
 #include "common.h"
 #include "reset.h"
-#include "vdd-level-sdm429w.h"
 
 #define F_SLEW(f, s, h, m, n, sf) { (f), (s), (2 * (h) - 1), (m), (n), (sf) }
 
@@ -3305,9 +3303,6 @@ static struct clk_branch gcc_mdss_mdp_clk = {
 	},
 };
 
-static DEFINE_CLK_VOTER(mdss_mdp_vote_clk, gcc_mdss_mdp_clk, 0);
-static DEFINE_CLK_VOTER(mdss_rotator_vote_clk, gcc_mdss_mdp_clk, 0);
-
 static struct clk_branch gcc_mdss_pclk0_clk = {
 	.halt_reg = 0x4d084,
 	.halt_check = BRANCH_HALT,
@@ -3608,20 +3603,12 @@ static struct clk_branch gcc_qdss_dap_clk = {
 	},
 };
 
-static struct clk_dummy wcnss_m_clk = {
-	.rrate = 0,
-	.hw.init = &(struct clk_init_data){
-		.name = "wcnss_m_clk",
-		.ops = &clk_dummy_ops,
-	},
-};
-
-struct clk_hw *gcc_sdm429w_hws[] = {
+struct clk_hw *gcc_msm8937_hws[] = {
 	[GPLL0_OUT_AUX] = &gpll0_out_aux.hw,
 	[GPLL6_OUT_MAIN] = &gpll6_out_main.hw,
 };
 
-static struct clk_regmap *gcc_sdm429w_clocks[] = {
+static struct clk_regmap *gcc_msm8937_clocks[] = {
 	[APSS_AHB_CLK_SRC] = &apss_ahb_clk_src.clkr,
 	[BLSP1_QUP1_I2C_APPS_CLK_SRC] = &blsp1_qup1_i2c_apps_clk_src.clkr,
 	[BLSP1_QUP1_SPI_APPS_CLK_SRC] = &blsp1_qup1_spi_apps_clk_src.clkr,
@@ -3799,7 +3786,7 @@ static struct clk_regmap *gcc_sdm429w_clocks[] = {
 	[GCC_QDSS_DAP_CLK] = &gcc_qdss_dap_clk.clkr,
 };
 
-static const struct qcom_reset_map gcc_sdm429w_resets[] = {
+static const struct qcom_reset_map gcc_msm8937_resets[] = {
 	[GCC_CAMSS_MICRO_BCR] = {0x56008},
 	[GCC_USB_FS_BCR] = {0x3F000},
 	[GCC_USB_HS_BCR] = {0x41000},
@@ -3807,7 +3794,7 @@ static const struct qcom_reset_map gcc_sdm429w_resets[] = {
 	[GCC_QUSB2_PHY_BCR] = {0x4103C},
 };
 
-static const struct regmap_config gcc_sdm429w_regmap_config = {
+static const struct regmap_config gcc_msm8937_regmap_config = {
 	.reg_bits = 32,
 	.reg_stride = 4,
 	.val_bits = 32,
@@ -3815,14 +3802,14 @@ static const struct regmap_config gcc_sdm429w_regmap_config = {
 	.fast_io = true,
 };
 
-static const struct qcom_cc_desc gcc_sdm429w_desc = {
-	.config = &gcc_sdm429w_regmap_config,
-	.clks = gcc_sdm429w_clocks,
-	.num_clks = ARRAY_SIZE(gcc_sdm429w_clocks),
-	.hwclks = gcc_sdm429w_hws,
-	.num_hwclks = ARRAY_SIZE(gcc_sdm429w_hws),
-	.resets = gcc_sdm429w_resets,
-	.num_resets = ARRAY_SIZE(gcc_sdm429w_resets),
+static const struct qcom_cc_desc gcc_msm8937_desc = {
+	.config = &gcc_msm8937_regmap_config,
+	.clks = gcc_msm8937_clocks,
+	.num_clks = ARRAY_SIZE(gcc_msm8937_clocks),
+	.hwclks = gcc_msm8937_hws,
+	.num_hwclks = ARRAY_SIZE(gcc_msm8937_hws),
+	.resets = gcc_msm8937_resets,
+	.num_resets = ARRAY_SIZE(gcc_msm8937_resets),
 };
 
 static void get_speed_bin(struct platform_device *pdev, int *bin)
@@ -3861,6 +3848,8 @@ static struct clk_init_data vcodec0_clk_src_init = {
 	.ops = &clk_rcg2_ops,	
 };
 
+
+/*
 static void fixup_for_qm215(struct platform_device *pdev,
 	struct regmap *regmap, int speed_bin)
 {
@@ -3943,18 +3932,18 @@ static void fixup_for_qm215(struct platform_device *pdev,
 	/*
 	 * Below clocks are not available on QM215, thus mark them NULL.
 	 */
-	gcc_sdm429w_desc.clks[BLSP1_QUP1_I2C_APPS_CLK_SRC] = NULL;
-	gcc_sdm429w_desc.clks[BLSP1_QUP1_SPI_APPS_CLK_SRC] = NULL;
-	gcc_sdm429w_desc.clks[BLSP2_QUP4_I2C_APPS_CLK_SRC] = NULL;
-	gcc_sdm429w_desc.clks[BLSP2_QUP4_SPI_APPS_CLK_SRC] = NULL;
-	gcc_sdm429w_desc.clks[GCC_BLSP1_QUP1_I2C_APPS_CLK] = NULL;
-	gcc_sdm429w_desc.clks[GCC_BLSP1_QUP1_SPI_APPS_CLK] = NULL;
-	gcc_sdm429w_desc.clks[GCC_BLSP2_QUP4_I2C_APPS_CLK] = NULL;
-	gcc_sdm429w_desc.clks[GCC_BLSP2_QUP4_SPI_APPS_CLK] = NULL;
-	gcc_sdm429w_desc.clks[GCC_OXILI_AON_CLK] = NULL;
-	gcc_sdm429w_desc.clks[GCC_OXILI_TIMER_CLK] = NULL;
-	gcc_sdm429w_desc.clks[ESC1_CLK_SRC] = NULL;
-	gcc_sdm429w_desc.clks[GCC_MDSS_ESC1_CLK] = NULL;
+	gcc_msm8937_desc.clks[BLSP1_QUP1_I2C_APPS_CLK_SRC] = NULL;
+	gcc_msm8937_desc.clks[BLSP1_QUP1_SPI_APPS_CLK_SRC] = NULL;
+	gcc_msm8937_desc.clks[BLSP2_QUP4_I2C_APPS_CLK_SRC] = NULL;
+	gcc_msm8937_desc.clks[BLSP2_QUP4_SPI_APPS_CLK_SRC] = NULL;
+	gcc_msm8937_desc.clks[GCC_BLSP1_QUP1_I2C_APPS_CLK] = NULL;
+	gcc_msm8937_desc.clks[GCC_BLSP1_QUP1_SPI_APPS_CLK] = NULL;
+	gcc_msm8937_desc.clks[GCC_BLSP2_QUP4_I2C_APPS_CLK] = NULL;
+	gcc_msm8937_desc.clks[GCC_BLSP2_QUP4_SPI_APPS_CLK] = NULL;
+	gcc_msm8937_desc.clks[GCC_OXILI_AON_CLK] = NULL;
+	gcc_msm8937_desc.clks[GCC_OXILI_TIMER_CLK] = NULL;
+	gcc_msm8937_desc.clks[ESC1_CLK_SRC] = NULL;
+	gcc_msm8937_desc.clks[GCC_MDSS_ESC1_CLK] = NULL;
 }
 
 static void fixup_for_sdm439_429(void)
@@ -3962,19 +3951,21 @@ static void fixup_for_sdm439_429(void)
 	/*
 	 * Below clocks are not available on SDM429/439, thus mark them NULL.
 	 */
-	gcc_sdm429w_desc.clks[GCC_GFX_TCU_CLK] = NULL;
-	gcc_sdm429w_desc.clks[GCC_GFX_TBU_CLK] = NULL;
-	gcc_sdm429w_desc.clks[GCC_GTCU_AHB_CLK] = NULL;
+	gcc_msm8937_desc.clks[GCC_GFX_TCU_CLK] = NULL;
+	gcc_msm8937_desc.clks[GCC_GFX_TBU_CLK] = NULL;
+	gcc_msm8937_desc.clks[GCC_GTCU_AHB_CLK] = NULL;
 }
-static const struct of_device_id gcc_sdm429w_match_table[] = {
-	{ .compatible = "qcom,gcc-sdm429w" },
+*/
+
+static const struct of_device_id gcc_msm8937_match_table[] = {
+	{ .compatible = "qcom,gcc-msm8937" },
 	{ .compatible = "qcom,gcc-qm215" },
 	{ .compatible = "qcom,gcc-sdm439" },
 	{ }
 };
-MODULE_DEVICE_TABLE(of, gcc_sdm429w_match_table);
+MODULE_DEVICE_TABLE(of, gcc_msm8937_match_table);
 
-static int gcc_sdm429w_probe(struct platform_device *pdev)
+static int gcc_msm8937_probe(struct platform_device *pdev)
 {
 	struct regmap *regmap;
 	struct clk *clk;
@@ -4002,7 +3993,7 @@ static int gcc_sdm429w_probe(struct platform_device *pdev)
 		return PTR_ERR(vdd_cx.regulator[0]);
 	}
 
-	regmap = qcom_cc_map(pdev, &gcc_sdm429w_desc);
+	regmap = qcom_cc_map(pdev, &gcc_msm8937_desc);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
@@ -4033,7 +4024,7 @@ static int gcc_sdm429w_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	ret = qcom_cc_really_probe(pdev, &gcc_sdm429w_desc, regmap);
+	ret = qcom_cc_really_probe(pdev, &gcc_msm8937_desc, regmap);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to register GCC clocks\n");
 		return ret;
@@ -4048,32 +4039,32 @@ static int gcc_sdm429w_probe(struct platform_device *pdev)
 	return 0;
 }
 
-static struct platform_driver gcc_sdm429w_driver = {
-	.probe = gcc_sdm429w_probe,
+static struct platform_driver gcc_msm8937_driver = {
+	.probe = gcc_msm8937_probe,
 	.driver = {
-		.name = "gcc-sdm429w",
-		.of_match_table = gcc_sdm429w_match_table,
+		.name = "gcc-msm8937",
+		.of_match_table = gcc_msm8937_match_table,
 	},
 };
 
-static int __init gcc_sdm429w_init(void)
+static int __init gcc_msm8937_init(void)
 {
-	return platform_driver_register(&gcc_sdm429w_driver);
+	return platform_driver_register(&gcc_msm8937_driver);
 }
-subsys_initcall(gcc_sdm429w_init);
+subsys_initcall(gcc_msm8937_init);
 
-static void __exit gcc_sdm429w_exit(void)
+static void __exit gcc_msm8937_exit(void)
 {
-	platform_driver_unregister(&gcc_sdm429w_driver);
+	platform_driver_unregister(&gcc_msm8937_driver);
 }
-module_exit(gcc_sdm429w_exit);
+module_exit(gcc_msm8937_exit);
 
-struct clk_hw *mdss_sdm429w_hws[] = {
+struct clk_hw *mdss_msm8937_hws[] = {
 	[MDSS_MDP_VOTE_CLK] = &mdss_mdp_vote_clk.hw,
 	[MDSS_ROTATOR_VOTE_CLK] = &mdss_rotator_vote_clk.hw,
 };
 
-static struct clk_regmap *mdss_sdm429w_clocks[] = {
+static struct clk_regmap *mdss_msm8937_clocks[] = {
 	[GCC_MDSS_BYTE0_CLK] = &gcc_mdss_byte0_clk.clkr,
 	[GCC_MDSS_BYTE1_CLK] = &gcc_mdss_byte1_clk.clkr,
 	[GCC_MDSS_PCLK0_CLK] = &gcc_mdss_pclk0_clk.clkr,
@@ -4084,12 +4075,12 @@ static struct clk_regmap *mdss_sdm429w_clocks[] = {
 	[PCLK1_CLK_SRC] = &pclk1_clk_src.clkr,
 };
 
-static const struct qcom_cc_desc mdss_sdm429w_desc = {
-	.config = &gcc_sdm429w_regmap_config,
-	.clks = mdss_sdm429w_clocks,
-	.num_clks = ARRAY_SIZE(mdss_sdm429w_clocks),
-	.hwclks = mdss_sdm429w_hws,
-	.num_hwclks = ARRAY_SIZE(mdss_sdm429w_hws),
+static const struct qcom_cc_desc mdss_msm8937_desc = {
+	.config = &gcc_msm8937_regmap_config,
+	.clks = mdss_msm8937_clocks,
+	.num_clks = ARRAY_SIZE(mdss_msm8937_clocks),
+	.hwclks = mdss_msm8937_hws,
+	.num_hwclks = ARRAY_SIZE(mdss_msm8937_hws),
 };
 
 static void fixup_for_qm215_gcc_mdss(void)
@@ -4098,21 +4089,21 @@ static void fixup_for_qm215_gcc_mdss(void)
 	 * Below clocks are not available on QM215, thus mark them NULL.
 	 */
 
-	mdss_sdm429w_desc.clks[BYTE1_CLK_SRC] = NULL;
-	mdss_sdm429w_desc.clks[PCLK1_CLK_SRC] = NULL;
-	mdss_sdm429w_desc.clks[GCC_MDSS_BYTE1_CLK] = NULL;
-	mdss_sdm429w_desc.clks[GCC_MDSS_PCLK1_CLK] = NULL;
+	mdss_msm8937_desc.clks[BYTE1_CLK_SRC] = NULL;
+	mdss_msm8937_desc.clks[PCLK1_CLK_SRC] = NULL;
+	mdss_msm8937_desc.clks[GCC_MDSS_BYTE1_CLK] = NULL;
+	mdss_msm8937_desc.clks[GCC_MDSS_PCLK1_CLK] = NULL;
 }
 
-static const struct of_device_id mdss_sdm429w_match_table[] = {
-	{ .compatible = "qcom,gcc-mdss-sdm429w" },
+static const struct of_device_id mdss_msm8937_match_table[] = {
+	{ .compatible = "qcom,gcc-mdss-msm8937" },
 	{ .compatible = "qcom,gcc-mdss-qm215" },
 	{ .compatible = "qcom,gcc-mdss-sdm439" },
 	{}
 };
-MODULE_DEVICE_TABLE(of, mdss_sdm429w_match_table);
+MODULE_DEVICE_TABLE(of, mdss_msm8937_match_table);
 
-static int mdss_sdm429w_probe(struct platform_device *pdev)
+static int mdss_msm8937_probe(struct platform_device *pdev)
 {
 	struct clk *clk;
 	struct regmap *regmap;
@@ -4151,14 +4142,14 @@ static int mdss_sdm429w_probe(struct platform_device *pdev)
 		return PTR_ERR(base);
 
 	regmap = devm_regmap_init_mmio(&pdev->dev, base,
-					mdss_sdm429w_desc.config);
+					mdss_msm8937_desc.config);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
 	if (is_qm215)
 		fixup_for_qm215_gcc_mdss();
 
-	ret = qcom_cc_really_probe(pdev, &mdss_sdm429w_desc, regmap);
+	ret = qcom_cc_really_probe(pdev, &mdss_msm8937_desc, regmap);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to register MDSS clocks\n");
 		return ret;
@@ -4169,26 +4160,26 @@ static int mdss_sdm429w_probe(struct platform_device *pdev)
 	return ret;
 }
 
-static struct platform_driver mdss_sdm429w_driver = {
-	.probe = mdss_sdm429w_probe,
+static struct platform_driver mdss_msm8937_driver = {
+	.probe = mdss_msm8937_probe,
 	.driver = {
-		.name = "gcc-mdss-sdm429w",
-		.of_match_table = mdss_sdm429w_match_table,
+		.name = "gcc-mdss-msm8937",
+		.of_match_table = mdss_msm8937_match_table,
 	},
 };
 
-static int __init mdss_sdm429w_init(void)
+static int __init mdss_msm8937_init(void)
 {
-	return platform_driver_register(&mdss_sdm429w_driver);
+	return platform_driver_register(&mdss_msm8937_driver);
 }
-subsys_initcall(mdss_sdm429w_init);
+subsys_initcall(mdss_msm8937_init);
 
-static void __exit mdss_sdm429w_exit(void)
+static void __exit mdss_msm8937_exit(void)
 {
-	platform_driver_unregister(&mdss_sdm429w_driver);
+	platform_driver_unregister(&mdss_msm8937_driver);
 }
-module_exit(mdss_sdm429w_exit);
+module_exit(mdss_msm8937_exit);
 
-MODULE_DESCRIPTION("QTI GCC sdm429w Driver");
+MODULE_DESCRIPTION("QTI GCC msm8937 Driver");
 MODULE_LICENSE("GPL v2");
 

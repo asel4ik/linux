@@ -364,7 +364,6 @@ static struct clk_alpha_pll gpll0_out_main = {
 		.hw.init = &(struct clk_init_data){
 			.name = "gpll0_out_main",
 			.parent_data = &parent_data_tcxo,
-					{ "bi_tcxo" },
 			.num_parents = 1,
 			.ops = &clk_alpha_pll_ops,
 		},
@@ -376,7 +375,9 @@ static struct clk_fixed_factor gpll0_out_aux = {
 	.div = 1,
 	.hw.init = &(struct clk_init_data){
 		.name = "gpll0_out_aux",
-		.parent_names = (const char *[]){ "gpll0_out_main" },
+		.parent_hws = (const struct clk_hw*[]) {
+			&gpll0_out_main.clkr.hw,
+		 },
 		.num_parents = 1,
 		.ops = &clk_fixed_factor_ops,
 	},
@@ -445,7 +446,9 @@ static struct clk_fixed_factor gpll3_out_main_div = {
 	.div = 2,
 	.hw.init = &(struct clk_init_data){
 		.name = "gpll3_out_main_div",
-		.parent_names = (const char *[]){ "gpll3_out_main" },
+		.parent_hws = (const struct clk_hw*[]){
+			&gpll3_out_main.clkr.hw,
+		},
 		.num_parents = 1,
 		.flags = CLK_SET_RATE_PARENT,
 		.ops = &clk_fixed_factor_ops,
@@ -492,7 +495,9 @@ static struct clk_regmap gpll6_out_aux = {
 	.enable_mask = BIT(7),
 	.hw.init = &(struct clk_init_data){
 		.name = "gpll6_out_aux",
-		.parent_names = (const char *[]){ "gpll6" },
+		.parent_hws = (const struct clk_hw*[]){
+			&gpll6.clkr.hw,
+		},
 		.num_parents = 1,
 		.ops = &clk_pll_vote_ops,
 	},
@@ -503,7 +508,9 @@ static struct clk_fixed_factor gpll6_out_main = {
 	.div = 1,
 	.hw.init = &(struct clk_init_data){
 		.name = "gpll6_out_main",
-		.parent_names = (const char *[]){ "gpll6_out_aux" },
+		.parent_hws = (const struct clk_hw*[]){
+			&gpll6_out_aux.clkr.hw,
+		},
 		.num_parents = 1,
 		.ops = &clk_fixed_factor_ops,
 	},

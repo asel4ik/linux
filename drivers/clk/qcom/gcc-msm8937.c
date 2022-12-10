@@ -55,6 +55,7 @@ enum {
 };
 
 static const struct clk_parent_data parent_data_tcxo = { .index = DT_BI_TCXO };
+static const struct clk_parent_data parent_data_tcxo_ao = { .index = DT_BI_TCXO_AO };
 
 static const struct parent_map gcc_parent_map_0[] = {
 	{ P_BI_TCXO, 0 },
@@ -342,7 +343,7 @@ static struct clk_alpha_pll gpll0_sleep_clk_src = {
 		.enable_is_inverted = true,
 		.hw.init = &(struct clk_init_data){
 			.name = "gpll0_sleep_clk_src",
-			.parent_names = (const char *[]){ "bi_tcxo" },
+			.parent_data = &parent_data_tcxo,
 			.num_parents = 1,
 			.ops = &clk_alpha_pll_ops,
 		},
@@ -362,7 +363,7 @@ static struct clk_alpha_pll gpll0_out_main = {
 		.enable_mask = BIT(0),
 		.hw.init = &(struct clk_init_data){
 			.name = "gpll0_out_main",
-			.parent_names = (const char *[])
+			.parent_data = &parent_data_tcxo,
 					{ "bi_tcxo" },
 			.num_parents = 1,
 			.ops = &clk_alpha_pll_ops,
@@ -427,7 +428,7 @@ static struct clk_alpha_pll gpll3_out_main = {
 	.clkr = {
 		.hw.init = &(struct clk_init_data){
 			.name = "gpll3_out_main",
-			.parent_names = (const char *[]){ "bi_tcxo" },
+			.parent_data = &parent_data_tcxo,
 			.num_parents = 1,
 			.ops = &clk_alpha_pll_slew_ops,
 			.vdd_class = &vdd_cx,
@@ -459,7 +460,7 @@ static struct clk_alpha_pll gpll4_out_main = {
 		.enable_mask = BIT(5),
 		.hw.init = &(struct clk_init_data){
 			.name = "gpll4_out_main",
-			.parent_names = (const char *[]){ "bi_tcxo" },
+			.parent_data = &parent_data_tcxo,
 			.num_parents = 1,
 			.ops = &clk_alpha_pll_ops,
 			.vdd_class = &vdd_cx,
@@ -480,7 +481,7 @@ static struct clk_pll gpll6 = {
 	.status_bit = 17,
 	.clkr.hw.init = &(struct clk_init_data){
 			.name = "gpll6",
-			.parent_names = (const char *[]){ "bi_tcxo" },
+			.parent_data = &parent_data_tcxo,
 			.num_parents = 1,
 			.ops = &clk_pll_ops,
 	},

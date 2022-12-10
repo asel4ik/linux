@@ -29,8 +29,16 @@
 static DEFINE_VDD_REGULATORS(vdd_cx, VDD_NUM, 1, vdd_corner);
 
 enum {
+	DT_BI_TCXO,
+	DT_DSI0_PHY_PLL_OUT_BYTECLK,
+	DT_DSI0_PHY_PLL_OUT_DSICLK,
+	DT_DSI1_PHY_PLL_OUT_BYTECLK,
+	DT_DSI1_PHY_PLL_OUT_DSICLK,
+	DT_SLEEP_CLK,
+}
+
+enum {
 	P_BI_TCXO,
-	P_CORE_BI_PLL_TEST_SE,
 	P_DSI0_PHY_PLL_OUT_BYTECLK,
 	P_DSI0_PHY_PLL_OUT_DSICLK,
 	P_DSI1_PHY_PLL_OUT_BYTECLK,
@@ -46,37 +54,33 @@ enum {
 	P_GPLL3_OUT_MAIN_DIV,
 };
 
+static const struct clk_parent_data parent_data_tcxo = { .index = DT_BI_TCXO };
+
 static const struct parent_map gcc_parent_map_0[] = {
 	{ P_BI_TCXO, 0 },
 	{ P_GPLL0_OUT_MAIN, 1 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_0[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
 };
 
 static const char * const gcc_parent_names_ao_0[] = {
-	"bi_tcxo_ao",
-	"gpll0_ao_out_main",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO_AO },
+	{ .hw = &gpll0_ao_out_main.clkr.hw },
 };
-
 
 static const struct parent_map gcc_parent_map_1[] = {
 	{ P_BI_TCXO, 0 },
 	{ P_GPLL0_OUT_MAIN, 1 },
 	{ P_GPLL6_OUT_AUX, 2 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_1[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"gpll6_out_aux",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
+	{ .hw = &gpll6_out_aux.clkr.hw },
 };
 
 static const struct parent_map gcc_parent_map_2[] = {
@@ -84,7 +88,7 @@ static const struct parent_map gcc_parent_map_2[] = {
 };
 
 static const char * const gcc_parent_names_2[] = {
-	"bi_tcxo",
+	{ .index = DT_BI_TCXO },
 };
 
 static const struct parent_map gcc_parent_map_3[] = {
@@ -95,10 +99,10 @@ static const struct parent_map gcc_parent_map_3[] = {
 };
 
 static const char * const gcc_parent_names_3[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"gpll6_out_aux",
-	"sleep_clk",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
+	{ .hw = &gpll6_out_aux.clkr.hw },
+	{ .index = DT_SLEEP_CLK},
 };
 
 static const struct parent_map gcc_parent_map_4[] = {
@@ -106,41 +110,35 @@ static const struct parent_map gcc_parent_map_4[] = {
 	{ P_GPLL0_OUT_MAIN, 1 },
 	{ P_GPLL6_OUT_MAIN, 2 },
 	{ P_SLEEP_CLK, 6 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_4[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"gpll6_out_main",
-	"sleep_clk",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
+	{ .hw = &gpll6_out_main.clkr.hw },
+	{ .index = DT_SLEEP_CLK},
 };
 
 static const struct parent_map gcc_parent_map_5[] = {
 	{ P_BI_TCXO, 0 },
 	{ P_GPLL0_OUT_MAIN, 1 },
 	{ P_GPLL6_OUT_MAIN, 2 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_5[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"gpll6_out_main",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
+	{ .hw = &gpll6_out_main.clkr.hw },
 };
 
 static const struct parent_map gcc_parent_map_6[] = {
 	{ P_BI_TCXO, 0 },
 	{ P_GPLL0_OUT_AUX, 2 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_6[] = {
-	"bi_tcxo",
-	"gpll0_out_aux",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_aux.clkr.hw },
 };
 
 static const struct parent_map gcc_parent_map_7[] = {
@@ -148,15 +146,13 @@ static const struct parent_map gcc_parent_map_7[] = {
 	{ P_GPLL0_OUT_MAIN, 1 },
 	{ P_GPLL6_OUT_MAIN, 2 },
 	{ P_GPLL4_OUT_MAIN, 3 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_7[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"gpll6_out_main",
-	"gpll4_out_main",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
+	{ .hw = &gpll6_out_main.clkr.hw },
+	{ .hw = &gpll4_out_main.clkr.hw },
 };
 
 static const struct parent_map gcc_parent_map_8[] = {
@@ -164,15 +160,13 @@ static const struct parent_map gcc_parent_map_8[] = {
 	{ P_DSI0_PHY_PLL_OUT_BYTECLK, 1 },
 	{ P_GPLL0_OUT_AUX, 2 },
 	{ P_DSI1_PHY_PLL_OUT_BYTECLK, 3 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_8[] = {
-	"bi_tcxo",
-	"dsi0_phy_pll_out_byteclk",
-	"gpll0_out_aux",
-	"dsi1_phy_pll_out_byteclk",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .index = DT_DSI0_PHY_PLL_OUT_BYTECLK},
+	{ .hw = &gpll0_out_aux.clkr.hw },
+	{ .index = DT_DSI1_PHY_PLL_OUT_BYTECLK},
 };
 
 static const struct parent_map gcc_parent_map_9[] = {
@@ -180,15 +174,13 @@ static const struct parent_map gcc_parent_map_9[] = {
 	{ P_DSI1_PHY_PLL_OUT_BYTECLK, 1 },
 	{ P_GPLL0_OUT_AUX, 2 },
 	{ P_DSI0_PHY_PLL_OUT_BYTECLK, 3 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_9[] = {
-	"bi_tcxo",
-	"dsi1_phy_pll_out_byteclk",
-	"gpll0_out_aux",
-	"dsi0_phy_pll_out_byteclk",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .index = DT_DSI1_PHY_PLL_OUT_BYTECLK},
+	{ .hw = &gpll0_out_aux.clkr.hw },
+	{ .index = DT_DSI0_PHY_PLL_OUT_BYTECLK},
 };
 
 static const struct parent_map gcc_parent_map_10[] = {
@@ -196,15 +188,13 @@ static const struct parent_map gcc_parent_map_10[] = {
 	{ P_GPLL0_OUT_MAIN, 1 },
 	{ P_GPLL6_OUT_MAIN, 2 },
 	{ P_GPLL4_OUT_AUX, 3 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_10[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"gpll6_out_main",
-	"gpll4_out_aux",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
+	{ .hw = &gpll6_out_main.clkr.hw },
+	{ .hw = &gpll4_out_aux.clkr.hw },
 };
 
 static const struct parent_map gcc_parent_map_11[] = {
@@ -212,15 +202,13 @@ static const struct parent_map gcc_parent_map_11[] = {
 	{ P_DSI0_PHY_PLL_OUT_BYTECLK, 2 },
 	{ P_GPLL0_OUT_AUX, 3 },
 	{ P_DSI1_PHY_PLL_OUT_BYTECLK, 4 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_11[] = {
-	"bi_tcxo",
-	"dsi0_phy_pll_out_byteclk",
-	"gpll0_out_aux",
-	"dsi1_phy_pll_out_byteclk",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .index = DT_DSI0_PHY_PLL_OUT_BYTECLK},
+	{ .hw = &gpll0_out_aux.clkr.hw },
+	{ .index = DT_DSI1_PHY_PLL_OUT_BYTECLK},
 };
 
 static const struct parent_map gcc_parent_map_12[] = {
@@ -228,15 +216,13 @@ static const struct parent_map gcc_parent_map_12[] = {
 	{ P_DSI1_PHY_PLL_OUT_BYTECLK, 2 },
 	{ P_GPLL0_OUT_AUX, 3 },
 	{ P_DSI0_PHY_PLL_OUT_BYTECLK, 4 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_12[] = {
-	"bi_tcxo",
-	"dsi1_phy_pll_out_byteclk",
-	"gpll0_out_aux",
-	"dsi0_phy_pll_out_byteclk",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .index = DT_DSI1_PHY_PLL_OUT_BYTECLK},
+	{ .hw = &gpll0_out_aux.clkr.hw },
+	{ .index = DT_DSI0_PHY_PLL_OUT_BYTECLK},
 };
 
 static const struct parent_map gcc_parent_map_14[] = {
@@ -245,7 +231,6 @@ static const struct parent_map gcc_parent_map_14[] = {
 	{ P_GPLL3_OUT_MAIN_DIV, 2 },
 	{ P_GPLL6_OUT_AUX, 3 },
 	{ P_GPLL4_OUT_AUX, 4 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const struct parent_map gcc_parent_map_14_gfx3d[] = {
@@ -254,16 +239,14 @@ static const struct parent_map gcc_parent_map_14_gfx3d[] = {
 	{ P_GPLL3_OUT_MAIN_DIV, 2 },
 	{ P_GPLL6_OUT_AUX, 6 },
 	{ P_GPLL4_OUT_AUX, 4 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_14[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"gpll3_out_main_div",
-	"gpll6_out_aux",
-	"gpll4_out_aux",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
+	{ .hw = &gpll3_out_main_div.clkr.hw },
+	{ .hw = &gpll6_out_aux.clkr.hw },
+	{ .hw = &gpll4_out_aux.clkr.hw },
 };
 
 static const struct parent_map gcc_parent_map_15[] = {
@@ -272,16 +255,14 @@ static const struct parent_map gcc_parent_map_15[] = {
 	{ P_DSI0_PHY_PLL_OUT_DSICLK, 2 },
 	{ P_GPLL6_OUT_AUX, 3 },
 	{ P_DSI1_PHY_PLL_OUT_DSICLK, 4 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_15[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"dsi0_phy_pll_out_dsiclk",
-	"gpll6_out_aux",
-	"dsi1_phy_pll_out_dsiclk",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
+	{ .index = DT_DSI0_PHY_PLL_OUT_DSICLK},
+	{ .hw = &gpll6_out_aux.clkr.hw },
+	{ .index = DT_DSI1_PHY_PLL_OUT_DSICLK},
 };
 
 static const struct parent_map gcc_parent_map_16[] = {
@@ -289,15 +270,13 @@ static const struct parent_map gcc_parent_map_16[] = {
 	{ P_DSI0_PHY_PLL_OUT_DSICLK, 1 },
 	{ P_GPLL0_OUT_AUX, 2 },
 	{ P_DSI1_PHY_PLL_OUT_DSICLK, 3 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_16[] = {
-	"bi_tcxo",
-	"dsi0_phy_pll_out_dsiclk",
-	"gpll0_out_aux",
-	"dsi1_phy_pll_out_dsiclk",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .index = DT_DSI0_PHY_PLL_OUT_DSICLK},
+	{ .hw = &gpll0_out_aux.clkr.hw },
+	{ .index = DT_DSI1_PHY_PLL_OUT_DSICLK},
 };
 
 static const struct parent_map gcc_parent_map_17[] = {
@@ -305,15 +284,13 @@ static const struct parent_map gcc_parent_map_17[] = {
 	{ P_DSI1_PHY_PLL_OUT_DSICLK, 1 },
 	{ P_GPLL0_OUT_AUX, 2 },
 	{ P_DSI0_PHY_PLL_OUT_DSICLK, 3 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_17[] = {
-	"bi_tcxo",
-	"dsi1_phy_pll_out_dsiclk",
-	"gpll0_out_aux",
-	"dsi0_phy_pll_out_dsiclk",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .index = DT_DSI1_PHY_PLL_OUT_DSICLK},
+	{ .hw = &gpll0_out_aux.clkr.hw },
+	{ .index = DT_DSI0_PHY_PLL_OUT_DSICLK},
 };
 
 static const struct parent_map gcc_parent_map_18[] = {
@@ -321,29 +298,25 @@ static const struct parent_map gcc_parent_map_18[] = {
 	{ P_GPLL0_OUT_MAIN, 1 },
 	{ P_GPLL4_OUT_MAIN, 2 },
 	{ P_GPLL6_OUT_AUX, 3 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_18[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"gpll4_out_main",
-	"gpll6_out_aux",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
+	{ .hw = &gpll4_out_main.clkr.hw },
+	{ .hw = &gpll6_out_aux.clkr.hw },
 };
 
 static const struct parent_map gcc_parent_map_19[] = {
 	{ P_BI_TCXO, 0 },
 	{ P_GPLL0_OUT_MAIN, 1 },
 	{ P_GPLL4_OUT_AUX, 2 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_19[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"gpll4_out_aux",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
+	{ .hw = &gpll4_out_aux.clkr.hw },
 };
 
 static const struct parent_map gcc_parent_map_20[] = {
@@ -351,15 +324,13 @@ static const struct parent_map gcc_parent_map_20[] = {
 	{ P_GPLL0_OUT_MAIN, 1 },
 	{ P_GPLL6_OUT_AUX, 2 },
 	{ P_SLEEP_CLK, 6 },
-	{ P_CORE_BI_PLL_TEST_SE, 7 },
 };
 
 static const char * const gcc_parent_names_20[] = {
-	"bi_tcxo",
-	"gpll0_out_main",
-	"gpll6_out_aux",
-	"sleep_clk",
-	"core_bi_pll_test_se",
+	{ .index = DT_BI_TCXO },
+	{ .hw = &gpll0_out_main.clkr.hw },
+	{ .hw = &gpll6_out_aux.clkr.hw },
+	{ .index = DT_SLEEP_CLK},
 };
 
 static struct clk_alpha_pll gpll0_sleep_clk_src = {
@@ -421,7 +392,7 @@ static struct clk_alpha_pll gpll0_ao_out_main = {
 		.enable_mask = BIT(0),
 		.hw.init = &(struct clk_init_data){
 			.name = "gpll0_ao_out_main",
-			.parent_names = (const char *[]){ "bi_tcxo_ao" },
+			.parent_data = &parent_data_tcxo_ao,
 			.num_parents = 1,
 			.ops = &clk_alpha_pll_ops,
 		},

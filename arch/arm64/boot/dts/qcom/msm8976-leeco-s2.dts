@@ -29,7 +29,7 @@
 			ftrace-size = <0x10000>;
 			pmsg-size = <0x20000>;
 			ecc-size = <16>;
-			status = "ok";
+			status = "okay";
 		};
 
 		/delete-node/ memory@83000000;
@@ -162,7 +162,6 @@
 	speaker_codec: audio-codec@34 {
 		compatible = "nxp,tfa9890";
 		reg = <0x34>;
-		reset-gpio = <&tlmm 129 GPIO_ACTIVE_HIGH>;
 		vddd-supply = <&pm8950_l5>;
 		sound-name-prefix = "Speaker";
 		#sound-dai-cells = <0>;
@@ -204,7 +203,7 @@
 };
 
 &pm8004_lsid5 {
-	status = "ok";
+	status = "okay";
 };
 
 &gcc {
@@ -214,7 +213,7 @@
 &pm8004_spmi_regulators {
 	vdd_s2-supply = <&vph_pwr>;
 	vdd_s5-supply = <&vph_pwr>;
-	status = "ok";
+	status = "okay";
 	
 	pm8004_s2: s2 {
 		regulator-always-on;
@@ -247,7 +246,7 @@
 
 &rpm_requests {
 
-	pm8950_regulators: regulators {
+	pm8950_regulators: pm8950-regulators {
 		compatible = "qcom,rpm-pm8950-regulators";
 		
 		vdd_s1-supply = <&vph_pwr>;

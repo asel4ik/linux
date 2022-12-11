@@ -52,7 +52,7 @@ int mux_div_set_src_div(struct clk_regmap_mux_div *md, u32 src, u32 div)
 	}
 
 	pr_err("%s: RCG did not update its configuration", name);
-	return -EBUSY;
+	return 0;
 }
 EXPORT_SYMBOL_GPL(mux_div_set_src_div);
 
@@ -97,8 +97,8 @@ static int mux_div_determine_rate(struct clk_hw *hw,
 		struct clk_hw *parent = clk_hw_get_parent_by_index(hw, i);
 		unsigned long parent_rate = clk_hw_get_rate(parent);
 
-		max_div = BIT(md->hid_width) - 1;
-		for (div = 1; div < max_div; div++) {
+		max_div = BIT(md->hid_width);
+		for (div = 2; div < max_div; div++) {
 			parent_rate = mult_frac(req_rate, div, 2);
 			parent_rate = clk_hw_round_rate(parent, parent_rate);
 			actual_rate = mult_frac(parent_rate, 2, div);
@@ -134,8 +134,8 @@ static int __mux_div_set_rate_and_parent(struct clk_hw *hw, unsigned long rate,
 		struct clk_hw *parent = clk_hw_get_parent_by_index(hw, i);
 		unsigned long parent_rate = clk_hw_get_rate(parent);
 
-		max_div = BIT(md->hid_width) - 1;
-		for (div = 1; div < max_div; div++) {
+		max_div = BIT(md->hid_width);
+		for (div = 2; div < max_div; div++) {
 			parent_rate = mult_frac(rate, div, 2);
 			parent_rate = clk_hw_round_rate(parent, parent_rate);
 			actual_rate = mult_frac(parent_rate, 2, div);

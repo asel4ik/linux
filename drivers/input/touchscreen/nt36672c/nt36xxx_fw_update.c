@@ -304,17 +304,22 @@ static int32_t update_firmware_request(char *filename)
 {
 	uint8_t retry = 0;
 	int32_t ret = 0;
-
+	
 	if (NULL == filename) {
 		return -ENOENT;
 	}
 
 	while (1) {
 		NVT_LOG("filename is %s\n", filename);
-
+		
 		ret = request_firmware(&fw_entry, filename, &ts->client->dev);
 		if (ret) {
 			NVT_ERR("firmware load failed, ret=%d\n", ret);
+			filename = "novatek_ts_fw.bin";
+			ret = request_firmware(&fw_entry, filename, &ts->client->dev);
+			if (ret) {
+			NVT_ERR("again failed to load firmware", ret);
+				}
 			goto request_fail;
 		}
 		else NVT_INFO("firmware load successful. fw name: %s\n", filename);
@@ -353,7 +358,7 @@ invalid:
 
 request_fail:
 		retry++;
-		if (unlikely(retry > 2)) {
+		if (unlikely(retry > 1)) {
 			NVT_ERR("error, retry=%d\n", retry);
 			break;
 		}

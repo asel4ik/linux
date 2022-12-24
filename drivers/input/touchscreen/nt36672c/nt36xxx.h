@@ -31,7 +31,7 @@
 
 #include "nt36xxx_mem_map.h"
 
-#define NVT_DEBUG 0
+#define NVT_DEBUG 1
 
 //---GPIO number---
 #define NVTTOUCH_RST_PIN 87
@@ -97,7 +97,7 @@ extern const uint16_t gesture_key_array[];
 #define NVT_TOUCH_ESD_DISP_RECOVERY 0
 
 //enable 'check touch vendor' feature
-#define CHECK_TOUCH_VENDOR
+//#define CHECK_TOUCH_VENDOR
 
 //---Touch Vendor ID---
 #define TP_VENDOR_UNKNOWN   0x00

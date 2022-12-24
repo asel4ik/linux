@@ -1107,7 +1107,7 @@ static int boe_nt35596s_fhd_5p5boe_vdo_probe(struct mipi_dsi_device *dsi)
 	return 0;
 }
 
-static int boe_nt35596s_fhd_5p5boe_vdo_remove(struct mipi_dsi_device *dsi)
+static void boe_nt35596s_fhd_5p5boe_vdo_remove(struct mipi_dsi_device *dsi)
 {
 	struct boe_nt35596s_fhd_5p5boe_vdo *ctx = mipi_dsi_get_drvdata(dsi);
 	int ret;
@@ -1118,7 +1118,7 @@ static int boe_nt35596s_fhd_5p5boe_vdo_remove(struct mipi_dsi_device *dsi)
 
 	drm_panel_remove(&ctx->panel);
 
-	return 0;
+	
 }
 
 static const struct of_device_id boe_nt35596s_fhd_5p5boe_vdo_of_match[] = {

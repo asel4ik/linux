@@ -72,6 +72,8 @@
 };
 
 &sdhc_1 {
+	vmmc-supply = <&pm8950_l8>;
+	vqmmc-supply = <&pm8950_l5>;
 	
 	status = "okay";
 
@@ -237,6 +239,8 @@
 &otg {
 	status = "okay";
 	extcon = <&tiusb320>,<0>;
+	v1p8-supply = <&pm8950_l7>;
+	v3p3-supply = <&pm8950_l13>;
 };
 
 &usb_hs_phy {

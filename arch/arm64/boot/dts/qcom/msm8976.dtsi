@@ -1302,7 +1302,9 @@
 					clock-names = "ref", "sleep";
 					resets = <&gcc RST_QUSB2_PHY_BCR>, <&gcc RST_USB2_HS_PHY_ONLY_BCR>;
 					reset-names = "phy", "por";
-					qcom,init-seq = /bits/ 8 <0x0 0x73>;
+					qcom,init-seq = /bits/ 8 <0x0 0x73>,
+								 <0x1 0x38>,
+								 <0x2 0x1b>;
 				};
 			};
 		};

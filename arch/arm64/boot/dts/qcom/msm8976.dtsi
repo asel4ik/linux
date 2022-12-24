@@ -29,7 +29,7 @@
 			compatible = "arm,cortex-a53";
 			reg = <0x0>;
 			enable-method = "psci";
-			clocks = <&apcs>;
+			clocks = <&apcs_c0>;
 			operating-points-v2 = <&little_cpu_opp_table>;
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;
@@ -42,7 +42,7 @@
 			compatible = "arm,cortex-a53";
 			reg = <0x1>;
 			enable-method = "psci";
-			clocks = <&apcs>;
+			clocks = <&apcs_c0>;
 			operating-points-v2 = <&little_cpu_opp_table>;
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;
@@ -55,7 +55,7 @@
 			compatible = "arm,cortex-a53";
 			reg = <0x2>;
 			enable-method = "psci";
-			clocks = <&apcs>;
+			clocks = <&apcs_c0>;
 			operating-points-v2 = <&little_cpu_opp_table>;
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;
@@ -68,7 +68,7 @@
 			compatible = "arm,cortex-a53";
 			reg = <0x3>;
 			enable-method = "psci";
-			clocks = <&apcs>;
+			clocks = <&apcs_c0>;
 			operating-points-v2 = <&little_cpu_opp_table>;
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;

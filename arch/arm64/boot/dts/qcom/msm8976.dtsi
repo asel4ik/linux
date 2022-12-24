@@ -210,7 +210,7 @@
 		};
 	};
 
-	little_cpu_opp_table: opp-table-cpu {
+	little_cpu_opp_table: opp-table-cpu-little {
 		compatible = "operating-points-v2";
 		opp-shared;
 
@@ -240,7 +240,7 @@
 		};	
 	};
 
-	big_cpu_opp_table: opp-table-cpu {
+	big_cpu_opp_table: opp-table-cpu-big {
 		compatible = "operating-points-v2";
 		opp-shared;
 

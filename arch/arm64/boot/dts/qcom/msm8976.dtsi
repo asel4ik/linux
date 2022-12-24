@@ -424,6 +424,7 @@
 				rpmcc: clock-controller {
 					compatible = "qcom,rpmcc-msm8976", "qcom,rpmcc";
 					#clock-cells = <1>;
+					clocks = <&xo_board>;
 				};
 
 				rpmpd: power-controller {

@@ -841,6 +841,8 @@
 				operating-points-v2 = <&mdp_opp_table>;
 				power-domains = <&rpmpd MSM8976_VDDCX>;
 
+				iommus = <&apps_iommu 0x17>;
+				
 				ports {
 					#address-cells = <1>;
 					#size-cells = <0>;

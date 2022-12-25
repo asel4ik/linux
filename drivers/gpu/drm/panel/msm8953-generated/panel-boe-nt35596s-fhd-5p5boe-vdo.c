@@ -14,7 +14,7 @@
 #include <drm/drm_modes.h>
 #include <drm/drm_panel.h>
 
-struct boe_nt35596s_fhd_5p5boe_vdo {
+struct boe_nt35596s_5p5boe_vdo {
 	struct drm_panel panel;
 	struct mipi_dsi_device *dsi;
 	struct regulator_bulk_data supplies[2];
@@ -23,9 +23,9 @@ struct boe_nt35596s_fhd_5p5boe_vdo {
 };
 
 static inline
-struct boe_nt35596s_fhd_5p5boe_vdo *to_boe_nt35596s_fhd_5p5boe_vdo(struct drm_panel *panel)
+struct boe_nt35596s_5p5boe_vdo *to_boe_nt35596s_5p5boe_vdo(struct drm_panel *panel)
 {
-	return container_of(panel, struct boe_nt35596s_fhd_5p5boe_vdo, panel);
+	return container_of(panel, struct boe_nt35596s_5p5boe_vdo, panel);
 }
 
 #define dsi_generic_write_seq(dsi, seq...) do {				\
@@ -44,7 +44,7 @@ struct boe_nt35596s_fhd_5p5boe_vdo *to_boe_nt35596s_fhd_5p5boe_vdo(struct drm_pa
 			return ret;					\
 	} while (0)
 
-static void boe_nt35596s_fhd_5p5boe_vdo_reset(struct boe_nt35596s_fhd_5p5boe_vdo *ctx)
+static void boe_nt35596s_5p5boe_vdo_reset(struct boe_nt35596s_5p5boe_vdo *ctx)
 {
 	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
 	usleep_range(10000, 11000);
@@ -54,7 +54,7 @@ static void boe_nt35596s_fhd_5p5boe_vdo_reset(struct boe_nt35596s_fhd_5p5boe_vdo
 	usleep_range(10000, 11000);
 }
 
-static int boe_nt35596s_fhd_5p5boe_vdo_on(struct boe_nt35596s_fhd_5p5boe_vdo *ctx)
+static int boe_nt35596s_5p5boe_vdo_on(struct boe_nt35596s_5p5boe_vdo *ctx)
 {
 	struct mipi_dsi_device *dsi = ctx->dsi;
 	struct device *dev = &dsi->dev;
@@ -870,7 +870,7 @@ static int boe_nt35596s_fhd_5p5boe_vdo_on(struct boe_nt35596s_fhd_5p5boe_vdo *ct
 	return 0;
 }
 
-static int boe_nt35596s_fhd_5p5boe_vdo_off(struct boe_nt35596s_fhd_5p5boe_vdo *ctx)
+static int boe_nt35596s_5p5boe_vdo_off(struct boe_nt35596s_5p5boe_vdo *ctx)
 {
 	struct mipi_dsi_device *dsi = ctx->dsi;
 	struct device *dev = &dsi->dev;
@@ -913,9 +913,9 @@ static int boe_nt35596s_fhd_5p5boe_vdo_off(struct boe_nt35596s_fhd_5p5boe_vdo *c
 	return 0;
 }
 
-static int boe_nt35596s_fhd_5p5boe_vdo_prepare(struct drm_panel *panel)
+static int boe_nt35596s_5p5boe_vdo_prepare(struct drm_panel *panel)
 {
-	struct boe_nt35596s_fhd_5p5boe_vdo *ctx = to_boe_nt35596s_fhd_5p5boe_vdo(panel);
+	struct boe_nt35596s_5p5boe_vdo *ctx = to_boe_nt35596s_5p5boe_vdo(panel);
 	struct device *dev = &ctx->dsi->dev;
 	int ret;
 
@@ -928,9 +928,9 @@ static int boe_nt35596s_fhd_5p5boe_vdo_prepare(struct drm_panel *panel)
 		return ret;
 	}
 
-	boe_nt35596s_fhd_5p5boe_vdo_reset(ctx);
+	boe_nt35596s_5p5boe_vdo_reset(ctx);
 
-	ret = boe_nt35596s_fhd_5p5boe_vdo_on(ctx);
+	ret = boe_nt35596s_5p5boe_vdo_on(ctx);
 	if (ret < 0) {
 		dev_err(dev, "Failed to initialize panel: %d\n", ret);
 		gpiod_set_value_cansleep(ctx->reset_gpio, 1);
@@ -942,16 +942,16 @@ static int boe_nt35596s_fhd_5p5boe_vdo_prepare(struct drm_panel *panel)
 	return 0;
 }
 
-static int boe_nt35596s_fhd_5p5boe_vdo_unprepare(struct drm_panel *panel)
+static int boe_nt35596s_5p5boe_vdo_unprepare(struct drm_panel *panel)
 {
-	struct boe_nt35596s_fhd_5p5boe_vdo *ctx = to_boe_nt35596s_fhd_5p5boe_vdo(panel);
+	struct boe_nt35596s_5p5boe_vdo *ctx = to_boe_nt35596s_5p5boe_vdo(panel);
 	struct device *dev = &ctx->dsi->dev;
 	int ret;
 
 	if (!ctx->prepared)
 		return 0;
 
-	ret = boe_nt35596s_fhd_5p5boe_vdo_off(ctx);
+	ret = boe_nt35596s_5p5boe_vdo_off(ctx);
 	if (ret < 0)
 		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);
 
@@ -962,7 +962,7 @@ static int boe_nt35596s_fhd_5p5boe_vdo_unprepare(struct drm_panel *panel)
 	return 0;
 }
 
-static const struct drm_display_mode boe_nt35596s_fhd_5p5boe_vdo_mode = {
+static const struct drm_display_mode boe_nt35596s_5p5boe_vdo_mode = {
 	.clock = (1080 + 40 + 8 + 20) * (1920 + 8 + 2 + 10) * 60 / 1000,
 	.hdisplay = 1080,
 	.hsync_start = 1080 + 40,
@@ -976,12 +976,12 @@ static const struct drm_display_mode boe_nt35596s_fhd_5p5boe_vdo_mode = {
 	.height_mm = 122,
 };
 
-static int boe_nt35596s_fhd_5p5boe_vdo_get_modes(struct drm_panel *panel,
-						 struct drm_connector *connector)
+static int boe_nt35596s_5p5boe_vdo_get_modes(struct drm_panel *panel,
+					     struct drm_connector *connector)
 {
 	struct drm_display_mode *mode;
 
-	mode = drm_mode_duplicate(connector->dev, &boe_nt35596s_fhd_5p5boe_vdo_mode);
+	mode = drm_mode_duplicate(connector->dev, &boe_nt35596s_5p5boe_vdo_mode);
 	if (!mode)
 		return -ENOMEM;
 
@@ -995,13 +995,13 @@ static int boe_nt35596s_fhd_5p5boe_vdo_get_modes(struct drm_panel *panel,
 	return 1;
 }
 
-static const struct drm_panel_funcs boe_nt35596s_fhd_5p5boe_vdo_panel_funcs = {
-	.prepare = boe_nt35596s_fhd_5p5boe_vdo_prepare,
-	.unprepare = boe_nt35596s_fhd_5p5boe_vdo_unprepare,
-	.get_modes = boe_nt35596s_fhd_5p5boe_vdo_get_modes,
+static const struct drm_panel_funcs boe_nt35596s_5p5boe_vdo_panel_funcs = {
+	.prepare = boe_nt35596s_5p5boe_vdo_prepare,
+	.unprepare = boe_nt35596s_5p5boe_vdo_unprepare,
+	.get_modes = boe_nt35596s_5p5boe_vdo_get_modes,
 };
 
-static int boe_nt35596s_fhd_5p5boe_vdo_bl_update_status(struct backlight_device *bl)
+static int boe_nt35596s_5p5boe_vdo_bl_update_status(struct backlight_device *bl)
 {
 	struct mipi_dsi_device *dsi = bl_get_data(bl);
 	u16 brightness = backlight_get_brightness(bl);
@@ -1020,7 +1020,7 @@ static int boe_nt35596s_fhd_5p5boe_vdo_bl_update_status(struct backlight_device 
 
 // TODO: Check if /sys/class/backlight/.../actual_brightness actually returns
 // correct values. If not, remove this function.
-static int boe_nt35596s_fhd_5p5boe_vdo_bl_get_brightness(struct backlight_device *bl)
+static int boe_nt35596s_5p5boe_vdo_bl_get_brightness(struct backlight_device *bl)
 {
 	struct mipi_dsi_device *dsi = bl_get_data(bl);
 	u16 brightness;
@@ -1037,13 +1037,13 @@ static int boe_nt35596s_fhd_5p5boe_vdo_bl_get_brightness(struct backlight_device
 	return brightness;
 }
 
-static const struct backlight_ops boe_nt35596s_fhd_5p5boe_vdo_bl_ops = {
-	.update_status = boe_nt35596s_fhd_5p5boe_vdo_bl_update_status,
-	.get_brightness = boe_nt35596s_fhd_5p5boe_vdo_bl_get_brightness,
+static const struct backlight_ops boe_nt35596s_5p5boe_vdo_bl_ops = {
+	.update_status = boe_nt35596s_5p5boe_vdo_bl_update_status,
+	.get_brightness = boe_nt35596s_5p5boe_vdo_bl_get_brightness,
 };
 
 static struct backlight_device *
-boe_nt35596s_fhd_5p5boe_vdo_create_backlight(struct mipi_dsi_device *dsi)
+boe_nt35596s_5p5boe_vdo_create_backlight(struct mipi_dsi_device *dsi)
 {
 	struct device *dev = &dsi->dev;
 	const struct backlight_properties props = {
@@ -1053,13 +1053,13 @@ boe_nt35596s_fhd_5p5boe_vdo_create_backlight(struct mipi_dsi_device *dsi)
 	};
 
 	return devm_backlight_device_register(dev, dev_name(dev), dev, dsi,
-					      &boe_nt35596s_fhd_5p5boe_vdo_bl_ops, &props);
+					      &boe_nt35596s_5p5boe_vdo_bl_ops, &props);
 }
 
-static int boe_nt35596s_fhd_5p5boe_vdo_probe(struct mipi_dsi_device *dsi)
+static int boe_nt35596s_5p5boe_vdo_probe(struct mipi_dsi_device *dsi)
 {
 	struct device *dev = &dsi->dev;
-	struct boe_nt35596s_fhd_5p5boe_vdo *ctx;
+	struct boe_nt35596s_5p5boe_vdo *ctx;
 	int ret;
 
 	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
@@ -1087,10 +1087,10 @@ static int boe_nt35596s_fhd_5p5boe_vdo_probe(struct mipi_dsi_device *dsi)
 			  MIPI_DSI_MODE_VIDEO_HSE | MIPI_DSI_MODE_NO_EOT_PACKET |
 			  MIPI_DSI_CLOCK_NON_CONTINUOUS;
 
-	drm_panel_init(&ctx->panel, dev, &boe_nt35596s_fhd_5p5boe_vdo_panel_funcs,
+	drm_panel_init(&ctx->panel, dev, &boe_nt35596s_5p5boe_vdo_panel_funcs,
 		       DRM_MODE_CONNECTOR_DSI);
 
-	ctx->panel.backlight = boe_nt35596s_fhd_5p5boe_vdo_create_backlight(dsi);
+	ctx->panel.backlight = boe_nt35596s_5p5boe_vdo_create_backlight(dsi);
 	if (IS_ERR(ctx->panel.backlight))
 		return dev_err_probe(dev, PTR_ERR(ctx->panel.backlight),
 				     "Failed to create backlight\n");
@@ -1107,9 +1107,9 @@ static int boe_nt35596s_fhd_5p5boe_vdo_probe(struct mipi_dsi_device *dsi)
 	return 0;
 }
 
-static void boe_nt35596s_fhd_5p5boe_vdo_remove(struct mipi_dsi_device *dsi)
+static void boe_nt35596s_5p5boe_vdo_remove(struct mipi_dsi_device *dsi)
 {
-	struct boe_nt35596s_fhd_5p5boe_vdo *ctx = mipi_dsi_get_drvdata(dsi);
+	struct boe_nt35596s_5p5boe_vdo *ctx = mipi_dsi_get_drvdata(dsi);
 	int ret;
 
 	ret = mipi_dsi_detach(dsi);
@@ -1117,26 +1117,24 @@ static void boe_nt35596s_fhd_5p5boe_vdo_remove(struct mipi_dsi_device *dsi)
 		dev_err(&dsi->dev, "Failed to detach from DSI host: %d\n", ret);
 
 	drm_panel_remove(&ctx->panel);
-
-	
 }
 
-static const struct of_device_id boe_nt35596s_fhd_5p5boe_vdo_of_match[] = {
-	{ .compatible = "boe,nt35596s-fhd-5p5boe-vdo" }, // FIXME
+static const struct of_device_id boe_nt35596s_5p5boe_vdo_of_match[] = {
+	{ .compatible = "boe,nt35596s-5p5boe-vdo" }, // FIXME
 	{ /* sentinel */ }
 };
-MODULE_DEVICE_TABLE(of, boe_nt35596s_fhd_5p5boe_vdo_of_match);
+MODULE_DEVICE_TABLE(of, boe_nt35596s_5p5boe_vdo_of_match);
 
-static struct mipi_dsi_driver boe_nt35596s_fhd_5p5boe_vdo_driver = {
-	.probe = boe_nt35596s_fhd_5p5boe_vdo_probe,
-	.remove = boe_nt35596s_fhd_5p5boe_vdo_remove,
+static struct mipi_dsi_driver boe_nt35596s_5p5boe_vdo_driver = {
+	.probe = boe_nt35596s_5p5boe_vdo_probe,
+	.remove = boe_nt35596s_5p5boe_vdo_remove,
 	.driver = {
-		.name = "panel-boe-nt35596s-fhd-5p5boe-vdo",
-		.of_match_table = boe_nt35596s_fhd_5p5boe_vdo_of_match,
+		.name = "panel-boe-nt35596s-5p5boe-vdo",
+		.of_match_table = boe_nt35596s_5p5boe_vdo_of_match,
 	},
 };
-module_mipi_dsi_driver(boe_nt35596s_fhd_5p5boe_vdo_driver);
+module_mipi_dsi_driver(boe_nt35596s_5p5boe_vdo_driver);
 
 MODULE_AUTHOR("linux-mdss-dsi-panel-driver-generator <fix@me>"); // FIXME
 MODULE_DESCRIPTION("DRM driver for boe nt35596s fhd vdo dsi panel");
-MODULE_LICENSE("GPL v2");
+MODULE_LICENSE("GPL");

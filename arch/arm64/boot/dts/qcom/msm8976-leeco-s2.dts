@@ -88,7 +88,6 @@
 
 	qcom,current-limit-microamp = <20000>;
 	qcom,enabled-strings = <0 1>;
-	qcom,num-strings = <2>;
 	qcom,ovp-millivolt = <29600>;
 };
 

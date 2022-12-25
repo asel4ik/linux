@@ -94,7 +94,7 @@
 
 &dsi0 {
 	panel@0 {
-		compatible = "boe,nt35596s-fhd-5p5boe-vdo";
+		compatible = "boe,nt35596s-5p5boe-vdo";
 		reg = <0>;
 		backlight = <&pmi8950_wled>;
 

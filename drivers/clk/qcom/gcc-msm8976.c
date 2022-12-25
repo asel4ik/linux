@@ -3834,6 +3834,7 @@ static struct gdsc oxili_gx_gdsc = {
 		.name = "oxili_gx_gdsc",
 	},
 	.pwrsts = PWRSTS_OFF_ON,
+	.parent = &oxili_cx_gdsc.pd,
 	.supply = "vdd_gfx",
 	.flags = CLAMP_IO,
 };

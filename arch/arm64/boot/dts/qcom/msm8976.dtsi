@@ -1118,8 +1118,8 @@
 					opp-supported-hw = <0xff>;
 				};
 
-				opp-550000000 {
-					opp-hz = /bits/ 64 <550000000>;
+				opp-540000000 {
+					opp-hz = /bits/ 64 <540000000>;
 					opp-level = <RPM_SMD_LEVEL_TURBO>;
 					opp-supported-hw = <0xff>;
 				};

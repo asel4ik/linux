@@ -3,6 +3,7 @@
 #include "msm8976.dtsi"
 #include "pm8950.dtsi"
 #include "pm8004.dtsi"
+#include "pmi8950.dtsi"
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/gpio-keys.h>
@@ -78,6 +79,57 @@
 	status = "okay";
 
 
+};
+
+&pmi8950_wled {
+	status = "okay";
+
+	qcom,current-limit-microamp = <20000>;
+	qcom,enabled-strings = <0 1>;
+	qcom,ovp-millivolt = <29600>;
+};
+
+&dsi0 {
+	panel@0 {
+		compatible = "boe,nt35596s-5p5boe-vdo";
+		reg = <0>;
+		backlight = <&pmi8950_wled>;
+
+		//supply-names = "vsp", "vsn";
+		//vsp-supply = <&lab_vreg>;
+		//vsn-supply = <&ibb_vreg>;
+
+		reset-gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
+
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&pmx_mdss_default &mdss_te_default>;
+		pinctrl-1 = <&pmx_mdss_sleep &mdss_te_default>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&dsi0_out>;
+			};
+		};
+	};
+};
+
+
+&dsi0_out {
+	data-lanes = <0 1 2 3>;
+	remote-endpoint = <&panel_in>;
+};
+
+
+&dsi0_phy {
+	status = "okay";
+	vddio-supply = <&pm8950_l6>;
+};
+
+&dsi0 {
+
+	vdd-supply = <&pm8950_l17>;
+	vdda-supply = <&pm8950_l1>;
+	vddio-supply = <&pm8950_l6>;
 };
 
 &blsp1_i2c4 {
@@ -175,6 +227,36 @@
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <8 4>;
 
+	mdp_vsync_p_gpio: mdp_sync_p_gpio {
+		pins = "gpio24";
+		function = "mdp_vsync";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+
+	pmx_mdss_default: pmx-mdss-default-pins {
+		pins = "gpio25";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+		output-high;
+	};
+
+	pmx_mdss_sleep: pmx-mdss-sleep-pins {
+		pins = "gpio25";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+
+	mdss_te_default: mdss-te-pins {
+			pins = "gpio24";
+			function = "mdp_vsync";
+			drive-strength = <2>;
+			bias-pull-down;
+		};
+		
 	ts_reset: ts_reset {
 		pins = "gpio64";
 		function = "gpio";
@@ -243,13 +325,7 @@
 	v3p3-supply = <&pm8950_l13>;
 };
 
-&usb_hs_phy_8916 {
 
-	status = "okay";
-	extcon = <&tiusb320>,<0>;
-	v1p8-supply = <&pm8950_l7>;
-	v3p3-supply = <&pm8950_l13>;
-};
 
 &rpm_requests {
 

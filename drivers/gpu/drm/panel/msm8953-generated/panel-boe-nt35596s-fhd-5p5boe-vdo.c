@@ -1001,61 +1001,6 @@ static const struct drm_panel_funcs boe_nt35596s_5p5boe_vdo_panel_funcs = {
 	.get_modes = boe_nt35596s_5p5boe_vdo_get_modes,
 };
 
-static int boe_nt35596s_5p5boe_vdo_bl_update_status(struct backlight_device *bl)
-{
-	struct mipi_dsi_device *dsi = bl_get_data(bl);
-	u16 brightness = backlight_get_brightness(bl);
-	int ret;
-
-	dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
-
-	ret = mipi_dsi_dcs_set_display_brightness(dsi, brightness);
-	if (ret < 0)
-		return ret;
-
-	dsi->mode_flags |= MIPI_DSI_MODE_LPM;
-
-	return 0;
-}
-
-// TODO: Check if /sys/class/backlight/.../actual_brightness actually returns
-// correct values. If not, remove this function.
-static int boe_nt35596s_5p5boe_vdo_bl_get_brightness(struct backlight_device *bl)
-{
-	struct mipi_dsi_device *dsi = bl_get_data(bl);
-	u16 brightness;
-	int ret;
-
-	dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
-
-	ret = mipi_dsi_dcs_get_display_brightness(dsi, &brightness);
-	if (ret < 0)
-		return ret;
-
-	dsi->mode_flags |= MIPI_DSI_MODE_LPM;
-
-	return brightness;
-}
-
-static const struct backlight_ops boe_nt35596s_5p5boe_vdo_bl_ops = {
-	.update_status = boe_nt35596s_5p5boe_vdo_bl_update_status,
-	.get_brightness = boe_nt35596s_5p5boe_vdo_bl_get_brightness,
-};
-
-static struct backlight_device *
-boe_nt35596s_5p5boe_vdo_create_backlight(struct mipi_dsi_device *dsi)
-{
-	struct device *dev = &dsi->dev;
-	const struct backlight_properties props = {
-		.type = BACKLIGHT_RAW,
-		.brightness = 4095,
-		.max_brightness = 4095,
-	};
-
-	return devm_backlight_device_register(dev, dev_name(dev), dev, dsi,
-					      &boe_nt35596s_5p5boe_vdo_bl_ops, &props);
-}
-
 static int boe_nt35596s_5p5boe_vdo_probe(struct mipi_dsi_device *dsi)
 {
 	struct device *dev = &dsi->dev;
@@ -1090,10 +1035,9 @@ static int boe_nt35596s_5p5boe_vdo_probe(struct mipi_dsi_device *dsi)
 	drm_panel_init(&ctx->panel, dev, &boe_nt35596s_5p5boe_vdo_panel_funcs,
 		       DRM_MODE_CONNECTOR_DSI);
 
-	ctx->panel.backlight = boe_nt35596s_5p5boe_vdo_create_backlight(dsi);
-	if (IS_ERR(ctx->panel.backlight))
-		return dev_err_probe(dev, PTR_ERR(ctx->panel.backlight),
-				     "Failed to create backlight\n");
+	ret = drm_panel_of_backlight(&ctx->panel);
+	if (ret)
+		return dev_err_probe(dev, ret, "Failed to get backlight\n");
 
 	drm_panel_add(&ctx->panel);
 

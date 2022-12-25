@@ -332,6 +332,14 @@
 	v3p3-supply = <&pm8950_l13>;
 };
 
+&usb_hs_phy_8916 {
+
+	status = "okay";
+	extcon = <&tiusb320>,<0>;
+	v1p8-supply = <&pm8950_l7>;
+	v3p3-supply = <&pm8950_l13>;
+};
+
 
 
 &rpm_requests {

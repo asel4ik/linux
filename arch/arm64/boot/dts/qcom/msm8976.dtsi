@@ -1469,6 +1469,7 @@
 			clocks = <&a72_pll>, <&gcc GPLL0>;
 			clock-names = "pll", "aux";
 			#clock-cells = <0>;
+			branch,enable-required;
 		};
 		
 		a72_pll: clock-controller@b016000 {
@@ -1508,6 +1509,7 @@
 			assigned-clocks = <&apcs_cci>;
 			assigned-clock-parents = <&cci_pll>;
 			assigned-clock-rates = <614400000>;
+			status = "disabled";
 		};
 
 		cci_pll: clock-controller@b1d0000 {

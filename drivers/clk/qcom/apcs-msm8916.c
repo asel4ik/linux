@@ -17,12 +17,14 @@
 #include "clk-regmap.h"
 #include "clk-regmap-mux-div.h"
 
-static const u32 gpll0_a53cc_map[] = { 4, 5 };
+static const u32 gpll0_a53cc_map[] = { 0, 4, 5 };
 
 static const struct clk_parent_data pdata[] = {
+	{ .fw_name = "ref", .name = "ref", },
 	{ .fw_name = "aux", .name = "gpll0_vote", },
 	{ .fw_name = "pll", .name = "a53pll", },
 };
+
 
 /*
  * We use the notifier function for switching to a temporary safe configuration
@@ -36,14 +38,23 @@ static int a53cc_notifier_cb(struct notifier_block *nb, unsigned long event,
 						     struct clk_regmap_mux_div,
 						     clk_nb);
 	if (event == PRE_RATE_CHANGE)
+	
+	if(mux_enable_branch)
+	{
+	regmap_set_bits(regmap, 0x58, BIT(0));
+	dev_err(dev, "Found branch required");
+	};
 		/* set the mux and divider to safe frequency (400mhz) */
 		ret = mux_div_set_src_div(md, 4, 3);
+	
+	
 
 	return notifier_from_errno(ret);
 }
 
 static int qcom_apcs_msm8916_clk_probe(struct platform_device *pdev)
 {
+			       
 	struct device *dev = &pdev->dev;
 	struct device *parent = dev->parent;
 	struct device_node *np = parent->of_node;
@@ -51,7 +62,10 @@ static int qcom_apcs_msm8916_clk_probe(struct platform_device *pdev)
 	struct regmap *regmap;
 	struct clk_init_data init = { };
 	int ret = -ENODEV;
-
+	
+bool mux_enable_branch = fwnode_property_present(dev_fwnode(dev),
+				       "branch,enable-required");
+				       
 	regmap = dev_get_regmap(parent, NULL);
 	if (!regmap) {
 		dev_err(dev, "failed to get regmap: %d\n", ret);
@@ -72,7 +86,7 @@ static int qcom_apcs_msm8916_clk_probe(struct platform_device *pdev)
 	init.num_parents = ARRAY_SIZE(pdata);
 	init.ops = &clk_regmap_mux_div_ops;
 	init.flags = CLK_IS_CRITICAL | CLK_SET_RATE_PARENT;
-
+	
 	a53cc->clkr.hw.init = &init;
 	a53cc->clkr.regmap = regmap;
 	a53cc->reg_offset = 0x50;
@@ -91,6 +105,7 @@ static int qcom_apcs_msm8916_clk_probe(struct platform_device *pdev)
 	}
 
 	a53cc->clk_nb.notifier_call = a53cc_notifier_cb;
+	
 	ret = clk_notifier_register(a53cc->pclk, &a53cc->clk_nb);
 	if (ret) {
 		dev_err(dev, "failed to register clock notifier: %d\n", ret);

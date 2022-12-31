@@ -17,14 +17,12 @@
 #include "clk-regmap.h"
 #include "clk-regmap-mux-div.h"
 
-static const u32 gpll0_a53cc_map[] = { 0, 4, 5 };
+static const u32 gpll0_a53cc_map[] = { 4, 5 };
 
 static const struct clk_parent_data pdata[] = {
-	{ .fw_name = "ref", .name = "ref", },
 	{ .fw_name = "aux", .name = "gpll0_vote", },
 	{ .fw_name = "pll", .name = "a53pll", },
 };
-
 
 /*
  * We use the notifier function for switching to a temporary safe configuration
@@ -38,23 +36,14 @@ static int a53cc_notifier_cb(struct notifier_block *nb, unsigned long event,
 						     struct clk_regmap_mux_div,
 						     clk_nb);
 	if (event == PRE_RATE_CHANGE)
-	
-	if(mux_enable_branch)
-	{
-	regmap_set_bits(regmap, 0x58, BIT(0));
-	dev_err(dev, "Found branch required");
-	};
 		/* set the mux and divider to safe frequency (400mhz) */
 		ret = mux_div_set_src_div(md, 4, 3);
-	
-	
 
 	return notifier_from_errno(ret);
 }
 
 static int qcom_apcs_msm8916_clk_probe(struct platform_device *pdev)
 {
-			       
 	struct device *dev = &pdev->dev;
 	struct device *parent = dev->parent;
 	struct device_node *np = parent->of_node;
@@ -62,10 +51,7 @@ static int qcom_apcs_msm8916_clk_probe(struct platform_device *pdev)
 	struct regmap *regmap;
 	struct clk_init_data init = { };
 	int ret = -ENODEV;
-	
-bool mux_enable_branch = fwnode_property_present(dev_fwnode(dev),
-				       "branch,enable-required");
-				       
+	       
 	regmap = dev_get_regmap(parent, NULL);
 	if (!regmap) {
 		dev_err(dev, "failed to get regmap: %d\n", ret);
@@ -86,7 +72,7 @@ bool mux_enable_branch = fwnode_property_present(dev_fwnode(dev),
 	init.num_parents = ARRAY_SIZE(pdata);
 	init.ops = &clk_regmap_mux_div_ops;
 	init.flags = CLK_IS_CRITICAL | CLK_SET_RATE_PARENT;
-	
+
 	a53cc->clkr.hw.init = &init;
 	a53cc->clkr.regmap = regmap;
 	a53cc->reg_offset = 0x50;
@@ -105,7 +91,6 @@ bool mux_enable_branch = fwnode_property_present(dev_fwnode(dev),
 	}
 
 	a53cc->clk_nb.notifier_call = a53cc_notifier_cb;
-	
 	ret = clk_notifier_register(a53cc->pclk, &a53cc->clk_nb);
 	if (ret) {
 		dev_err(dev, "failed to register clock notifier: %d\n", ret);
@@ -152,6 +137,51 @@ static struct platform_driver qcom_apcs_msm8916_clk_driver = {
 };
 module_platform_driver(qcom_apcs_msm8916_clk_driver);
 
+#define APCS_ALIAS0_CMD_RCGR		0xb011050
+#define APCS_ALIAS0_CFG_OFF		0x4
+#define APCS_ALIAS0_CORE_CBCR_OFF	0x8
+#define SRC_SEL			0x4
+#define SRC_DIV			0x1
+#ifndef MODULE
+static int __init cpu_clock_a72_init_big(void)
+{
+
+struct device_node *np = NULL;
+
+np =  of_find_node_with_property(np, "cluster,early-setup");
+	if (!np)
+	return 0;
+
+	void __iomem  *base;
+	int regval = 0, count;
+
+	base = ioremap(APCS_ALIAS0_CMD_RCGR, SZ_8);
+	regval = readl_relaxed(base);
+	/* Source GPLL0 and at the rate of GPLL0 */
+	regval = (SRC_SEL << 8) | SRC_DIV; /* 0x401 */
+	writel_relaxed(regval, base + APCS_ALIAS0_CFG_OFF);
+	mb();
+
+	/* update bit */
+	regval = readl_relaxed(base);
+	regval |= BIT(0);
+	writel_relaxed(regval, base);
+
+	/* Wait for update to take effect */
+	for (count = 500; count > 0; count--) {
+		if (!(readl_relaxed(base)) & BIT(0))
+			break;
+		udelay(1);
+	};
+	iounmap(base);
+
+	pr_info("A72 Power clocks configured\n");
+
+	return 0;
+};
+
+early_initcall(cpu_clock_a72_init_big);
+#endif
 MODULE_AUTHOR("Georgi Djakov <georgi.djakov@linaro.org>");
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("Qualcomm MSM8916 APCS clock driver");

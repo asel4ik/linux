@@ -1469,7 +1469,7 @@
 			clocks = <&a72_pll>, <&gcc GPLL0>;
 			clock-names = "pll", "aux";
 			#clock-cells = <0>;
-			branch,enable-required;
+			cluster,early-setup;
 		};
 		
 		a72_pll: clock-controller@b016000 {

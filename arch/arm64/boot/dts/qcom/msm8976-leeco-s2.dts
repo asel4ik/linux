@@ -223,6 +223,18 @@
 };
 
 
+&pronto {
+	status = "okay";
+	
+	vddpx-supply = <&pm8950_l5>;
+};
+
+&iris {
+	vddxo-supply = <&pm8950_l7>;
+	vddrfa-supply = <&pm8950_l19>;
+	vddpa-supply = <&pm8950_l9>;
+	vdddig-supply = <&pm8950_l5>;
+};
 
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <8 4>;

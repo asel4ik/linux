@@ -72,6 +72,10 @@
 	};
 };
 
+&adreno_gpu {
+	status = "disabled";
+};
+
 &sdhc_1 {
 	vmmc-supply = <&pm8950_l8>;
 	vqmmc-supply = <&pm8950_l5>;

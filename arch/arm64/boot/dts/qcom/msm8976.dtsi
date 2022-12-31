@@ -1509,7 +1509,7 @@
 			assigned-clocks = <&apcs_cci>;
 			assigned-clock-parents = <&cci_pll>;
 			assigned-clock-rates = <614400000>;
-			status = "disabled";
+			status = "okay";
 		};
 
 		cci_pll: clock-controller@b1d0000 {

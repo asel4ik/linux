@@ -11,16 +11,6 @@ config TOUCHSCREEN_NT36XXX_I2C
 
 	  If unsure, say N.
 
-config NOVATEK_TRUSTED_TOUCH
-	bool "Novatek Trusted Touch"
-	depends on TOUCHSCREEN_NT36XXX_I2C
-	help
-	  Say Y here to enable Novatek Trusted Touch over I2C.
-	  It requires more on Trust VM.
-	  Choose this when you need.
-
-	  If unsure, say N.
-
 config TOUCHSCREEN_NT36XXX_SPI
 	tristate "Novatek NT36XXX over SPI"
 	help

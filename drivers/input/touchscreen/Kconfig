@@ -12,7 +12,7 @@ menuconfig INPUT_TOUCHSCREEN
 
 if INPUT_TOUCHSCREEN
 
-source "drivers/input/touchscreen/nt36672c/Kconfig"
+source "drivers/input/touchscreen/nt36xxx/Kconfig"
 
 config TOUCHSCREEN_88PM860X
 	tristate "Marvell 88PM860x touchscreen"
@@ -401,6 +401,18 @@ config TOUCHSCREEN_GOODIX
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called goodix.
+
+ config TOUCHSCREEN_NT36XXX_CORE
+	tristate "Novatek NT36xxx Core support"
+	depends on I2C
+	help
+	  Say Y here if you have a touchscreen using novatek crap,
+	  or something similar enough.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called crap.
 
 config TOUCHSCREEN_HIDEEP
 	tristate "HiDeep Touch IC"
@@ -1380,5 +1392,5 @@ config TOUCHSCREEN_ZINITIX
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called zinitix.
-
+	  
 endif

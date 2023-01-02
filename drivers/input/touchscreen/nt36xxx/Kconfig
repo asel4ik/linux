@@ -2,8 +2,10 @@
 #
 # Novatek NT36XXX touchscreen driver configuration
 #
+
 config TOUCHSCREEN_NT36XXX_I2C
 	tristate "Novatek NT36XXX over I2C"
+	default y
 	help
 	  Say Y here if you have a Novatek NT36XXX over I2C touchscreen connected
 	  to your system.
@@ -13,6 +15,8 @@ config TOUCHSCREEN_NT36XXX_I2C
 
 config TOUCHSCREEN_NT36XXX_SPI
 	tristate "Novatek NT36XXX over SPI"
+	depends on SPI
+	default y
 	help
 	  Say Y here if you have a Novatek NT36XXX over SPI touchscreen connected
 	  to your system.

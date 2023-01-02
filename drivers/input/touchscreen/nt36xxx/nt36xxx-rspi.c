@@ -8,6 +8,8 @@
 #include <linux/of_gpio.h>
 #include <linux/of_irq.h>
 
+#define NVT_NT36XXX_SPI
+
 #if defined(CONFIG_DRM)
 #include <linux/soc/qcom/panel_event_notifier.h>
 #endif

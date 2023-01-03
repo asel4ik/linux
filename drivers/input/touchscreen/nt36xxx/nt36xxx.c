@@ -16,7 +16,7 @@
  * more details.
  *
  */
-
+#define NVT_NT36XXX_I2C
 #include <linux/kernel.h>
 #include <linux/irq.h>
 #include <linux/module.h>
@@ -29,18 +29,7 @@
 #include <linux/of_irq.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 
-#if defined(CONFIG_DRM)
-#include <linux/soc/qcom/panel_event_notifier.h>
-#endif
-
-#if defined(CONFIG_DRM_PANEL)
-#include <drm/drm_panel.h>
-#elif defined(CONFIG_FB)
 #include <linux/notifier.h>
-#include <linux/fb.h>
-#elif defined(CONFIG_HAS_EARLYSUSPEND)
-#include <linux/earlysuspend.h>
-#endif
 
 #include "nt36xxx.h"
 #if NVT_TOUCH_ESD_PROTECT
@@ -72,20 +61,11 @@ static struct workqueue_struct *nvt_fwu_wq;
 extern void Boot_Update_Firmware(struct work_struct *work);
 #endif
 
-#if defined(CONFIG_DRM)
-static struct drm_panel *active_panel;
-static void nvt_i2c_panel_notifier_callback(enum panel_event_notifier_tag tag,
-			struct panel_event_notification *notification, void *client_data);
-
-#elif defined(_MSM_DRM_NOTIFY_H_)
-static int nvt_drm_notifier_callback(struct notifier_block *self, unsigned long event, void *data);
-
-#else
 static int nvt_fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data);
-#endif
 
 static void nvt_irq_enable(bool enable);
 static irqreturn_t nvt_ts_work_func(int irq, void *data);
+
 static int32_t nvt_ts_late_probe_sub(struct i2c_client *client,
 	const struct i2c_device_id *id);
 
@@ -97,7 +77,7 @@ const uint16_t touch_key_array[TOUCH_KEY_NUM] = {
 };
 #endif
 
-#if WAKEUP_GESTURE
+#if NVT_WAKEUP_GESTURE
 const uint16_t gesture_key_array[] = {
 	KEY_POWER,  //GESTURE_WORD_C
 	KEY_POWER,  //GESTURE_WORD_W
@@ -116,23 +96,6 @@ const uint16_t gesture_key_array[] = {
 #endif
 
 static uint8_t bTouchIsAwake = 0;
-
-#if defined(CONFIG_DRM)
-static void nvt_i2c_register_for_panel_events(struct device_node *dp,
-		struct nvt_ts_data *ts)
-{
-	void *cookie = NULL;
-
-	cookie = panel_event_notifier_register(PANEL_EVENT_NOTIFICATION_PRIMARY,
-			PANEL_EVENT_NOTIFIER_CLIENT_PRIMARY_TOUCH, active_panel,
-			&nvt_i2c_panel_notifier_callback, ts);
-	if (!cookie) {
-		pr_err("Failed to register for panel events\n");
-		return;
-	}
-	ts->notifier_cookie = cookie;
-}
-#endif
 
 static void nvt_irq_enable(bool enable)
 {
@@ -313,15 +276,15 @@ int32_t nvt_clear_fw_status(void)
 
 	for (i = 0; i < retry; i++) {
 		//---set xdata index to EVENT BUF ADDR---
-		nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE);
+		nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | NVT_EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE);
 
 		//---clear fw status---
-		buf[0] = EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE;
+		buf[0] = NVT_EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE;
 		buf[1] = 0x00;
 		CTP_I2C_WRITE(ts->client, I2C_FW_Address, buf, 2);
 
 		//---read fw status---
-		buf[0] = EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE;
+		buf[0] = NVT_EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE;
 		buf[1] = 0xFF;
 		CTP_I2C_READ(ts->client, I2C_FW_Address, buf, 2);
 
@@ -354,10 +317,10 @@ int32_t nvt_check_fw_status(void)
 
 	for (i = 0; i < retry; i++) {
 		//---set xdata index to EVENT BUF ADDR---
-		nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE);
+		nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | NVT_EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE);
 
 		//---read fw status---
-		buf[0] = EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE;
+		buf[0] = NVT_EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE;
 		buf[1] = 0x00;
 		CTP_I2C_READ(ts->client, I2C_FW_Address, buf, 2);
 
@@ -382,7 +345,7 @@ int32_t nvt_check_fw_status(void)
  * return:
  *     Executive outcomes. 0---succeed. -1---failed.
  ******************************************************/
-int32_t nvt_check_fw_reset_state(NVT_RST_COMPLETE_STATE check_reset_state)
+int32_t nvt_check_fw_reset_state(enum NVT_RST_COMPLETE_STATE check_reset_state)
 {
 	uint8_t buf[8] = {0};
 	int32_t ret = 0;
@@ -392,11 +355,11 @@ int32_t nvt_check_fw_reset_state(NVT_RST_COMPLETE_STATE check_reset_state)
 		usleep_range(10000, 10000);
 
 		//---read reset state---
-		buf[0] = EVENT_MAP_RESET_COMPLETE;
+		buf[0] = NVT_EVENT_MAP_RESET_COMPLETE;
 		buf[1] = 0x00;
 		CTP_I2C_READ(ts->client, I2C_FW_Address, buf, 6);
 
-		if ((buf[1] >= check_reset_state) && (buf[1] <= RESET_STATE_MAX)) {
+		if ((buf[1] >= check_reset_state) && (buf[1] <= NVT_RESET_STATE_MAX)) {
 			ret = 0;
 			break;
 		}
@@ -426,10 +389,10 @@ int32_t nvt_read_pid(void)
 	uint8_t buf[3] = {0};
 
 	//---set xdata index to EVENT BUF ADDR---
-	nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | EVENT_MAP_PROJECTID);
+	nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | NVT_EVENT_MAP_PROJECTID);
 
 	//---read project id---
-	buf[0] = EVENT_MAP_PROJECTID;
+	buf[0] = NVT_EVENT_MAP_PROJECTID;
 	buf[1] = 0x00;
 	buf[2] = 0x00;
 	CTP_I2C_READ(ts->client, I2C_FW_Address, buf, 3);
@@ -457,10 +420,10 @@ int32_t nvt_get_fw_info(void)
 
 info_retry:
 	//---set xdata index to EVENT BUF ADDR---
-	nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | EVENT_MAP_FWINFO);
+	nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | NVT_EVENT_MAP_FWINFO);
 
 	//---read fw info---
-	buf[0] = EVENT_MAP_FWINFO;
+	buf[0] = NVT_EVENT_MAP_FWINFO;
 	CTP_I2C_READ(ts->client, I2C_FW_Address, buf, 17);
 	ts->fw_ver = buf[1];
 	ts->x_num = buf[3];
@@ -661,7 +624,7 @@ static void nvt_flash_proc_deinit(void)
 }
 #endif
 
-#if WAKEUP_GESTURE
+#if NVT_WAKEUP_GESTURE
 #define GESTURE_WORD_C          12
 #define GESTURE_WORD_W          13
 #define GESTURE_WORD_V          14
@@ -902,7 +865,7 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
 	int32_t i = 0;
 	int32_t finger_cnt = 0;
 
-#if WAKEUP_GESTURE
+#if NVT_WAKEUP_GESTURE
 	if (bTouchIsAwake == 0) {
 		pm_wakeup_event(&ts->input_dev->dev, 5000);
 	}
@@ -922,7 +885,7 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
 		goto XFER_ERROR;
 	}
 
-#if WAKEUP_GESTURE
+#if NVT_WAKEUP_GESTURE
 	if (bTouchIsAwake == 0) {
 		input_id = (uint8_t)(point_data[1] >> 3);
 		nvt_ts_wakeup_gesture_report(input_id, point_data);
@@ -1173,85 +1136,11 @@ out:
 	return ret;
 }
 
-#if defined(CONFIG_DRM)
-static int nvt_ts_check_dt(struct device_node *np)
-{
-	int i;
-	int count;
-	struct device_node *node;
-	struct drm_panel *panel;
-
-	count = of_count_phandle_with_args(np, "panel", NULL);
-	if (count <= 0)
-		return 0;
-
-	for (i = 0; i < count; i++) {
-		node = of_parse_phandle(np, "panel", i);
-		panel = of_drm_find_panel(node);
-		of_node_put(node);
-		if (!IS_ERR(panel)) {
-			active_panel = panel;
-			NVT_LOG(" %s:find\n", __func__);
-			return 0;
-		}
-	}
-
-	NVT_ERR(" %s: not find\n", __func__);
-	return -ENODEV;
-}
-
-static int nvt_ts_check_default_tp(struct device_node *dt, const char *prop)
-{
-	const char **active_tp = NULL;
-	int count, tmp, score = 0;
-	const char *active;
-	int ret, i;
-
-	count = of_property_count_strings(dt->parent, prop);
-	if (count <= 0 || count > 3)
-		return -ENODEV;
-
-	active_tp = kcalloc(count, sizeof(char *),  GFP_KERNEL);
-	if (!active_tp) {
-		NVT_ERR("FTS alloc failed\n");
-		return -ENOMEM;
-	}
-
-	ret = of_property_read_string_array(dt->parent, prop,
-			active_tp, count);
-	if (ret < 0) {
-		NVT_ERR("fail to read %s %d\n", prop, ret);
-		ret = -ENODEV;
-		goto out;
-	}
-
-	for (i = 0; i < count; i++) {
-		active = active_tp[i];
-		if (active != NULL) {
-			tmp = of_device_is_compatible(dt, active);
-			if (tmp > 0)
-				score++;
-		}
-	}
-
-	if (score <= 0) {
-		NVT_ERR("not match this driver\n");
-		ret = -ENODEV;
-		goto out;
-	}
-	ret = 0;
-out:
-	kfree(active_tp);
-	return ret;
-}
-#endif
-
-
 static int32_t nvt_ts_late_probe_sub(struct i2c_client *client,
 	const struct i2c_device_id *id)
 {
 	int32_t ret = 0;
-#if ((TOUCH_KEY_NUM > 0) || WAKEUP_GESTURE)
+#if ((TOUCH_KEY_NUM > 0) || NVT_WAKEUP_GESTURE)
 	int32_t retry = 0;
 #endif
 	//---allocate input device---
@@ -1268,7 +1157,7 @@ static int32_t nvt_ts_late_probe_sub(struct i2c_client *client,
 	ts->max_button_num = TOUCH_KEY_NUM;
 #endif
 
-	ts->int_trigger_type = INT_TRIGGER_TYPE;
+	ts->int_trigger_type = NVT_INT_TRIGGER_TYPE;
 
 
 	//---set input device info.---
@@ -1300,7 +1189,7 @@ static int32_t nvt_ts_late_probe_sub(struct i2c_client *client,
 	}
 #endif
 
-#if WAKEUP_GESTURE
+#if NVT_WAKEUP_GESTURE
 	for (retry = 0; retry < ARRAY_SIZE(gesture_key_array); retry++) {
 		input_set_capability(ts->input_dev, EV_KEY, gesture_key_array[retry]);
 	}
@@ -1363,7 +1252,7 @@ static int32_t nvt_ts_late_probe(struct i2c_client *client,
 	}
 
 	nvt_bootloader_reset();
-	nvt_check_fw_reset_state(RESET_STATE_INIT);
+	nvt_check_fw_reset_state(NVT_RESET_STATE_INIT);
 	nvt_get_fw_info();
 	ret = nvt_ts_late_probe_sub(ts->client, ts->id);
 	if (ret) {
@@ -1387,7 +1276,7 @@ static int32_t nvt_ts_late_probe(struct i2c_client *client,
 		}
 	}
 
-#if WAKEUP_GESTURE
+#if NVT_WAKEUP_GESTURE
 	device_init_wakeup(&ts->input_dev->dev, 1);
 #endif
 
@@ -1476,7 +1365,7 @@ err_create_nvt_esd_check_wq_failed:
 	}
 err_create_nvt_fwu_wq_failed:
 #endif
-#if WAKEUP_GESTURE
+#if NVT_WAKEUP_GESTURE
 	device_init_wakeup(&ts->input_dev->dev, 0);
 #endif
 	free_irq(client->irq, ts);
@@ -1501,22 +1390,6 @@ static int32_t nvt_ts_probe(struct i2c_client *client,
 	const struct i2c_device_id *id)
 {
 	int32_t ret = 0;
-#if defined(CONFIG_DRM)
-	struct device_node *dp = client->dev.of_node;
-#endif
-
-	NVT_LOG("start\n");
-
-#if defined(CONFIG_DRM)
-	if (nvt_ts_check_dt(dp)) {
-		if (!nvt_ts_check_default_tp(dp, "qcom,i2c-touch-active"))
-			ret = -EPROBE_DEFER;
-		else
-			ret = -ENODEV;
-
-		return ret;
-	}
-#endif
 
 	ts = devm_kzalloc(&client->dev, sizeof(struct nvt_ts_data), GFP_KERNEL);
 	if (ts == NULL) {
@@ -1542,36 +1415,16 @@ static int32_t nvt_ts_probe(struct i2c_client *client,
 
 	ts->id = id;
 
-
-#if defined(CONFIG_DRM)
-	nvt_i2c_register_for_panel_events(client->dev.of_node, ts);
-#endif
-
-#elif defined(_MSM_DRM_NOTIFY_H_)
-	ts->drm_notif.notifier_call = nvt_drm_notifier_callback;
-	ret = msm_drm_register_client(&ts->drm_notif);
-	if (ret) {
-		NVT_ERR("register drm_notifier failed. ret=%d\n", ret);
-		goto err_register_drm_notif_failed;
-	}
-#else
 	ts->fb_notif.notifier_call = nvt_fb_notifier_callback;
 	ts->fb_notif.notifier_call = nvt_fb_notifier_callback;
 	if (ret) {
 		NVT_ERR("register fb_notifier failed. ret=%d\n", ret);
 		goto err_register_fb_notif_failed;
 	}
-#endif
 	NVT_LOG("end\n");
 	return 0;
 
-#if defined(CONFIG_DRM)
-
-#elif defined(_MSM_DRM_NOTIFY_H_)
-err_register_drm_notif_failed:
-#else
 err_register_fb_notif_failed:
-#endif
 	return -ENODEV;
 }
 
@@ -1582,20 +1435,13 @@ err_register_fb_notif_failed:
  * return:
  *     Executive outcomes. 0---succeed.
  *******************************************************/
-static int32_t nvt_ts_remove(struct i2c_client *client)
+static void nvt_ts_remove(struct i2c_client *client)
 {
 	NVT_LOG("Removing driver...\n");
 
-#if defined(CONFIG_DRM)
-	if (active_panel && ts->notifier_cookie)
-		panel_event_notifier_unregister(ts->notifier_cookie);
-#elif defined(_MSM_DRM_NOTIFY_H_)
-	if (msm_drm_unregister_client(&ts->drm_notif))
-		NVT_ERR("Error occurred while unregistering drm_notifier.\n");
-#else
 	if (fb_unregister_client(&ts->fb_notif))
 		NVT_ERR("Error occurred while unregistering fb_notifier.\n");
-#endif
+
 
 #if NVT_TOUCH_MP
 	nvt_mp_proc_deinit();
@@ -1624,7 +1470,7 @@ static int32_t nvt_ts_remove(struct i2c_client *client)
 	}
 #endif
 
-#if WAKEUP_GESTURE
+#if NVT_WAKEUP_GESTURE
 	if (ts->input_dev)
 		device_init_wakeup(&ts->input_dev->dev, 0);
 #endif
@@ -1649,7 +1495,7 @@ static int32_t nvt_ts_remove(struct i2c_client *client)
 		ts = NULL;
 	}
 
-	return 0;
+
 }
 
 static void nvt_ts_shutdown(struct i2c_client *client)
@@ -1658,16 +1504,8 @@ static void nvt_ts_shutdown(struct i2c_client *client)
 
 	nvt_irq_enable(false);
 
-#if defined(CONFIG_DRM)
-	if (active_panel && ts->notifier_cookie)
-		panel_event_notifier_unregister(ts->notifier_cookie);
-#elif defined(_MSM_DRM_NOTIFY_H_)
-	if (msm_drm_unregister_client(&ts->drm_notif))
-		NVT_ERR("Error occurred while unregistering drm_notifier.\n");
-#else
 	if (fb_unregister_client(&ts->fb_notif))
 		NVT_ERR("Error occurred while unregistering fb_notifier.\n");
-#endif
 
 #if NVT_TOUCH_MP
 	nvt_mp_proc_deinit();
@@ -1696,7 +1534,7 @@ static void nvt_ts_shutdown(struct i2c_client *client)
 	}
 #endif
 
-#if WAKEUP_GESTURE
+#if NVT_WAKEUP_GESTURE
 	if (ts->input_dev)
 		device_init_wakeup(&ts->input_dev->dev, 0);
 #endif
@@ -1721,7 +1559,7 @@ static int32_t nvt_ts_suspend(struct device *dev)
 		return 0;
 	}
 
-#if !WAKEUP_GESTURE
+#if !NVT_WAKEUP_GESTURE
 	nvt_irq_enable(false);
 #endif
 
@@ -1737,9 +1575,9 @@ static int32_t nvt_ts_suspend(struct device *dev)
 
 	bTouchIsAwake = 0;
 
-#if WAKEUP_GESTURE
+#if NVT_WAKEUP_GESTURE
 	//---write command to enter "wakeup gesture mode"---
-	buf[0] = EVENT_MAP_HOST_CMD;
+	buf[0] = NVT_EVENT_MAP_HOST_CMD;
 	buf[1] = 0x13;
 	CTP_I2C_WRITE(ts->client, I2C_FW_Address, buf, 2);
 
@@ -1749,7 +1587,7 @@ static int32_t nvt_ts_suspend(struct device *dev)
 
 #else // WAKEUP_GESTURE
 	//---write command to enter "deep sleep mode"---
-	buf[0] = EVENT_MAP_HOST_CMD;
+	buf[0] = NVT_EVENT_MAP_HOST_CMD;
 	buf[1] = 0x11;
 #endif // WAKEUP_GESTURE
 
@@ -1800,13 +1638,13 @@ static int32_t nvt_ts_resume(struct device *dev)
 
 	// NT36772 IC due to no boot-load when RESX/TP_RESX
 	// nvt_bootloader_reset();
-	if (nvt_check_fw_reset_state(RESET_STATE_REK)) {
+	if (nvt_check_fw_reset_state(NVT_RESET_STATE_REK)) {
 		NVT_ERR("FW is not ready! Try to bootloader reset...\n");
 		nvt_bootloader_reset();
-		nvt_check_fw_reset_state(RESET_STATE_REK);
+		nvt_check_fw_reset_state(NVT_RESET_STATE_REK);
 	}
 
-#if !WAKEUP_GESTURE
+#if !NVT_WAKEUP_GESTURE
 	nvt_irq_enable(true);
 #endif
 
@@ -1825,83 +1663,6 @@ static int32_t nvt_ts_resume(struct device *dev)
 	return 0;
 }
 
-#if defined(CONFIG_DRM)
-
-static void nvt_i2c_panel_notifier_callback(enum panel_event_notifier_tag tag,
-		struct panel_event_notification *notification, void *client_data)
-{
-	struct nvt_ts_data *ts = client_data;
-
-	if (!notification) {
-		pr_err("Invalid notification\n");
-		return;
-	}
-
-	NVT_LOG("Notification type:%d, early_trigger:%d",
-		notification->notif_type,
-		notification->notif_data.early_trigger);
-
-	switch (notification->notif_type) {
-	case DRM_PANEL_EVENT_UNBLANK:
-		if (notification->notif_data.early_trigger)
-			NVT_LOG("resume notification pre commit\n");
-		else
-			nvt_ts_resume(&ts->client->dev);
-		break;
-
-	case DRM_PANEL_EVENT_BLANK:
-		if (notification->notif_data.early_trigger)
-			nvt_ts_suspend(&ts->client->dev);
-		else
-			NVT_LOG("suspend notification post commit\n");
-		break;
-
-	case DRM_PANEL_EVENT_BLANK_LP:
-		NVT_LOG("received lp event\n");
-		break;
-
-	case DRM_PANEL_EVENT_FPS_CHANGE:
-		NVT_LOG("Received fps change old fps:%d new fps:%d\n",
-			notification->notif_data.old_fps,
-			notification->notif_data.new_fps);
-		break;
-	default:
-		NVT_LOG("notification serviced :%d\n",
-			notification->notif_type);
-		break;
-	}
-}
-
-#elif defined(_MSM_DRM_NOTIFY_H_)
-static int nvt_drm_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
-{
-	struct msm_drm_notifier *evdata = data;
-	int *blank;
-	struct nvt_ts_data *ts =
-		container_of(self, struct nvt_ts_data, drm_notif);
-
-	if (!evdata || (evdata->id != 0))
-		return 0;
-
-	if (evdata->data && ts) {
-		blank = evdata->data;
-		if (event == MSM_DRM_EARLY_EVENT_BLANK) {
-			if (*blank == MSM_DRM_BLANK_POWERDOWN) {
-				NVT_LOG("event=%lu, *blank=%d\n", event, *blank);
-				nvt_ts_suspend(&ts->client->dev);
-			}
-		} else if (event == MSM_DRM_EVENT_BLANK) {
-			if (*blank == MSM_DRM_BLANK_UNBLANK) {
-				NVT_LOG("event=%lu, *blank=%d\n", event, *blank);
-				nvt_ts_resume(&ts->client->dev);
-			}
-		}
-	}
-
-	return 0;
-}
-
-#else
 static int nvt_fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
 {
 	struct fb_event *evdata = data;
@@ -1909,13 +1670,7 @@ static int nvt_fb_notifier_callback(struct notifier_block *self, unsigned long e
 	struct nvt_ts_data *ts =
 		container_of(self, struct nvt_ts_data, fb_notif);
 
-	if (evdata && evdata->data && event == FB_EARLY_EVENT_BLANK) {
-		blank = evdata->data;
-		if (*blank == FB_BLANK_POWERDOWN) {
-			NVT_LOG("event=%lu, *blank=%d\n", event, *blank);
-			nvt_ts_suspend(&ts->client->dev);
-		}
-	} else if (evdata && evdata->data && event == FB_EVENT_BLANK) {
+	if (evdata && evdata->data && event == FB_EVENT_BLANK) {
 		blank = evdata->data;
 		if (*blank == FB_BLANK_UNBLANK) {
 			NVT_LOG("event=%lu, *blank=%d\n", event, *blank);
@@ -1925,7 +1680,7 @@ static int nvt_fb_notifier_callback(struct notifier_block *self, unsigned long e
 
 	return 0;
 }
-#endif
+
 
 static const struct i2c_device_id nvt_ts_id[] = {
 	{ NVT_I2C_NAME, 0 },

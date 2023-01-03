@@ -25,8 +25,24 @@
 #include <linux/spi/spi.h>
 #include <linux/i2c.h>
 #include <linux/uaccess.h>
+#include <linux/fb.h>
+
+#include "nt36xxx_mem_map.h"
+
+
+#define NVT_I2C_NAME "NVT-ts"
+#define I2C_HW_Address 0x62
+#define I2C_BLDR_Address 0x01
+#define I2C_FW_Address 0x01
 
 #define NVT_INT_TRIGGER_TYPE IRQ_TYPE_EDGE_RISING
+
+//feature flags
+#define NVT_DEBUG 0
+#define NVT_WAKEUP_GESTURE 0
+#define NVT_TOUCH_ESD_PROTECT 0
+
+
 
 #if NVT_DEBUG
 #define NVT_LOG(fmt, args...)    pr_err("[%s] %s %d: " fmt, NVT_I2C_NAME, __func__, __LINE__, ##args)
@@ -51,7 +67,7 @@ extern const uint16_t touch_key_array[TOUCH_KEY_NUM];
 
 //---for Pen---
 #define NVT_PEN_PRESSURE_MAX (4095)
-#define NVT__PEN_DISTANCE_MAX (1)
+#define NVT_PEN_DISTANCE_MAX (1)
 #define NVT_PEN_TILT_MIN (-60)
 #define NVT_PEN_TILT_MAX (60)
 
@@ -64,17 +80,17 @@ extern const uint16_t touch_key_array[TOUCH_KEY_NUM];
 #define NVT_TOUCH_MP 1
 #define MT_PROTOCOL_B 1
 #define NVT_WAKEUP_GESTUR 0
-#ifNVT_WAKEUP_GESTUR
+#if NVT_WAKEUP_GESTURE
 extern const uint16_t gesture_key_array[];
 #endif
 #define BOOT_UPDATE_FIRMWARE 1
 #define BOOT_UPDATE_FIRMWARE_NAME "novatek_ts_fw.bin"
 #define NVT_MP_UPDATE_FIRMWARE_NAME   "novatek_ts_mp.bin"
 #define NVT_POINT_DATA_CHECKSUM 1
-#define NVT__POINT_DATA_CHECKSUM_LEN 65
+#define NVT_POINT_DATA_CHECKSUM_LEN 65
 
 //---ESD Protect.---
-#define NVT__TOUCH_ESD_PROTECT 0
+#define NVT_TOUCH_ESD_PROTECT 0
 #define NVT_TOUCH_ESD_CHECK_PERIOD 1500	/* ms */
 #define NVT_TOUCH_WDT_RECOVERY 1
 
@@ -97,14 +113,14 @@ struct nvt_ts_data {
 	int8_t pen_phys[32];
 	void *notifier_cookie;
     #endif
-
+	struct notifier_block fb_notif;
     #if defined(NVT_NT36XXX_I2C)
     struct i2c_client *client;
+    const struct i2c_device_id *id;
     struct device *dev;
     const struct nvt_ts_mem_map *mmap;
     uint8_t carrier_system;
     uint8_t xbuf[1025];
-    uint8_t carrier_system;
     #endif
 
 	struct input_dev *input_dev;
@@ -184,7 +200,7 @@ extern int32_t CTP_I2C_READ(struct i2c_client *client, uint16_t address, uint8_t
 extern int32_t CTP_I2C_WRITE(struct i2c_client *client, uint16_t address, uint8_t *buf, uint16_t len);
 extern void nvt_bootloader_reset(void);
 extern void nvt_sw_reset_idle(void);
-extern int32_t nvt_check_fw_reset_state(RST_COMPLETE_STATE check_reset_state);
+extern int32_t nvt_check_fw_reset_state(enum NVT_RST_COMPLETE_STATE check_reset_state);
 extern int32_t nvt_get_fw_info(void);
 extern int32_t nvt_clear_fw_status(void);
 extern int32_t nvt_check_fw_status(void);
@@ -216,7 +232,7 @@ int32_t nvt_spi_check_spi_dma_tx_info(void);
 int32_t nvt_spi_set_page(uint32_t addr);
 int32_t nvt_spi_write_addr(uint32_t addr, uint8_t data);
 
-#if NVT_SPI_TOUCH_EXT_PROC
+#if NVT_TOUCH_EXT_PROC
 int32_t nvt_spi_extra_proc_init(void);
 void nvt_spi_extra_proc_deinit(void);
 #endif
@@ -228,5 +244,8 @@ extern void nvt_spi_mp_proc_deinit(void);
 
 #if NVT_TOUCH_ESD_PROTECT
 extern void nvt_spi_esd_check_enable(uint8_t enable);
-#endif /* #if NVT_SPI_TOUCH_ESD_PROTECT */
+#endif /* #if NVT_TOUCH_ESD_PROTECT */
 #endif
+
+
+#endif /* _LINUX_NVT_TOUCH_H */

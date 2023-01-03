@@ -20,7 +20,7 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/slab.h>
-
+#define NVT_NT36XXX_I2C
 #include "nt36xxx.h"
 #include "nt36xxx_mp_ctrlram.h"
 
@@ -364,10 +364,10 @@ static int32_t nvt_polling_hand_shake_status(void)
 
 	for (i = 0; i < retry; i++) {
 		//---set xdata index to EVENT BUF ADDR---
-		nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE);
+		nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | NVT_EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE);
 
 		//---read fw status---
-		buf[0] = EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE;
+		buf[0] = NVT_EVENT_MAP_HANDSHAKING_or_SUB_CMD_BYTE;
 		buf[1] = 0x00;
 		CTP_I2C_READ(ts->client, I2C_FW_Address, buf, 2);
 
@@ -380,17 +380,17 @@ static int32_t nvt_polling_hand_shake_status(void)
 	if (i >= retry) {
 		NVT_ERR("polling hand shake status failed, buf[1]=0x%02X\n", buf[1]);
 
-		// Read back 5 bytes from offset EVENT_MAP_HOST_CMD for debug check
-		nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | EVENT_MAP_HOST_CMD);
+		// Read back 5 bytes from offset NVT_EVENT_MAP_HOST_CMD for debug check
+		nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | NVT_EVENT_MAP_HOST_CMD);
 
-		buf[0] = EVENT_MAP_HOST_CMD;
+		buf[0] = NVT_EVENT_MAP_HOST_CMD;
 		buf[1] = 0x00;
 		buf[2] = 0x00;
 		buf[3] = 0x00;
 		buf[4] = 0x00;
 		buf[5] = 0x00;
 		CTP_I2C_READ(ts->client, I2C_FW_Address, buf, 6);
-		NVT_ERR("Read back 5 bytes from offset EVENT_MAP_HOST_CMD: 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X\n", buf[1], buf[2], buf[3], buf[4], buf[5]);
+		NVT_ERR("Read back 5 bytes from offset NVT_EVENT_MAP_HOST_CMD: 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X\n", buf[1], buf[2], buf[3], buf[4], buf[5]);
 
 		return -1;
 	} else {
@@ -408,16 +408,16 @@ static int8_t nvt_switch_FreqHopEnDis(uint8_t FreqHopEnDis)
 
 	for (retry = 0; retry < 20; retry++) {
 		//---set xdata index to EVENT BUF ADDR---
-		nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | EVENT_MAP_HOST_CMD);
+		nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | NVT_EVENT_MAP_HOST_CMD);
 
 		//---switch FreqHopEnDis---
-		buf[0] = EVENT_MAP_HOST_CMD;
+		buf[0] = NVT_EVENT_MAP_HOST_CMD;
 		buf[1] = FreqHopEnDis;
 		CTP_I2C_WRITE(ts->client, I2C_FW_Address, buf, 2);
 
 		msleep(35);
 
-		buf[0] = EVENT_MAP_HOST_CMD;
+		buf[0] = NVT_EVENT_MAP_HOST_CMD;
 		buf[1] = 0xFF;
 		CTP_I2C_READ(ts->client, I2C_FW_Address, buf, 2);
 
@@ -513,10 +513,10 @@ static void nvt_enable_noise_collect(int32_t frame_num)
 	uint8_t buf[8] = {0};
 
 	//---set xdata index to EVENT BUF ADDR---
-	nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | EVENT_MAP_HOST_CMD);
+	nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | NVT_EVENT_MAP_HOST_CMD);
 
 	//---enable noise collect---
-	buf[0] = EVENT_MAP_HOST_CMD;
+	buf[0] = NVT_EVENT_MAP_HOST_CMD;
 	buf[1] = 0x47;
 	buf[2] = 0xAA;
 	buf[3] = frame_num;
@@ -594,10 +594,10 @@ static void nvt_enable_open_test(void)
 	uint8_t buf[8] = {0};
 
 	//---set xdata index to EVENT BUF ADDR---
-	nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | EVENT_MAP_HOST_CMD);
+	nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | NVT_EVENT_MAP_HOST_CMD);
 
 	//---enable open test---
-	buf[0] = EVENT_MAP_HOST_CMD;
+	buf[0] = NVT_EVENT_MAP_HOST_CMD;
 	buf[1] = 0x45;
 	buf[2] = 0xAA;
 	buf[3] = 0x02;
@@ -610,10 +610,10 @@ static void nvt_enable_short_test(void)
 	uint8_t buf[8] = {0};
 
 	//---set xdata index to EVENT BUF ADDR---
-	nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | EVENT_MAP_HOST_CMD);
+	nvt_set_page(I2C_FW_Address, ts->mmap->EVENT_BUF_ADDR | NVT_EVENT_MAP_HOST_CMD);
 
 	//---enable short test---
-	buf[0] = EVENT_MAP_HOST_CMD;
+	buf[0] = NVT_EVENT_MAP_HOST_CMD;
 	buf[1] = 0x43;
 	buf[2] = 0xAA;
 	buf[3] = 0x02;
@@ -1112,7 +1112,7 @@ static int32_t nvt_selftest_open(struct inode *inode, struct file *file)
 		return -EAGAIN;
 	}
 
-	if (nvt_check_fw_reset_state(RESET_STATE_NORMAL_RUN)) {
+	if (nvt_check_fw_reset_state(NVT_RESET_STATE_NORMAL_RUN)) {
 		mutex_unlock(&ts->lock);
 		NVT_ERR("check fw reset state failed!\n");
 		return -EAGAIN;

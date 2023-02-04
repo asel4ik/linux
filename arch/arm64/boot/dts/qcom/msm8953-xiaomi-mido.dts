@@ -95,6 +95,62 @@
 	};
 };
 
+&mdss {
+status = "okay";
+};
+
+
+
+&dsi0 {
+	vdda-supply = <&pm8953_s3>;
+	vddio-supply = <&pm8953_l6>;
+	
+	status = "okay";
+	
+	panel: panel@0 {
+		compatible = "xiaomi,mido-panel";
+		reg = <0>;
+
+		backlight = <&pmi8950_wled>;
+
+		reset-gpios = <&tlmm 61 GPIO_ACTIVE_LOW>;
+
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&pmx_mdss_default &mdss_te_default>;
+		pinctrl-1 = <&pmx_mdss_sleep &mdss_te_default>;
+
+		//vsp-supply = <&lab_vreg>;
+		//vsn-supply = <&ibb_vreg>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&dsi0_out>;
+			};
+		};
+	};
+};
+
+&dsi0_out {
+	data-lanes = <0 1 2 3>;
+	remote-endpoint = <&panel_in>;
+};
+
+&dsi0_phy {
+	vcca-supply = <&pm8953_l3>;
+	status = "okay";
+};
+
+&pmi8950_wled {
+	status = "okay";
+
+	/* Don't copy-paste! See pmi8950.dtsi */
+
+	qcom,current-limit-microamp = <20000>;
+	qcom,enabled-strings = <0 1>;
+	qcom,ovp-millivolt = <29600>;
+};
+
+
 &hsusb_phy {
 	vdd-supply = <&pm8953_l3>;
 	vdda-pll-supply = <&pm8953_l7>;
@@ -318,6 +374,28 @@
 		drive-strength = <8>;
 		bias-pull-up;
 	};
+	
+	pmx_mdss_default: pmx-mdss-default-pins {
+		pins = "gpio61";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+		output-high;
+	};
+
+	pmx_mdss_sleep: pmx-mdss-sleep-pins {
+		pins = "gpio61";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+	
+	mdss_te_default: mdss-te-pins {
+				pins = "gpio24";
+				function = "mdp_vsync";
+				drive-strength = <2>;
+				bias-pull-down;
+			};
 };
 
 &usb3 {

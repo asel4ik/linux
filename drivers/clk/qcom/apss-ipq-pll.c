@@ -9,6 +9,17 @@
 #include "clk-alpha-pll.h"
 
 static const u8 ipq_pll_offsets[][PLL_OFF_MAX_REGS] = {
+	[CLK_ALPHA_PLL_TYPE_DEFAULT] =  {
+		[PLL_OFF_L_VAL] = 0x04,
+		[PLL_OFF_ALPHA_VAL] = 0x08,
+		[PLL_OFF_ALPHA_VAL_U] = 0x0c,
+		[PLL_OFF_USER_CTL] = 0x10,
+		[PLL_OFF_USER_CTL_U] = 0x14,
+		[PLL_OFF_CONFIG_CTL] = 0x18,
+		[PLL_OFF_TEST_CTL] = 0x1c,
+		[PLL_OFF_TEST_CTL_U] = 0x20,
+		[PLL_OFF_STATUS] = 0x24,
+	},
 	[CLK_ALPHA_PLL_TYPE_HUAYRA] =  {
 		[PLL_OFF_L_VAL] = 0x08,
 		[PLL_OFF_ALPHA_VAL] = 0x10,
@@ -29,6 +40,24 @@ static const u8 ipq_pll_offsets[][PLL_OFF_MAX_REGS] = {
 		[PLL_OFF_STATUS] = 0x28,
 		[PLL_OFF_TEST_CTL] = 0x30,
 		[PLL_OFF_TEST_CTL_U] = 0x34,
+	},
+};
+
+static struct clk_alpha_pll ipq_pll_default = {
+	.offset = 0x0,
+	.regs = ipq_pll_offsets[CLK_ALPHA_PLL_TYPE_DEFAULT],
+	.flags = SUPPORTS_DYNAMIC_UPDATE,
+	.clkr = {
+		.enable_reg = 0x0,
+		.enable_mask = BIT(0),
+		.hw.init = &(struct clk_init_data){
+			.name = "a53pll",
+			.parent_data = &(const struct clk_parent_data) {
+				.fw_name = "xo",
+			},
+			.num_parents = 1,
+			.ops = &clk_alpha_pll_ops,
+		},
 	},
 };
 
@@ -106,6 +135,47 @@ static const struct alpha_pll_config ipq8074_pll_config = {
 	.test_ctl_hi_val = 0x4000,
 };
 
+static const struct alpha_pll_config msm8953_pll_config = {
+	.l = 0x2e,
+	.config_ctl_val = 0x200d4828,
+	.config_ctl_hi_val = 0x6,
+	.post_div_val = BIT(8),
+	.post_div_mask = GENMASK(11, 8),
+	.early_output_mask = BIT(3),
+	.aux2_output_mask = BIT(2),
+	.aux_output_mask = BIT(1),
+	.main_output_mask = BIT(0),
+	.test_ctl_val = 0x1c000000,
+	.test_ctl_hi_val = 0x4000,
+};
+
+static const struct pll_vco sdm632_cci_pll_vco[] = {
+	VCO(2, 500000000, 1000000000),
+};
+
+/* CCI IS OF "DEFAULT" TYPE, 691.2Mhz boot rate
+   ALPHA field is set to achieve fractional scalling reaching 748.81Mhz
+   maybe we should kick it off and just not use fractional?
+   DS dts only uses integer achieveable freqs in freq-tbl-khz
+   so if somehow someone manage to read freqs on real hardware we might be set
+ */
+static const struct alpha_pll_config sdm632_cci_pll_config = {
+	.l = 0x24,
+	.alpha = 0x270000
+	.alpha_en_mask = BIT(24),
+	.vco_table = sdm632_cci_pll_vco,
+	.num_vco = ARRAY_SIZE(sdm632_cci_pll_vco),
+	.vco_mask = 0x3 << 20,
+	.vco_val = 0x2 << 20,
+	.config_ctl_val = 0x4001055b,
+	.config_ctl_hi_val = 0x6,
+	.post_div_val = BIT(8),
+	.post_div_mask = GENMASK(11, 8),
+	.early_output_mask = BIT(3),
+	.test_ctl_val = 0x1c000000,
+	.test_ctl_hi_val = 0x4000,
+};
+
 struct apss_pll_data {
 	int pll_type;
 	struct clk_alpha_pll *pll;
@@ -129,6 +199,22 @@ static struct apss_pll_data ipq6018_pll_data = {
 	.pll = &ipq_pll_huayra,
 	.pll_config = &ipq6018_pll_config,
 };
+
+static struct apss_pll_data msm8953_pll_data = {
+	.pll_type = CLK_ALPHA_PLL_TYPE_HUAYRA,
+	.pll = &ipq_pll_huayra,
+	.pll_config = &msm8953_pll_config,
+};
+
+static struct apss_pll_data sdm632_cci_pll_data = {
+	.pll_type = CLK_ALPHA_PLL_TYPE_DEFAULT,
+	.pll = &ipq_pll_default,
+	.pll_config = &sdm632_cci_pll_config,
+};
+
+
+
+
 
 static const struct regmap_config ipq_pll_regmap_config = {
 	.reg_bits		= 32,

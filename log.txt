@@ -1,0 +1,230 @@
+[0] smem ram ptable found: ver: 1 len: 5
+[0] smem ram ptable found: ver: 1 len: 5
+[0] welcome to lk
+
+[0] calling constructors
+[0] initializing heap
+[0] initializing threads
+[0] initializing dpc
+[0] initializing timers
+[0] creating bootstrap completion thread
+[10] top of bootstrap2()
+[10] initializing platform
+[10] platform_init()
+[10] initializing target
+[10] target_init()
+[20] initialising mmc_slot =1
+[20]  Initializing MMC host data structure and clock!
+[60] Decoded CID fields:
+[60] Manufacturer ID: 11
+[70] OEM ID: 0x100
+[70] Product Name: 032G32
+[70] Product revision: 0.0
+[70] Product serial number: 7F66F22F
+[80] Manufacturing date: 3 2009
+[80] Decoded CSD fields:
+[80] cmmc_structure: 3
+[90] card_cmd_class: 8f5
+[90] write_blk_len: 512
+[90] read_blk_len: 512
+[90] r2w_factor: 1
+[90] sector_size: 0
+[100] c_size_mult:7
+[100] c_size: 4095
+[100] nsac_clk_cycle: 0
+[100] taac_ns: 15000000
+[100] tran_speed: 0 kbps
+[110] erase_blk_len: 1
+[110] read_blk_misalign: 0
+[110] write_blk_misalign: 0
+[110] read_blk_partial: 0
+[120] write_blk_partial: 0
+[120] wp_grp_size: 8192
+[120] Card Capacity: 31268536320 Bytes
+[120] SDHC Running in HS400 mode
+[130] Done initialization of the card
+[130] erase_grpsize: 31
+[130] erase_grpmult: 31
+[140] wp_grpsize: 7
+[140] wp_grpen: 1
+[140] perm_wp: 0
+[140] temp_wp: 0
+[140] mbr partition table dump:
+[150] 	0: status 0x0, type 0xee, start 0x1, len 0xffffffff
+[150] 	1: status 0x0, type 0x0, start 0x0, len 0x0
+[160] 	2: status 0x0, type 0x0, start 0x0, len 0x0
+[160] 	3: status 0x0, type 0x0, start 0x0, len 0x0
+[160] found GPT
+[170] mbr partition table dump:
+[170] 	0: status 0x6f, type 0x72, start 0x2e616964, len 0x440a0dff
+[180] 	1: status 0x69, type 0x65, start 0xa0dff72, len 0x73657250
+[180] 	2: status 0x73, type 0x79, start 0x6f742079, len 0x73657220
+[190] 	3: status 0x74, type 0xd, start 0x0, len 0xd8cbac00
+[200] initialising mmc_slot =2
+[210]  Initializing MMC host data structure and clock!
+[220] Error: Command timeout error
+[220] Failure getting OCR response from MMC Card
+[220] MMC card failed to respond, try for SD card
+[230] Error: Command timeout error
+[230] The response for CMD8 does not match the supplied value
+[230] Failed to initialize SD card
+[240] Failed detecting MMC/SDC @ slot2
+[240] sdcard init failed![250] pm8x41_get_is_cold_boot: Warm boot
+[250] Waiting for the RPM to populate smd channel table
+[250] calling apps_init()
+[250] Board: platform: 293, foundry: 0x3, platform_version: 0x10001, platform_hw: 0xb, platform_subtype: 0x0, target: 0x1000b, baseband: 0x0, platform_hlos_subtype: 0x0
+[270] pmic_info[0]: type: 0x10016, version: 0x10000, target: 0x10016
+[280] pmic_info[1]: type: 0x10011, version: 0x20000, target: 0x20011
+[280] pmic_info[2]: type: 0x10000, version: 0x0, target: 0x0
+[290] pmic_info[3]: type: 0x0, version: 0x0, target: 0x0
+[290] Updating board target id: 0x1000b -> 0x1000b
+[300] Command line from primary bootloader: lk2nd lk2nd lk2nd androidboot.emmc=true androidboot.verifiedbootstate=orange androidboot.veritymode=enforcing androidboot.keymaster=1 androidboot.serialno=7f66f22f0903 androidboot.boot_reason= androidboot.secureboot=1 gpt androidboot.baseband=msm mdss_mdp.panel=1:dsi:0:qcom,mdss_dsi_nt35596_tianma_fhd_video:1:none:cfg:single_dsi
+[330] Unknown bootloader, cannot match
+[330] Device model: Xiaomi Redmi Note 4X Snapdragon (mido)
+[340] Display Init: Start
+[340] Panel: 
+[340] Continuous splash detected: base: 0x90001000, stride: 3240, source: 1080x1920 (0,0), output: 1080x1920 (0,0) (cmd mode: 0)
+[350] smem ram ptable found: ver: 1 len: 5
+[360] smem ram ptable found: ver: 1 len: 5
+[360] ERROR: Splash image header invalid
+[410] Display Init: Done
+[410] serial number: 7f66f22f
+[420] fs-boot: Can't open hd2
+[420] Unable to load boot.img from ext2. Continuing legacy boot
+[430] Unable to locate /bootselect partition
+[430] ERROR: Invalid boot image header
+[430] ERROR: Could not do normal boot. Reverting to fastboot mode.
+[440] recovery() Reverting to default 0x0
+[440] system() Found EXT FS
+[440] cache() Found EXT FS
+[450] userdata() Reverting to default 0x8b0a
+[450] ptn[0]:Name[modem] Size[172032] Type[0] First[131072] Last[303103]
+[460] ptn[1]:Name[fsc] Size[2] Type[0] First[393216] Last[393217]
+[460] ptn[2]:Name[ssd] Size[16] Type[0] First[393218] Last[393233]
+[470] ptn[3]:Name[sbl1] Size[1024] Type[0] First[393234] Last[394257]
+[480] ptn[4]:Name[sbl1bak] Size[1024] Type[0] First[394258] Last[395281]
+[480] ptn[5]:Name[rpm] Size[1024] Type[0] First[395282] Last[396305]
+[490] ptn[6]:Name[rpmbak] Size[1024] Type[0] First[396306] Last[397329]
+[490] ptn[7]:Name[tz] Size[4096] Type[0] First[397330] Last[401425]
+[500] ptn[8]:Name[tzbak] Size[4096] Type[0] First[401426] Last[405521]
+[510] ptn[9]:Name[devcfg] Size[512] Type[0] First[405522] Last[406033]
+[510] ptn[10]:Name[devcfgbak] Size[512] Type[0] First[406034] Last[406545]
+[520] ptn[11]:Name[dsp] Size[32768] Type[0] First[406546] Last[439313]
+[530] ptn[12]:Name[modemst1] Size[3072] Type[0] First[439314] Last[442385]
+[530] ptn[13]:Name[modemst2] Size[3072] Type[0] First[442386] Last[445457]
+[540] ptn[14]:Name[DDR] Size[64] Type[0] First[524288] Last[524351]
+[550] ptn[15]:Name[fsg] Size[3072] Type[0] First[524352] Last[527423]
+[550] ptn[16]:Name[sec] Size[32] Type[0] First[527424] Last[527455]
+[560] ptn[17]:Name[splash] Size[22528] Type[0] First[655360] Last[677887]
+[560] ptn[18]:Name[aboot] Size[2048] Type[0] First[786432] Last[788479]
+[570] ptn[19]:Name[abootbak] Size[2048] Type[0] First[788480] Last[790527]
+[580] ptn[20]:Name[boot] Size[129024] Type[0] First[792576] Last[921599]
+[580] ptn[21]:Name[recovery] Size[131072] Type[0] First[921600] Last[1052671]
+[590] ptn[22]:Name[devinfo] Size[2048] Type[0] First[1052672] Last[1054719]
+[600] ptn[23]:Name[system] Size[6291456] Type[0] First[1054720] Last[7346175]
+[600] ptn[24]:Name[cache] Size[524288] Type[0] First[7471104] Last[7995391]
+[610] ptn[25]:Name[persist] Size[65536] Type[0] First[7995392] Last[8060927]
+[620] ptn[26]:Name[misc] Size[2048] Type[0] First[8060928] Last[8062975]
+[620] ptn[27]:Name[keystore] Size[1024] Type[0] First[8062976] Last[8063999]
+[630] ptn[28]:Name[config] Size[64] Type[0] First[8064000] Last[8064063]
+[640] ptn[29]:Name[oem] Size[524288] Type[0] First[8064064] Last[8588351]
+[640] ptn[30]:Name[limits] Size[64] Type[0] First[8650752] Last[8650815]
+[650] ptn[31]:Name[mota] Size[1024] Type[0] First[8781824] Last[8782847]
+[660] ptn[32]:Name[dip] Size[2048] Type[0] First[8782848] Last[8784895]
+[660] ptn[33]:Name[mdtp] Size[65536] Type[0] First[8784896] Last[8850431]
+[670] ptn[34]:Name[syscfg] Size[1024] Type[0] First[8850432] Last[8851455]
+[680] ptn[35]:Name[mcfg] Size[8192] Type[0] First[8851456] Last[8859647]
+[680] ptn[36]:Name[lksecapp] Size[256] Type[0] First[8912896] Last[8913151]
+[690] ptn[37]:Name[lksecappbak] Size[256] Type[0] First[8913152] Last[8913407]
+[700] ptn[38]:Name[cmnlib] Size[512] Type[0] First[8913408] Last[8913919]
+[700] ptn[39]:Name[cmnlibbak] Size[512] Type[0] First[8913920] Last[8914431]
+[710] ptn[40]:Name[cmnlib64] Size[512] Type[0] First[8914432] Last[8914943]
+[720] ptn[41]:Name[cmnlib64bak] Size[512] Type[0] First[8914944] Last[8915455]
+[720] ptn[42]:Name[keymaster] Size[512] Type[0] First[8915456] Last[8915967]
+[730] ptn[43]:Name[keymasterbak] Size[512] Type[0] First[8915968] Last[8916479]
+[740] ptn[44]:Name[apdp] Size[512] Type[0] First[9043968] Last[9044479]
+[740] ptn[45]:Name[msadp] Size[512] Type[0] First[9044480] Last[9044991]
+[750] ptn[46]:Name[dpo] Size[16] Type[0] First[9044992] Last[9045007]
+[760] ptn[47]:Name[cust] Size[1703936] Type[0] First[9045008] Last[10748943]
+[760] ptn[48]:Name[userdata] Size[50322383] Type[0] First[10748944] Last[61071326]
+[770] ptn[49]:Name[lk2nd] Size[2048] Type[0] First[790528] Last[792575]
+[780] fs-boot: Scanned devices:
+[780] fs-boot: Can't open hd2
+[780] fs-boot: Looking at hd1:
+[780]   hd1p24:      system (  3072 MiB): 
+[790]   hd1p25:       cache (   256 MiB): 
+[790]   hd1p49:    userdata ( 24571 MiB): 
+[800] fastboot_init()
+[800] Loading keystore failed status 6 [800] serial number: 7f66f22f
+[870] creating fastboot menu keys detect thread
+[1370] fastboot: processing commands
+[1370] usb_read(): len = 64
+[1380] usb_read(): DONE. req.length = 17
+
+[1380] fastboot: getvar:slot-count
+[1380] usb_write(): len = 4 str = OKAY
+[1390] usb_write(): DONE: len = 4 req->length = 4 str = OKAY
+[1390] usb_read(): len = 64
+[1400] usb_read(): DONE. req.length = 20
+
+[1400] fastboot: getvar:slot-suffixes
+[1400] usb_write(): len = 4 str = OKAY
+[1410] usb_write(): DONE: len = 4 req->length = 4 str = OKAY
+[1410] usb_read(): len = 64
+[1420] usb_read(): DONE. req.length = 6
+
+[1420] fastboot: upload
+[1420] usb_write(): len = 18 str = FAILno data staged
+[1430] usb_write(): DONE: len = 18 req->length = 18 str = FAILno data staged
+[1430] usb_read(): len = 64
+[3020] usb_read(): DONE. req.length = 17
+
+[3020] fastboot: getvar:slot-count
+[3020] usb_write(): len = 4 str = OKAY
+[3030] usb_write(): DONE: len = 4 req->length = 4 str = OKAY
+[3030] usb_read(): len = 64
+[3040] usb_read(): DONE. req.length = 20
+
+[3040] fastboot: getvar:slot-suffixes
+[3040] usb_write(): len = 4 str = OKAY
+[3050] usb_write(): DONE: len = 4 req->length = 4 str = OKAY
+[3050] usb_read(): len = 64
+[3060] usb_read(): DONE. req.length = 6
+
+[3060] fastboot: upload
+[3060] usb_write(): len = 18 str = FAILno data staged
+[3070] usb_write(): DONE: len = 18 req->length = 18 str = FAILno data staged
+[3070] usb_read(): len = 64
+[4380] usb_read(): DONE. req.length = 17
+
+[4380] fastboot: getvar:slot-count
+[4380] usb_write(): len = 4 str = OKAY
+[4390] usb_write(): DONE: len = 4 req->length = 4 str = OKAY
+[4390] usb_read(): len = 64
+[4400] usb_read(): DONE. req.length = 20
+
+[4400] fastboot: getvar:slot-suffixes
+[4400] usb_write(): len = 4 str = OKAY
+[4410] usb_write(): DONE: len = 4 req->length = 4 str = OKAY
+[4410] usb_read(): len = 64
+[4420] usb_read(): DONE. req.length = 6
+
+[4420] fastboot: upload
+[4420] usb_write(): len = 18 str = FAILno data staged
+[4430] usb_write(): DONE: len = 18 req->length = 18 str = FAILno data staged
+[4430] usb_read(): len = 64
+[8440] usb_read(): DONE. req.length = 17
+
+[8440] fastboot: getvar:slot-count
+[8440] usb_write(): len = 4 str = OKAY
+[8450] usb_write(): DONE: len = 4 req->length = 4 str = OKAY
+[8450] usb_read(): len = 64
+[8460] usb_read(): DONE. req.length = 20
+
+[8460] fastboot: getvar:slot-suffixes
+[8460] usb_write(): len = 4 str = OKAY
+[8470] usb_write(): DONE: len = 4 req->length = 4 str = OKAY
+[8470] usb_read(): len = 64
+[8480] usb_read(): DONE. req.length = 10
+
+[8480] fastboot: oem lk_log

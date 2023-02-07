@@ -36,12 +36,11 @@
 		framebuffer@90001000 {
 			compatible = "simple-framebuffer";
 			reg = <0 0x90001000 0 (1920 * 1080 * 3)>;
-
 			width = <1080>;
 			height = <1920>;
-			stride = <(1080 * 3)>;
+			stride = <(1080*3)>;
 			format = "r8g8b8";
-
+			status = "disabled";
 			power-domains = <&gcc MDSS_GDSC>;
 
 			clocks = <&gcc GCC_MDSS_AHB_CLK>,

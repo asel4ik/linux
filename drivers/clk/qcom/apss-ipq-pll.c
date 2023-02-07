@@ -45,8 +45,7 @@ static const u8 ipq_pll_offsets[][PLL_OFF_MAX_REGS] = {
 
 static struct clk_alpha_pll ipq_pll_default = {
 	.offset = 0x0,
-	.regs = ipq_pll_offsets[CLK_ALPHA_PLL_TYPE_DEFAULT],
-	.flags = SUPPORTS_DYNAMIC_UPDATE,
+	.regs = ipq_pll_offsets[CLK_ALPHA_PLL_TYPE_HUAYRA],
 	.clkr = {
 		.enable_reg = 0x0,
 		.enable_mask = BIT(0),
@@ -158,7 +157,7 @@ static const struct pll_vco sdm632_cci_pll_vco[] = {
    maybe we should kick it off and just not use fractional?
    DS dts only uses integer achieveable freqs in freq-tbl-khz
    so if somehow someone manage to read freqs on real hardware we might be set
- */
+
 static const struct alpha_pll_config sdm632_cci_pll_config = {
 	.l = 0x24,
 	.alpha = 0x270000
@@ -175,7 +174,7 @@ static const struct alpha_pll_config sdm632_cci_pll_config = {
 	.test_ctl_val = 0x1c000000,
 	.test_ctl_hi_val = 0x4000,
 };
-
+ */
 struct apss_pll_data {
 	int pll_type;
 	struct clk_alpha_pll *pll;
@@ -202,17 +201,16 @@ static struct apss_pll_data ipq6018_pll_data = {
 
 static struct apss_pll_data msm8953_pll_data = {
 	.pll_type = CLK_ALPHA_PLL_TYPE_HUAYRA,
-	.pll = &ipq_pll_huayra,
+	.pll = &ipq_pll_default,
 	.pll_config = &msm8953_pll_config,
 };
-
+/*
 static struct apss_pll_data sdm632_cci_pll_data = {
 	.pll_type = CLK_ALPHA_PLL_TYPE_DEFAULT,
 	.pll = &ipq_pll_default,
 	.pll_config = &sdm632_cci_pll_config,
 };
-
-
+*/
 
 
 
@@ -261,6 +259,7 @@ static const struct of_device_id apss_ipq_pll_match_table[] = {
 	{ .compatible = "qcom,ipq5332-a53pll", .data = &ipq5332_pll_data },
 	{ .compatible = "qcom,ipq6018-a53pll", .data = &ipq6018_pll_data },
 	{ .compatible = "qcom,ipq8074-a53pll", .data = &ipq8074_pll_data },
+	{ .compatible = "qcom,msm8953-a53pll", .data = &msm8953_pll_data },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, apss_ipq_pll_match_table);

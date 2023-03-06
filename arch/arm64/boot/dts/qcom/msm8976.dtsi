@@ -490,7 +490,7 @@
 
 		qcom,ipc-1 = <&apcs 8 12>;
 		qcom,ipc-2 = <&apcs 8 9>;
-		qcom,ipc-3 = <&apcs 8 18>;
+		qcom,ipc-3 = <&apcs 8 19>; //fixed
 
 		apps_smsm: apps@0 {
 			reg = <0>;

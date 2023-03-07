@@ -29,6 +29,7 @@ struct apq8016_sbc_data {
 	struct snd_soc_jack jack;
 	bool jack_setup;
 	bool use_ibit_clk;
+	bool use_osr_clk;
 	int mi2s_clk_count[MI2S_COUNT];
 };
 
@@ -45,6 +46,7 @@ struct apq8016_sbc_data {
 #define SPKR_CTL_TLMM_WS_EN_SEL_SEC	BIT(18)
 #define DEFAULT_MCLK_RATE		9600000
 #define MI2S_BCLK_RATE			1536000
+#define MI2S_OSR_RATE			12288000
 
 static int apq8016_dai_init(struct snd_soc_pcm_runtime *rtd, int mi2s)
 {
@@ -227,6 +229,12 @@ static int msm8916_qdsp6_startup(struct snd_pcm_substream *substream)
 	ret = snd_soc_dai_set_sysclk(cpu_dai, qdsp6_get_bit_clk_id(data, mi2s), MI2S_BCLK_RATE, 0);
 	if (ret)
 		dev_err(card->dev, "Failed to enable LPAIF bit clk: %d\n", ret);
+if (data->use_osr_clk)
+{
+ret = snd_soc_dai_set_sysclk(cpu_dai, LPAIF_OSR_CLK, MI2S_OSR_RATE, 0);
+	if (ret)
+		dev_err(card->dev, "Failed to enable OSR bit clk: %d\n", ret);
+};
 	return ret;
 }
 
@@ -248,6 +256,11 @@ static void msm8916_qdsp6_shutdown(struct snd_pcm_substream *substream)
 	ret = snd_soc_dai_set_sysclk(cpu_dai, qdsp6_get_bit_clk_id(data, mi2s), 0, 0);
 	if (ret)
 		dev_err(card->dev, "Failed to disable LPAIF bit clk: %d\n", ret);
+	if (data->use_osr_clk){
+	ret = snd_soc_dai_set_sysclk(cpu_dai, LPAIF_OSR_CLK, 0, 0);
+	if (ret)
+		dev_err(card->dev, "Failed to disable LPAIF bit clk: %d\n", ret);
+	    };
 }
 
 static const struct snd_soc_ops msm8916_qdsp6_be_ops = {
@@ -289,6 +302,15 @@ static void msm8916_qdsp6_add_ops(struct snd_soc_card *card)
 }
 
 static void msm8953_qdsp6_add_ops(struct snd_soc_card *card)
+{
+	struct apq8016_sbc_data *pdata = snd_soc_card_get_drvdata(card);
+
+	pdata->use_ibit_clk = true;
+
+	msm8916_qdsp6_add_ops(card);
+}
+
+static void msm8976_qdsp6_add_ops(struct snd_soc_card *card)
 {
 	struct apq8016_sbc_data *pdata = snd_soc_card_get_drvdata(card);
 
@@ -354,9 +376,9 @@ static const struct of_device_id apq8016_sbc_device_id[] __maybe_unused = {
 	{ .compatible = "qcom,apq8016-sbc-sndcard", .data = apq8016_sbc_add_ops },
 	{ .compatible = "qcom,msm8916-qdsp6-sndcard", .data = msm8916_qdsp6_add_ops },
 	{ .compatible = "qcom,msm8953-qdsp6-sndcard", .data = msm8953_qdsp6_add_ops },
+	{ .compatible = "qcom,msm8976-qdsp6-sndcard", .data = msm8976_qdsp6_add_ops },
 	{},
 };
-MODULE_DEVICE_TABLE(of, apq8016_sbc_device_id);
 
 static struct platform_driver apq8016_sbc_platform_driver = {
 	.driver = {

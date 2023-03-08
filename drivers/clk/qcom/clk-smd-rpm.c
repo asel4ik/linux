@@ -45,15 +45,17 @@
 		},							      \
 	};								      \
 	__DEFINE_CLK_SMD_RPM_AO_PREFIX(_prefix, _name, _active, type,	      \
-				       r_id, key, ao_flags)
+				       r_id, key, ao_flags, false)
 
 #define __DEFINE_CLK_SMD_RPM_AO_PREFIX(_prefix, _name, _active,		      \
-				       type, r_id, key, ao_flags)	      \
+				       type, r_id, key, ao_flags,	      \
+				       _keep_alive)			      \
 	static struct clk_smd_rpm clk_smd_rpm_##_prefix##_active = {	      \
 		.rpm_res_type = (type),					      \
 		.rpm_clk_id = (r_id),					      \
 		.active_only = true,					      \
 		.rpm_key = (key),					      \
+		.keep_alive = (_keep_alive),				      \
 		.peer = &clk_smd_rpm_##_prefix##_name,			      \
 		.rate = INT_MAX,					      \
 		.hw.init = &(struct clk_init_data){			      \
@@ -170,6 +172,7 @@ struct clk_smd_rpm {
 	const bool active_only;
 	bool enabled;
 	bool branch;
+	bool keep_alive;
 	struct clk_smd_rpm *peer;
 	struct clk_hw hw;
 	unsigned long rate;
@@ -198,11 +201,16 @@ static int clk_smd_rpm_handoff(struct clk_smd_rpm *r)
 		.value = cpu_to_le32(r->branch ? 1 : INT_MAX),
 	};
 
+	/* Set up keepalive clocks with a minimum bus rate */
+	if (r->keep_alive)
+		req.value = cpu_to_le32(19200); /* 19.2 MHz */
+
 	ret = qcom_rpm_smd_write(r->rpm, QCOM_SMD_RPM_ACTIVE_STATE,
 				 r->rpm_res_type, r->rpm_clk_id, &req,
 				 sizeof(req));
 	if (ret)
 		return ret;
+
 	ret = qcom_rpm_smd_write(r->rpm, QCOM_SMD_RPM_SLEEP_STATE,
 				 r->rpm_res_type, r->rpm_clk_id, &req,
 				 sizeof(req));
@@ -438,12 +446,29 @@ static int clk_smd_rpm_is_enabled(struct clk_hw *hw)
 	return r->enabled;
 }
 
+static int clk_smd_rpm_determine_rate(struct clk_hw *hw,
+				      struct clk_rate_request *req)
+{
+	struct clk_smd_rpm *r = to_clk_smd_rpm(hw);
+
+	/*
+	 * RPM resolves the rates internally. All we have to do on the kernel
+	 * side is ensure that we don't accidentally put down the keepalive
+	 * clocks, which could happen if they received a vote below 19.2 MHz.
+	 */
+	if (r->keep_alive)
+		req->rate = max(req->rate, 19200000UL);
+
+	return 0;
+}
+
 static const struct clk_ops clk_smd_rpm_ops = {
 	.prepare	= clk_smd_rpm_prepare,
 	.unprepare	= clk_smd_rpm_unprepare,
 	.set_rate	= clk_smd_rpm_set_rate,
 	.round_rate	= clk_smd_rpm_round_rate,
 	.recalc_rate	= clk_smd_rpm_recalc_rate,
+	.determine_rate = clk_smd_rpm_determine_rate,
 	.is_enabled	= clk_smd_rpm_is_enabled,
 	.is_prepared	= clk_smd_rpm_is_enabled,
 };

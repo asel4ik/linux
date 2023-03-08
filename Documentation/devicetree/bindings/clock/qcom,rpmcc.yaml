@@ -58,6 +58,12 @@ properties:
     minItems: 1
     maxItems: 2
 
+  qcom,clk-disable-unused:
+    type: boolean
+    description:
+      Indicates whether unused RPM clocks can be shut down with the common
+      unused clock cleanup. Requires a functional interconnect driver.
+
 required:
   - compatible
   - '#clock-cells'

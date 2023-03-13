@@ -61,6 +61,8 @@ static int apq8016_dai_init(struct snd_soc_pcm_runtime *rtd, int mi2s)
 	case MI2S_PRIMARY:
 		writel(readl(pdata->spkr_iomux) | SPKR_CTL_PRI_WS_SLAVE_SEL_11,
 			pdata->spkr_iomux);
+			
+			
 		break;
 
 	case MI2S_QUATERNARY:
@@ -225,7 +227,12 @@ static int msm8916_qdsp6_startup(struct snd_pcm_substream *substream)
 
 	if (++data->mi2s_clk_count[mi2s] > 1)
 		return 0;
-
+		
+      ret = snd_soc_dai_set_sysclk(cpu_dai,  LPAIF_DIG_CLK, DEFAULT_MCLK_RATE, 0);
+      if (ret)
+		dev_err(card->dev, "Failed to enable codec_mclk: %d\n", ret);
+		
+		
 	ret = snd_soc_dai_set_sysclk(cpu_dai, qdsp6_get_bit_clk_id(data, mi2s), MI2S_BCLK_RATE, 0);
 	if (ret)
 		dev_err(card->dev, "Failed to enable LPAIF bit clk: %d\n", ret);
@@ -259,7 +266,7 @@ static void msm8916_qdsp6_shutdown(struct snd_pcm_substream *substream)
 	if (data->use_osr_clk){
 	ret = snd_soc_dai_set_sysclk(cpu_dai, LPAIF_OSR_CLK, 0, 0);
 	if (ret)
-		dev_err(card->dev, "Failed to disable LPAIF bit clk: %d\n", ret);
+		dev_err(card->dev, "Failed to disable OSR bit clk: %d\n", ret);
 	    };
 }
 
@@ -312,11 +319,8 @@ static void msm8953_qdsp6_add_ops(struct snd_soc_card *card)
 
 static void msm8976_qdsp6_add_ops(struct snd_soc_card *card)
 {
-	struct apq8016_sbc_data *pdata = snd_soc_card_get_drvdata(card);
-
-	pdata->use_ibit_clk = true;
-
-	msm8916_qdsp6_add_ops(card);
+	//struct apq8016_sbc_data *pdata = snd_soc_card_get_drvdata(card);
+		msm8916_qdsp6_add_ops(card);
 }
 
 static const struct snd_soc_dapm_widget apq8016_sbc_dapm_widgets[] = {

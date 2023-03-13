@@ -1,0 +1,186 @@
+From patchwork Tue Feb 14 02:09:53 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [1/4] drm/msm/a5xx: fix setting of the CP_PREEMPT_ENABLE_LOCAL
+ register
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+X-Patchwork-Id: 522638
+Message-Id: <20230214020956.164473-2-dmitry.baryshkov@linaro.org>
+To: Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+ Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc: freedreno@lists.freedesktop.org,
+ Yassine Oudjana <y.oudjana@protonmail.com>,
+ linux-arm-msm@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ dri-devel@lists.freedesktop.org, Stephen Boyd <swboyd@chromium.org>,
+ Jami Kettunen <jami.kettunen@protonmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>,
+ David Airlie <airlied@gmail.com>
+Date: Tue, 14 Feb 2023 05:09:53 +0300
+
+Rather than writing CP_PREEMPT_ENABLE_GLOBAL twice, follow the vendor
+kernel and set CP_PREEMPT_ENABLE_LOCAL register instead. a5xx_submit()
+will override it during submission, but let's get the sequence correct.
+
+Fixes: b1fc2839d2f9 ("drm/msm: Implement preemption for A5XX targets")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
+index 660ba0db8900..8b2df12d8681 100644
+--- a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
+@@ -151,8 +151,8 @@ static void a5xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
+ 	OUT_RING(ring, 1);
+ 
+ 	/* Enable local preemption for finegrain preemption */
+-	OUT_PKT7(ring, CP_PREEMPT_ENABLE_GLOBAL, 1);
+-	OUT_RING(ring, 0x02);
++	OUT_PKT7(ring, CP_PREEMPT_ENABLE_LOCAL, 1);
++	OUT_RING(ring, 0x1);
+ 
+ 	/* Allow CP_CONTEXT_SWITCH_YIELD packets in the IB2 */
+ 	OUT_PKT7(ring, CP_YIELD_ENABLE, 1);
+
+From patchwork Tue Feb 14 02:09:54 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [2/4] drm/msm/a5xx: fix highest bank bit for a530
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+X-Patchwork-Id: 522639
+Message-Id: <20230214020956.164473-3-dmitry.baryshkov@linaro.org>
+To: Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+ Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc: freedreno@lists.freedesktop.org,
+ Yassine Oudjana <y.oudjana@protonmail.com>,
+ linux-arm-msm@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ dri-devel@lists.freedesktop.org, Stephen Boyd <swboyd@chromium.org>,
+ Jami Kettunen <jami.kettunen@protonmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>,
+ David Airlie <airlied@gmail.com>
+Date: Tue, 14 Feb 2023 05:09:54 +0300
+
+A530 has highest bank bit equal to 15 (like A540). Fix values written to
+REG_A5XX_RB_MODE_CNTL and REG_A5XX_TPL1_MODE_CNTL registers.
+
+Fixes: 1d832ab30ce6 ("drm/msm/a5xx: Add support for Adreno 508, 509, 512 GPUs")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
+index 8b2df12d8681..047c5e8c87ff 100644
+--- a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
+@@ -806,7 +806,7 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
+ 	gpu_write(gpu, REG_A5XX_RBBM_AHB_CNTL2, 0x0000003F);
+ 
+ 	/* Set the highest bank bit */
+-	if (adreno_is_a540(adreno_gpu))
++	if (adreno_is_a540(adreno_gpu) || adreno_is_a530(adreno_gpu))
+ 		regbit = 2;
+ 	else
+ 		regbit = 1;
+
+From patchwork Tue Feb 14 02:09:55 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [3/4] drm/msm/a5xx: fix the emptyness check in the preempt code
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+X-Patchwork-Id: 522642
+Message-Id: <20230214020956.164473-4-dmitry.baryshkov@linaro.org>
+To: Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+ Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc: freedreno@lists.freedesktop.org,
+ Yassine Oudjana <y.oudjana@protonmail.com>,
+ linux-arm-msm@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ dri-devel@lists.freedesktop.org, Stephen Boyd <swboyd@chromium.org>,
+ Jami Kettunen <jami.kettunen@protonmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>,
+ David Airlie <airlied@gmail.com>
+Date: Tue, 14 Feb 2023 05:09:55 +0300
+
+Quoting Yassine: ring->memptrs->rptr is never updated and stays 0, so
+the comparison always evaluates to false and get_next_ring always
+returns ring 0 thinking it isn't empty.
+
+Fix this by calling get_rptr() instead of reading rptr directly.
+
+Reported-by: Yassine Oudjana <y.oudjana@protonmail.com>
+Fixes: b1fc2839d2f9 ("drm/msm: Implement preemption for A5XX targets")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+ drivers/gpu/drm/msm/adreno/a5xx_preempt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/msm/adreno/a5xx_preempt.c b/drivers/gpu/drm/msm/adreno/a5xx_preempt.c
+index 7658e89844b4..7e0affd60993 100644
+--- a/drivers/gpu/drm/msm/adreno/a5xx_preempt.c
++++ b/drivers/gpu/drm/msm/adreno/a5xx_preempt.c
+@@ -63,7 +63,7 @@ static struct msm_ringbuffer *get_next_ring(struct msm_gpu *gpu)
+ 		struct msm_ringbuffer *ring = gpu->rb[i];
+ 
+ 		spin_lock_irqsave(&ring->preempt_lock, flags);
+-		empty = (get_wptr(ring) == ring->memptrs->rptr);
++		empty = (get_wptr(ring) == gpu->funcs->get_rptr(gpu, ring));
+ 		spin_unlock_irqrestore(&ring->preempt_lock, flags);
+ 
+ 		if (!empty)
+
+From patchwork Tue Feb 14 02:09:56 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [4/4] drm/msm/a5xx: fix context faults during ring switch
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+X-Patchwork-Id: 522640
+Message-Id: <20230214020956.164473-5-dmitry.baryshkov@linaro.org>
+To: Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+ Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc: freedreno@lists.freedesktop.org,
+ Yassine Oudjana <y.oudjana@protonmail.com>,
+ linux-arm-msm@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ dri-devel@lists.freedesktop.org, Stephen Boyd <swboyd@chromium.org>,
+ Jami Kettunen <jami.kettunen@protonmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>,
+ David Airlie <airlied@gmail.com>
+Date: Tue, 14 Feb 2023 05:09:56 +0300
+
+The rptr_addr is set in the preempt_init_ring(), which is called from
+a5xx_gpu_init(). It uses shadowptr() to set the address, however the
+shadow_iova is not yet initialized at that time. Move the rptr_addr
+setting to the a5xx_preempt_hw_init() which is called after setting the
+shadow_iova, getting the correct value for the address.
+
+Fixes: 8907afb476ac ("drm/msm: Allow a5xx to mark the RPTR shadow as privileged")
+Suggested-by: Rob Clark <robdclark@gmail.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+ drivers/gpu/drm/msm/adreno/a5xx_preempt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/msm/adreno/a5xx_preempt.c b/drivers/gpu/drm/msm/adreno/a5xx_preempt.c
+index 7e0affd60993..f58dd564d122 100644
+--- a/drivers/gpu/drm/msm/adreno/a5xx_preempt.c
++++ b/drivers/gpu/drm/msm/adreno/a5xx_preempt.c
+@@ -207,6 +207,7 @@ void a5xx_preempt_hw_init(struct msm_gpu *gpu)
+ 		a5xx_gpu->preempt[i]->wptr = 0;
+ 		a5xx_gpu->preempt[i]->rptr = 0;
+ 		a5xx_gpu->preempt[i]->rbase = gpu->rb[i]->iova;
++		a5xx_gpu->preempt[i]->rptr_addr = shadowptr(a5xx_gpu, gpu->rb[i]);
+ 	}
+ 
+ 	/* Write a 0 to signal that we aren't switching pagetables */
+@@ -257,7 +258,6 @@ static int preempt_init_ring(struct a5xx_gpu *a5xx_gpu,
+ 	ptr->data = 0;
+ 	ptr->cntl = MSM_GPU_RB_CNTL_DEFAULT | AXXX_CP_RB_CNTL_NO_UPDATE;
+ 
+-	ptr->rptr_addr = shadowptr(a5xx_gpu, ring);
+ 	ptr->counter = counters_iova;
+ 
+ 	return 0;

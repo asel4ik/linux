@@ -52,7 +52,7 @@ config DRM_MSM_GPU_SUDO
 
 config DRM_MSM_GPU_A5XX_NO_PREEMPT
 	bool "Disable preemption on A5XX GPUs"
-	depends on DRM_MSM && EXPERT
+	depends on DRM_MSM
 	default n
 
 config DRM_MSM_MDSS

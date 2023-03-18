@@ -101,3 +101,7 @@
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <135 4>;
 };
+
+&panel {
+	compatible = "xiaomi,mido-panel";
+};

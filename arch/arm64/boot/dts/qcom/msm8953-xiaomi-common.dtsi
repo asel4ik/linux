@@ -28,10 +28,13 @@
 	};
 };
 
+&mdss {
+status = "okay";
+};
 &dsi0 {
 	vdda-supply = <&pm8953_s3>;
 	vddio-supply = <&pm8953_l6>;
-
+	status = "okay";
 	panel: panel@0 {
 		reg = <0>;
 
@@ -60,6 +63,7 @@
 };
 
 &dsi0_phy {
+	status = "okay";
 	vcca-supply = <&pm8953_l3>;
 };
 

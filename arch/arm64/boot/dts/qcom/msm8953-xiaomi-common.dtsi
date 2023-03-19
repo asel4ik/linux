@@ -155,9 +155,8 @@ status = "okay";
 		interrupt-parent = <&tlmm>;
 		interrupts = <65 IRQ_TYPE_EDGE_FALLING>;
 
-		pinctrl-names = "default", "sleep";
+		pinctrl-names = "default";
 		pinctrl-0 = <&ts_reset_active &ts_int_active>;
-		pinctrl-1 = <&ts_reset_suspend &ts_int_suspend>;
 
 		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
 

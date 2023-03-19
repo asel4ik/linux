@@ -4,7 +4,7 @@
  * Copyright (c) 2014, Sony Mobile Communications AB.
  *
  */
-
+#define DEBUG 1
 #include <linux/acpi.h>
 #include <linux/atomic.h>
 #include <linux/clk.h>

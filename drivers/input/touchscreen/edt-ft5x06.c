@@ -1451,7 +1451,7 @@ static int edt_ft5x06_ts_resume(struct device *dev)
 		struct gpio_desc *wake_gpio = tsdata->wake_gpio;
 
 		gpiod_set_value_cansleep(wake_gpio, 0);
-		usleep_range(5000, 6000);
+		usleep_range(9000, 10000);
 		gpiod_set_value_cansleep(wake_gpio, 1);
 	}
 

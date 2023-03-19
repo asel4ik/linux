@@ -1095,7 +1095,29 @@
 				};
 			};
 		};
-
+		
+		dma_blsp1: dma-controller@7884000{
+			compatible = "qcom,bam-v1.7.0";
+			reg = <0x07884000 0x1f000>;
+			interrupts = <GIC_SPI 238 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&gcc GCC_BLSP1_AHB_CLK>;
+			clock-names = "bam_clk";
+			#dma-cells = <1>;
+			qcom,ee = <0>;
+			status = "disabled";
+		};
+		
+		dma_blsp2: dma-controller@7ac4000 {
+			compatible = "qcom,bam-v1.7.0";
+			reg = <0x07ac4000 0x1f000>;
+			interrupts = <GIC_SPI 239 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&gcc GCC_BLSP2_AHB_CLK>;
+			clock-names = "bam_clk";
+			#dma-cells = <1>;
+			qcom,ee = <0>;
+			status = "disabled";
+		};
+		
 		uart_0: serial@78af000 {
 			compatible = "qcom,msm-uartdm-v1.4", "qcom,msm-uartdm";
 			reg = <0x78af000 0x200>;
@@ -1132,7 +1154,10 @@
 			clock-names = "core", "iface";
 			clocks = <&gcc GCC_BLSP1_QUP2_I2C_APPS_CLK>,
 				 <&gcc GCC_BLSP1_AHB_CLK>;
-
+				 
+			//dmas = <&dma_blsp1 6>, <&dma_blsp1 7>;
+			//dma-names = "tx", "rx";
+			
 			pinctrl-names = "default", "sleep";
 			pinctrl-0 = <&i2c_2_default>;
 			pinctrl-1 = <&i2c_2_sleep>;
@@ -1156,7 +1181,8 @@
 
 			#address-cells = <1>;
 			#size-cells = <0>;
-
+			//dmas = <&dma_blsp1 8>, <&dma_blsp1 9>;
+			//dma-names = "tx", "rx";
 			status = "disabled";
 		};
 

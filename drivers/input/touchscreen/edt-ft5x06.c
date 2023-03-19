@@ -12,7 +12,7 @@
  * Development of this driver has been sponsored by Glyn:
  *    http://www.glyn.com/Products/Displays
  */
-#define DEBUG 1
+
 #include <linux/debugfs.h>
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -167,12 +167,7 @@ static int edt_ft5x06_ts_readwrite(struct i2c_client *client,
 
 	ret = i2c_transfer(client->adapter, wrmsg, i);
 	if (ret < 0)
-{
-dev_dbg(&client->dev,
-			"i2c_transfer returned, error %d\n", ret);
-return ret;
-
-};
+		return ret;
 	if (ret != i)
 		return -EIO;
 
@@ -890,30 +885,16 @@ static int edt_ft5x06_ts_identify(struct i2c_client *client,
 	int error;
 	char *model_name = tsdata->name;
 	char *fw_version = tsdata->fw_version;
-        int retries= 10;
+
 	/* see what we find if we assume it is a M06 *
 	 * if we get less than EDT_NAME_LEN, we don't want
 	 * to have garbage in there
 	 */
 	memset(rdbuf, 0, sizeof(rdbuf));
-	
-	while (retries--) {
-		error = edt_ft5x06_ts_readwrite(client, 1, "\xBB",
+	error = edt_ft5x06_ts_readwrite(client, 1, "\xBB",
 					EDT_NAME_LEN - 1, rdbuf);
-		if (!(error < 0)) {
-			dev_info(&client->dev, "Managed to read something at retry:%d", retries);
-			break;
-		}
-		
-		if (retries == 0) {
-	          if (error){
-	            dev_dbg(&client->dev, "haven't managed to properly read after all retries result:%d\n",error);
+	if (error)
 		return error;
-		};
-		}
-	};
-	
-
 
 	/* Probe content for something consistent.
 	 * M06 starts with a response byte, M12 gives the data directly.
@@ -1519,7 +1500,7 @@ static struct i2c_driver edt_ft5x06_ts_driver = {
 	.driver = {
 		.name = "edt_ft5x06",
 		.of_match_table = edt_ft5x06_of_match,
-		//.pm = pm_sleep_ptr(&edt_ft5x06_ts_pm_ops),
+		.pm = pm_sleep_ptr(&edt_ft5x06_ts_pm_ops),
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 	},
 	.id_table = edt_ft5x06_ts_id,

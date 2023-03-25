@@ -891,10 +891,12 @@ static int edt_ft5x06_ts_identify(struct i2c_client *client,
 	 * to have garbage in there
 	 */
 	memset(rdbuf, 0, sizeof(rdbuf));
-	error = edt_ft5x06_ts_readwrite(client, 1, "\xBB",
+identify:	error = edt_ft5x06_ts_readwrite(client, 1, "\xBB",
 					EDT_NAME_LEN - 1, rdbuf);
-	if (error)
-		return error;
+	if (error==-ETIMEDOUT)
+	goto identify;
+	if(error)
+	return error;
 
 	/* Probe content for something consistent.
 	 * M06 starts with a response byte, M12 gives the data directly.
@@ -1237,7 +1239,7 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client)
 	}
 
 	if (tsdata->reset_gpio) {
-		usleep_range(5000, 6000);
+		usleep_range(8000, 9000);
 		gpiod_set_value_cansleep(tsdata->reset_gpio, 0);
 		msleep(300);
 	}

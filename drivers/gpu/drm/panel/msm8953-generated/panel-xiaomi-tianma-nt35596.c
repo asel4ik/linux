@@ -51,6 +51,8 @@ static void nt35596_tianma_reset(struct nt35596_tianma *ctx)
 static int nt35596_tianma_on(struct nt35596_tianma *ctx)
 {
 	struct mipi_dsi_device *dsi = ctx->dsi;
+		struct device *dev = &dsi->dev;
+			int ret;
 
 	dsi->mode_flags |= MIPI_DSI_MODE_LPM;
 
@@ -62,6 +64,13 @@ static int nt35596_tianma_on(struct nt35596_tianma *ctx)
 	usleep_range(1000, 2000);
 	dsi_generic_write_seq(dsi, 0xfb, 0x01);
 	dsi_generic_write_seq(dsi, 0x35, 0x00);
+	
+	ret = mipi_dsi_dcs_set_display_brightness(dsi, 0xff0f);
+	if (ret < 0) {
+		dev_err(dev, "Failed to set display brightness: %d\n", ret);
+		return ret;
+	}
+	
 	dsi_generic_write_seq(dsi, 0x36, 0x00);
 	dsi_generic_write_seq(dsi, 0x51, 0xff);
 	dsi_generic_write_seq(dsi, 0x53, 0x2c);

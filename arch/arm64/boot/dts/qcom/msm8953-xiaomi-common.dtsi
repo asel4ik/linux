@@ -167,6 +167,25 @@ status = "okay";
 	};
 };
 
+&iris {
+	vddxo-supply = <&pm8953_l7>;
+	vddrfa-supply = <&pm8953_l19>;
+	vddpa-supply = <&pm8953_l9>;
+	vdddig-supply = <&pm8953_l5>;
+};
+
+&mpss {
+	status = "okay";
+	pll-supply = <&pm8953_l7>;
+
+};
+
+
+&pronto {
+	status = "okay";
+	vddpx-supply = <&pm8953_l5>;
+};
+
 &pm8953_resin {
 	linux,code = <KEY_VOLUMEDOWN>;
 	status = "okay";

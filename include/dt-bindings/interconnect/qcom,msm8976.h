@@ -8,10 +8,10 @@
 
 /* BIMC fabric */
 #define MAS_APPS_PROC		0
-#define MAS_SMMNOC_BIMC	1
+#define MAS_SMMNOC_BIMC	        1
 #define MAS_SNOC_BIMC		2
 #define MAS_TCU_0		3
-#define SLV_EBI		4
+#define SLV_EBI		        4
 #define SLV_BIMC_SNOC		5
 
 
@@ -43,14 +43,14 @@
 #define SLV_TCSR		24
 #define SLV_TLMM		25
 #define SLV_CRYPTO_0_CFG	26
-#define SLV_MESSAGE_RAM	27
-#define SLV_PDM		28
+#define SLV_MESSAGE_RAM	        27
+#define SLV_PDM		        28
 #define SLV_PRNG		29
 #define SLV_PMIC_ARB		30
 #define SLV_SNOC_CFG		31
 #define SLV_DCC_CFG		32
 #define SLV_CAMERA_SS_CFG	33
-#define SLV_DISP_SS_CFG	34
+#define SLV_DISP_SS_CFG	        34
 #define SLV_VENUS_CFG		35
 #define SLV_SDCC_1		36
 #define SLV_BLSP_1		37
@@ -69,7 +69,7 @@
 #define MAS_PCNOC_SNOC		2
 #define MAS_QDSS_ETR		3
 #define MAS_LPASS_PROC		4
-#define MAS_IPA		5
+#define MAS_IPA		        5
 #define QDSS_INT		6
 #define SNOC_INT_0		7
 #define SNOC_INT_1		8
@@ -91,9 +91,9 @@
 #define MAS_MDP1		3
 #define MAS_VENUS_0		4
 #define MAS_VENUS_1		5
-#define MAS_VFE0		6
-#define MAS_VFE1		7
-#define MAS_CPP		8
+#define MAS_VFE_0		6
+#define MAS_VFE_1		7
+#define MAS_CPP		        8
 #define MM_INT_0		9
 #define SLV_MNOC_BIMC		10
 

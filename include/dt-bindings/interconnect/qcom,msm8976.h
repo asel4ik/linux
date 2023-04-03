@@ -14,7 +14,6 @@
 #define SLV_EBI		        4
 #define SLV_BIMC_SNOC		5
 
-
 /* PCNOC fabric */
 #define MAS_USB_HS2		0
 #define MAS_BLSP_1		1
@@ -62,7 +61,6 @@
 #define SLV_BLSP_2		43
 #define SLV_PCNOC_SNOC		44
 
-
 /* SNOC fabric */
 #define MAS_QDSS_BAM		0
 #define MAS_BIMC_SNOC		1
@@ -83,7 +81,6 @@
 #define SLV_CATS_1		16
 #define SLV_LPASS		17
 
-
 /* SNOC-MM fabric */
 #define MAS_JPEG		0
 #define MAS_OXILI		1
@@ -95,6 +92,6 @@
 #define MAS_VFE_1		7
 #define MAS_CPP		        8
 #define MM_INT_0		9
-#define SLV_MNOC_BIMC		10
+#define SLV_SMMNOC_BIMC		10
 
 #endif /* __DT_BINDINGS_INTERCONNECT_QCOM_MSM8976_H */

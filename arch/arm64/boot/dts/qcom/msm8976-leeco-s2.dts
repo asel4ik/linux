@@ -72,6 +72,10 @@
 	};
 };
 
+&adreno_gpu
+{
+status = "okay";
+};
 &sdhc_1 {
 	vmmc-supply = <&pm8950_l8>;
 	vqmmc-supply = <&pm8950_l5>;
@@ -130,6 +134,31 @@
 	vdd-supply = <&pm8950_l17>;
 	vdda-supply = <&pm8950_l1>;
 	vddio-supply = <&pm8950_l6>;
+};
+
+&sound_card {
+	status = "okay";
+
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act  &tlmm_pri_act &cross_con_sus >;
+	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus  &tlmm_pri_sus &cross_con_act>;
+	model = "motorola-ocean";
+
+
+	dai-link-quinary {
+		link-name = "Quinary MI2S";
+		cpu {
+			sound-dai = <&q6afedai QUINARY_MI2S_RX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+
+		codec {
+			sound-dai = <&speaker_codec>;
+		};
+	};
 };
 
 &blsp1_i2c4 {
@@ -239,6 +268,22 @@
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <8 4>;
 
+
+	cross_con_sus: cross_con_sus {
+		pins = "gpio69";
+		function = "gpio";
+		bias-pull-down;
+		drive-strength = <2>;
+
+	};
+	cross_con_act: cross_con_act {
+		pins = "gpio69";
+		function = "gpio";
+		bias-pull-down;
+		drive-strength = <8>;
+
+	};
+	
 	mdp_vsync_p_gpio: mdp_sync_p_gpio {
 		pins = "gpio24";
 		function = "mdp_vsync";
@@ -296,6 +341,18 @@
 		drive-strength = <2>;
 		bias-pull-down;
 	};
+	
+	tlmm_pri_act: tlmm_quin_default {
+	pins = "gpio123", "gpio124", "gpio125", "gpio127";
+		function = "pri_mi2s";
+		drive-strength = <8>;
+	};
+	tlmm_pri_sus: tlmm_quin_sleep {
+		pins =  "gpio123", "gpio124", "gpio125", "gpio127";
+		function = "pri_mi2s";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
 };
 
 &pm8004_lsid5 {
@@ -345,7 +402,16 @@
 	v3p3-supply = <&pm8950_l13>;
 };
 
-
+&wcd_codec {
+	status="okay";
+	qcom,micbias1-ext-cap;
+	qcom,hphl-jack-type-normally-open;
+	qcom,mbhc-vthreshold-low = <75 150 237 450 500>;
+	qcom,mbhc-vthreshold-high = <75 150 237 450 500>;
+	vdd-cdc-io-supply = <&pm8950_l5>;
+	vdd-cdc-tx-rx-cx-supply = <&pm8950_s4>;
+	vdd-micbias-supply = <&pm8950_l13>;
+};
 
 &rpm_requests {
 

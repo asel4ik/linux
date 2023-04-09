@@ -99,9 +99,9 @@ status = "okay";
 		reg = <0>;
 		backlight = <&pmi8950_wled>;
 
-		//supply-names = "vsp", "vsn";
-		//vsp-supply = <&lab_vreg>;
-		//vsn-supply = <&ibb_vreg>;
+		supply-names = "vsp", "vsn";
+		vsp-supply = <&lab_vreg>;
+		vsn-supply = <&ibb_vreg>;
 
 		reset-gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
 
@@ -541,4 +541,6 @@ status = "okay";
 		};
 	};
 };
-
+&tsens {
+status = "disabled";
+};

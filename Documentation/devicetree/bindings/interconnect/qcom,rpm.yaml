@@ -20,6 +20,9 @@ properties:
 
   compatible:
     enum:
+      - qcom,msm8909-bimc
+      - qcom,msm8909-pcnoc
+      - qcom,msm8909-snoc
       - qcom,msm8916-bimc
       - qcom,msm8916-pcnoc
       - qcom,msm8916-snoc
@@ -72,6 +75,7 @@ patternProperties:
     properties:
       compatible:
         enum:
+          - qcom,msm8909-snoc-mm
           - qcom,msm8939-snoc-mm
 
       '#interconnect-cells':
@@ -108,6 +112,9 @@ allOf:
         compatible:
           contains:
             enum:
+              - qcom,msm8909-bimc
+              - qcom,msm8909-pcnoc
+              - qcom,msm8909-snoc
               - qcom,msm8916-bimc
               - qcom,msm8916-pcnoc
               - qcom,msm8916-snoc

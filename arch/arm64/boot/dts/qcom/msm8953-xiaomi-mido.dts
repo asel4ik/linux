@@ -91,10 +91,7 @@
 
 	touchscreen-size-x = <1080>;
 	touchscreen-size-y = <1920>;
-};
 
-&panel {
-	compatible = "xiaomi,mido-panel";
 };
 
 &sdhc_2 {

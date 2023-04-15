@@ -10,10 +10,6 @@
 	chassis-type = "handset";
 	qcom,msm-id = <293 0>;
 
-	battery: battery {
-		compatible = "simple-battery";
-	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
 
@@ -30,45 +26,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-};
-
-&dsi0 {
-	vdda-supply = <&pm8953_s3>;
-	vddio-supply = <&pm8953_l6>;
-	status = "okay";
-
-	panel: panel@0 {
-		reg = <0>;
-
-		backlight = <&pmi8950_wled>;
-
-		reset-gpios = <&tlmm 61 GPIO_ACTIVE_LOW>;
-
-		pinctrl-names = "default", "sleep";
-		pinctrl-0 = <&pmx_mdss_default &mdss_te_default>;
-		pinctrl-1 = <&pmx_mdss_sleep &mdss_te_default>;
-
-		vsp-supply = <&lab_vreg>;
-		vsn-supply = <&ibb_vreg>;
-
-		port {
-			panel_in: endpoint {
-				remote-endpoint = <&dsi0_out>;
-			};
-		};
-	};
-};
-
-&dsi0_out {
-	data-lanes = <0 1 2 3>;
-	remote-endpoint = <&panel_in>;
-};
-
-&dsi0_phy {
-	vddio-supply = <&pm8953_l6>;
-	vcca-supply = <&pm8953_l3>;
-
-	status = "okay";
 };
 
 &hsusb_phy {
@@ -91,7 +48,7 @@
 		imon-slot-no = <1>;
 		interleave_mode = <0>;
 
-		#sound-dai-cells = <0>;
+		#sound-dai-cells = <1>;
 	};
 
 	aw2013_led: led-controller@45 {
@@ -165,49 +122,15 @@
 
 		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
 
-		iovcc-supply = <&pm8953_l6>;
+		iovcc-supply = <&pm8953_l5>;
 		vcc-supply = <&pm8953_l10>;
 
 		status = "disabled";
 	};
 };
 
-&iris {
-	vddxo-supply = <&pm8953_l7>;
-	vddrfa-supply = <&pm8953_l19>;
-	vddpa-supply = <&pm8953_l9>;
-	vdddig-supply = <&pm8953_l5>;
-
-	status = "okay";
-};
-
-&lpass {
-	status = "okay";
-};
-
-&mdss {
-	status = "okay";
-};
-
-&modem {
-	pll-supply = <&pm8953_l7>;
-
-	status = "okay";
-};
-
 &pm8953_resin {
 	linux,code = <KEY_VOLUMEDOWN>;
-	status = "okay";
-};
-
-&pmi8950_fg {
-	monitored-battery = <&battery>;
-	power-supplies = <&pmi8950_smbcharger>;
-	status = "okay";
-};
-
-&pmi8950_smbcharger {
-	monitored-battery = <&battery>;
 	status = "okay";
 };
 
@@ -216,11 +139,6 @@
 	qcom,ovp-millivolt = <29600>;
 	qcom,num-strings = <2>;
 
-	status = "okay";
-};
-
-&pronto {
-	vddpx-supply = <&pm8953_l5>;
 	status = "okay";
 };
 
@@ -281,6 +199,7 @@
 		pm8953_l6: l6 {
 			regulator-min-microvolt = <1800000>;
 			regulator-max-microvolt = <1800000>;
+			regulator-always-on;
 		};
 
 		pm8953_l7: l7 {
@@ -301,6 +220,7 @@
 		pm8953_l10: l10 {
 			regulator-min-microvolt = <2850000>;
 			regulator-max-microvolt = <2850000>;
+			regulator-always-on;
 		};
 
 		pm8953_l11: l11 {
@@ -363,13 +283,14 @@
 	status = "okay";
 };
 &tlmm {
+
 	ts_int_active: ts-int-active-state {
 		pins = "gpio65";
 		function = "gpio";
 		drive-strength = <8>;
 		bias-pull-up;
 	};
-
+	
 	ts_int_suspend: ts-int-suspend-state {
 		pins = "gpio65";
 		function = "gpio";
@@ -377,21 +298,6 @@
 		bias-pull-down;
 	};
 
-	pmx_mdss_default: pmx-mdss-default-state {
-		pins = "gpio61";
-		function = "gpio";
-		drive-strength = <8>;
-		bias-disable;
-		output-high;
-	};
-
-	pmx_mdss_sleep: pmx-mdss-sleep-state {
-		pins = "gpio61";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-pull-down;
-	};
-	
 	ts_reset_active: ts-reset-active-state {
 		pins = "gpio64";
 		function = "gpio";
@@ -406,14 +312,10 @@
 		bias-pull-down;
 	};
 };
-
 &usb3 {
 	status = "okay";
 };
 
 &usb3_dwc3 {
-	usb-psy-name = "qcom-smbchg-usb";
-	extcon = <&pmi8950_smbcharger>;
-	vbus-supply = <&otg_vbus>;
-	dr_mode = "otg";
+	dr_mode = "peripheral";
 };

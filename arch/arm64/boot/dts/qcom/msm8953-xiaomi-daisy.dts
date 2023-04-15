@@ -95,51 +95,8 @@
 	touchscreen-size-y = <2280>;
 };
 
-&panel {
-	compatible = "xiaomi,daisy-panel";
-};
-
-&battery {
-	charge-full-design-microamp-hours = <4000000>;
-	constant-charge-current-max-microamp = <1000000>;
-	voltage-min-design-microvolt = <3400000>;
-	voltage-max-design-microvolt = <4400000>;
-};
-
 &sdhc_2 {
 	cd-gpios = <&tlmm 133 GPIO_ACTIVE_LOW>;
-};
-
-&q6afedai {
-	dai@127 {
-		reg = <QUINARY_MI2S_RX>;
-		qcom,sd-lines = <0 1>;
-	};
-};
-
-&sound_card {
-	status = "okay";
-
-	model = "xiaomi-daisy";
-
-	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act &cdc_pdm_comp_lines_act &pri_tlmm_default>;
-	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus &cdc_pdm_comp_lines_sus &pri_tlmm_default>;
-
-	quinary-mi2s-dai-link {
-		link-name = "Quinary MI2S";
-		cpu {
-			sound-dai = <&q6afedai QUINARY_MI2S_RX>;
-		};
-
-		platform {
-			sound-dai = <&q6routing>;
-		};
-
-		codec {
-			sound-dai = <&max98927_codec>;
-		};
-	};
 };
 
 &tlmm {

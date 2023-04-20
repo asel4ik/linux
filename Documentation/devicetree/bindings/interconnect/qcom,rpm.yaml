@@ -26,6 +26,9 @@ properties:
       - qcom,msm8916-bimc
       - qcom,msm8916-pcnoc
       - qcom,msm8916-snoc
+      - qcom,msm8937-bimc
+      - qcom,msm8937-pcnoc
+      - qcom,msm8937-snoc
       - qcom,msm8939-bimc
       - qcom,msm8939-pcnoc
       - qcom,msm8939-snoc
@@ -79,6 +82,7 @@ patternProperties:
       compatible:
         enum:
           - qcom,msm8909-snoc-mm
+          - qcom,msm8937-snoc-mm
           - qcom,msm8939-snoc-mm
           - qcom,msm8976-snoc-mm
 
@@ -122,6 +126,9 @@ allOf:
               - qcom,msm8916-bimc
               - qcom,msm8916-pcnoc
               - qcom,msm8916-snoc
+              - qcom,msm8937-bimc
+              - qcom,msm8937-pcnoc
+              - qcom,msm8937-snoc
               - qcom,msm8939-bimc
               - qcom,msm8939-pcnoc
               - qcom,msm8939-snoc

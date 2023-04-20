@@ -1042,7 +1042,7 @@
 		};
 
 		gcc: clock-controller@1800000 {
-			compatible = "qcom,gcc-msm8976";
+			compatible = "qcom,gcc-msm8976-v1.1";
 			reg = <0x01800000 0x80000>;
 			#clock-cells = <1>;
 			#reset-cells = <1>;
@@ -1124,7 +1124,7 @@
 						<&snoc_mm MAS_MDP1 &bimc SLV_EBI>,
 						<&bimc MAS_APPS_PROC &pcnoc SLV_DISP_SS_CFG>;
 
-				interconnect-names = "mdp0-mem", "mdp1-mem" "cpu-cfg";
+				interconnect-names = "mdp0-mem", "mdp1-mem", "cpu-cfg";
 
 				operating-points-v2 = <&mdp_opp_table>;
 				power-domains = <&rpmpd MSM8976_VDDCX>;
@@ -1155,19 +1155,23 @@
 
 					opp-177780000 {
 						opp-hz = /bits/ 64 <177780000>;
+						opp-peak-kBps = <320000 320000>;
 						required-opps = <&rpmpd_opp_svs>;
 					};
 					opp-270000000 {
 						opp-hz = /bits/ 64 <270000000>;
+						opp-peak-kBps = <6400000 6400000>;
 						required-opps = <&rpmpd_opp_svs_plus>;
 					};
 				
 					opp-320000000 {
 						opp-hz = /bits/ 64 <320000000>;
+						opp-peak-kBps = <6400000 6400000>;
 						required-opps = <&rpmpd_opp_nom>;
 					};
 					opp-360000000 {
 						opp-hz = /bits/ 64 <360000000>;
+						opp-peak-kBps = <6400000 6400000>;
 						required-opps = <&rpmpd_opp_turbo>;
 					};
 				};
@@ -1639,6 +1643,7 @@
 					opp-avg-kBps = <261438>, <300000>;
 					required-opps = <&rpmpd_opp_nom>;
 				};
+			};
 		};
 
 		sdhc_2: mmc@7864000 {
@@ -1671,6 +1676,7 @@
 			#dma-cells = <1>;
 			qcom,ee = <0>;
 			qcom,controlled-remotely;
+			status = "disabled";
 		};
 
 		blsp1_uart1: serial@78af000 {
@@ -1770,7 +1776,7 @@
 					compatible = "qcom,usb-hs-phy-msm8916",
 						     "qcom,usb-hs-phy";
 					#phy-cells = <0>;
-					clocks = <&xo_board>, <&gcc GCC_USB2A_PHY_SLEEP_CLK>;
+					clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>, <&gcc GCC_USB2A_PHY_SLEEP_CLK>;
 					clock-names = "ref", "sleep";
 					resets = <&gcc RST_QUSB2_PHY_BCR>, <&gcc RST_USB2_HS_PHY_ONLY_BCR>;
 					reset-names = "phy", "por";
@@ -1807,6 +1813,7 @@
 			#dma-cells = <1>;
 			qcom,ee = <0>;
 			qcom,controlled-remotely;
+			status = "disabled";
 		};
 
 		blsp2_uart2: serial@7af0000 {
@@ -2062,7 +2069,7 @@
 			#sound-dai-cells = <1>;
 
 			clocks = <&mclk>,
-				 <&xo_board>;
+				 <&rpmcc RPM_SMD_XO_CLK_SRC>;
 			clock-names = "mclk", "ahbix-clk";
 		};
 		

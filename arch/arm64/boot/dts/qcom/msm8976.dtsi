@@ -441,6 +441,7 @@
 					#clock-cells = <1>;
 					clocks = <&xo_board>;
 					clock-names = "xo";
+					qcom,clk-disable-unused;
 				};
 
 				rpmpd: power-controller {
@@ -568,9 +569,10 @@
 			compatible = "qcom,msm8976-snoc";
 			reg = <0x00580000 0x1a000>;
 
-			clock-names = "bus", "bus_a";
+			clock-names = "bus", "bus_a", "ipa";
 			clocks = <&rpmcc RPM_SMD_SNOC_CLK>,
-				 <&rpmcc RPM_SMD_SNOC_A_CLK>;
+				 <&rpmcc RPM_SMD_SNOC_A_CLK>,
+				 <&rpmcc RPM_SMD_IPA_CLK>;
 
 			#interconnect-cells = <1>;
 

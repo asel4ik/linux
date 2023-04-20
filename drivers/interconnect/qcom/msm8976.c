@@ -99,6 +99,10 @@ enum {
 	QNOC_SLAVE_LPASS,
 };
 
+static const char * const snoc_intf_clocks[] = {
+	"ipa",
+};
+
 static const u16 mas_apps_proc_links[] = {
 	QNOC_SLAVE_EBI_CH0,
 	QNOC_BIMC_SNOC_SLV
@@ -1378,6 +1382,8 @@ static const struct qcom_icc_desc msm8976_snoc = {
 	.type = QCOM_ICC_NOC,
 	.nodes = msm8976_snoc_nodes,
 	.num_nodes = ARRAY_SIZE(msm8976_snoc_nodes),
+	.intf_clocks = snoc_intf_clocks,
+	.num_intf_clocks = ARRAY_SIZE(snoc_intf_clocks),
 	.regmap_cfg = &msm8976_snoc_regmap_config,
 	.qos_offset = 0x7000,
 };

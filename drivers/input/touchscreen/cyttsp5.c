@@ -891,7 +891,7 @@ static struct i2c_driver cyttsp5_i2c_driver = {
 		.name = CYTTSP5_NAME,
 		.of_match_table = cyttsp5_of_match,
 	},
-	.probe_new = cyttsp5_i2c_probe,
+	.probe = cyttsp5_i2c_probe,
 	.id_table = cyttsp5_i2c_id,
 };
 module_i2c_driver(cyttsp5_i2c_driver);

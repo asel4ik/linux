@@ -447,6 +447,7 @@ static const struct of_device_id qcom_cpufreq_match_list[] __initconst = {
 	{ .compatible = "qcom,msm8974", .data = &match_data_krait },
 	{ .compatible = "qcom,msm8960", .data = &match_data_krait },
 	{ .compatible = "qcom,msm8953", .data = &match_data_a53 },
+	{ .compatible = "qcom,msm8976", .data = &match_data_qcs404 },
 	{ .compatible = "qcom,sdm450", .data = &match_data_a53 },
 	{ .compatible = "qcom,sdm632", .data = &match_data_a53 },
 	{},

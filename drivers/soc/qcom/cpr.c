@@ -1750,9 +1750,16 @@ static int cpr_probe(struct platform_device *pdev)
 	const struct cpr_acc_desc *data;
 	struct device_node *np;
 	u32 cpr_rev = FUSE_REVISION_UNKNOWN;
-
+        bool have_acc;
+        
+        if(data->acc_desc == NULL)
+        {
+        have_acc=false;
+        }
+        ;
 	data = of_device_get_match_data(dev);
-	if (!data || !data->cpr_desc || !data->acc_desc)
+	
+	if (!data || !data->cpr_desc)
 		return -EINVAL;
 
 	drv = devm_kzalloc(dev, sizeof(*drv), GFP_KERNEL);
@@ -1760,14 +1767,16 @@ static int cpr_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	drv->dev = dev;
 	drv->desc = data->cpr_desc;
-	drv->acc_desc = data->acc_desc;
-
+	
+	if(have_acc)
+        drv->acc_desc = data->acc_desc;
+        
 	drv->fuse_corners = devm_kcalloc(dev, drv->desc->num_fuse_corners,
 					 sizeof(*drv->fuse_corners),
 					 GFP_KERNEL);
 	if (!drv->fuse_corners)
 		return -ENOMEM;
-
+      if(have_acc){
 	np = of_parse_phandle(dev->of_node, "acc-syscon", 0);
 	if (!np)
 		return -ENODEV;
@@ -1776,7 +1785,7 @@ static int cpr_probe(struct platform_device *pdev)
 	of_node_put(np);
 	if (IS_ERR(drv->tcsr))
 		return PTR_ERR(drv->tcsr);
-
+};
 	drv->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(drv->base))
 		return PTR_ERR(drv->base);

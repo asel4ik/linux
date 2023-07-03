@@ -6,12 +6,18 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>
+#include <linux/of_device.h>
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/regmap.h>
 
 #include "clk-regmap.h"
 #include "clk-hfpll.h"
+
+static struct pll_vco hdata_vco[] = {
+	{ 537600000, 1248000000, 0 },
+	{ 1267200000, 2900000000, 1 },
+};
 
 static const struct hfpll_data hdata = {
 	.mode_reg = 0x00,
@@ -23,16 +29,107 @@ static const struct hfpll_data hdata = {
 	.config_val = 0x430405d,
 	.status_reg = 0x1c,
 	.lock_bit = 16,
-
-	.user_val = 0x8,
-	.user_vco_mask = 0x100000,
-	.low_vco_max_rate = 1248000000,
+        .vco_table = hdata_vco,
+        .num_vco = ARRAY_SIZE(hdata_vco),
 	.min_rate = 537600000UL,
 	.max_rate = 2900000000UL,
+	.c = {
+	 .early_output_mask = BIT(3),
+	 .l =0x0 //todo
+	},
 };
 
+static struct pll_vco msm8976_a53_vco[] = {
+	{ 902400000, 1478400000, 0 },
+};
+
+static const struct hfpll_data msm8976_a53 = {
+	.mode_reg = 0x00,
+	.l_reg = 0x04,
+	.m_reg = 0x08,
+	.n_reg = 0x0c,
+	.user_reg = 0x10,
+	.config_reg = 0x14,
+	.config_val = 0x341600,
+	.status_reg = 0x1c,
+	.lock_bit = 16,
+	.min_rate = 902400000UL,
+	.max_rate = 1478400000UL,
+	.vco_table = msm8976_a53_vco,
+        .num_vco = ARRAY_SIZE(msm8976_a53_vco),
+	.c = {
+	 .post_div_val = BIT(8),
+	 .post_div_mask = GENMASK(9,8),
+	 .main_output_mask = BIT(0),
+	 .early_output_mask = BIT(3),
+	 .l=0x49,
+	},
+};
+
+static struct pll_vco msm8976_a72_vco[] = {
+	{ 940800000, 1843200000, 1 },
+};
+
+static const struct hfpll_data msm8976_a72 = {
+	.mode_reg = 0x00,
+	.l_reg = 0x04,
+	.m_reg = 0x08,
+	.n_reg = 0x0c,
+	.user_reg = 0x10,
+	.config_reg = 0x14,
+	.config_val = 0x4e0405d,
+	.status_reg = 0x1c,
+	.lock_bit = 16,
+	.min_rate = 940800000UL,
+	.max_rate = 1843200000UL,
+	.vco_table = msm8976_a72_vco,
+        .num_vco = ARRAY_SIZE(msm8976_a72_vco),
+	.c = {
+	 .post_div_val = BIT(8),
+	 .post_div_mask = GENMASK(9,8),
+	 .main_output_mask = BIT(0),
+	 .early_output_mask = BIT(3),
+	 .l=0x5b,
+	 .vco_val = 1 << 20,
+	 .vco_mask = BIT(20),
+	},
+};
+
+static struct pll_vco msm8976_cci_vco[] = {
+	{ 556800000, 902400000, 1 },
+};
+
+static const struct hfpll_data msm8976_cci = {
+	.mode_reg = 0x00,
+	.l_reg = 0x04,
+	.m_reg = 0x08,
+	.n_reg = 0x0c,
+	.user_reg = 0x10,
+	.config_reg = 0x14,
+	.config_val = 0x141400,
+	.status_reg = 0x1c,
+	.lock_bit = 16,
+	.min_rate = 556800000UL,
+	.max_rate = 902400000UL,
+        .vco_table = msm8976_cci_vco,
+        .num_vco = ARRAY_SIZE(msm8976_cci_vco),
+	.c = {
+	 .post_div_val = BIT(8),
+	 .post_div_mask = GENMASK(9,8),
+	 .main_output_mask = BIT(0),
+	 .early_output_mask = BIT(3),
+	 .l=0x20,
+	 .vco_val = 1 << 20,
+	 .vco_mask = BIT(20),
+	},
+};
+
+
 static const struct of_device_id qcom_hfpll_match_table[] = {
-	{ .compatible = "qcom,hfpll" },
+	{ .compatible = "qcom,hfpll", &hdata },
+	{ .compatible = "qcom,hfpll-msm8976-a53", &msm8976_a53 },
+	{ .compatible = "qcom,hfpll-msm8976-a72", &msm8976_a72 },
+	{ .compatible = "qcom,hfpll-msm8976-cci", &msm8976_cci },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, qcom_hfpll_match_table);
@@ -50,7 +147,9 @@ static int qcom_hfpll_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	void __iomem *base;
 	struct regmap *regmap;
+	const struct hfpll_data *pll_data;
 	struct clk_hfpll *h;
+	int ret;
 	struct clk_init_data init = {
 		.num_parents = 1,
 		.ops = &clk_ops_hfpll,
@@ -62,7 +161,8 @@ static int qcom_hfpll_probe(struct platform_device *pdev)
 		 */
 		.flags = CLK_IGNORE_UNUSED,
 	};
-	int ret;
+	pll_data = of_device_get_match_data(&pdev->dev);
+	
 	struct clk_parent_data pdata = { .index = 0 };
 
 	h = devm_kzalloc(dev, sizeof(*h), GFP_KERNEL);
@@ -83,7 +183,7 @@ static int qcom_hfpll_probe(struct platform_device *pdev)
 
 	init.parent_data = &pdata;
 
-	h->d = &hdata;
+	h->d = pll_data;
 	h->clkr.hw.init = &init;
 	spin_lock_init(&h->lock);
 

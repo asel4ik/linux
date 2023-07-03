@@ -7,7 +7,38 @@
 #include <linux/spinlock.h>
 #include "clk-regmap.h"
 
+
+struct pll_vco {
+	unsigned long min_freq;
+	unsigned long max_freq;
+	u32 val;
+};
+
+#define VCO(a, b, c) { \
+	.val = a,\
+	.min_freq = b,\
+	.max_freq = c,\
+}
+
+struct hfpll_config {
+	u16 l;
+	u32 m;
+	u32 n;
+	u32 vco_val;
+	u32 vco_mask;
+	u32 pre_div_val;
+	u32 pre_div_mask;
+	u32 post_div_val;
+	u32 post_div_mask;
+	u32 mn_ena_mask;
+	u32 early_output_mask;
+	u32 main_output_mask;
+	u32 aux_output_mask;
+};
+
 struct hfpll_data {
+        const struct pll_vco *vco_table;
+	size_t num_vco;
 	u32 mode_reg;
 	u32 l_reg;
 	u32 m_reg;
@@ -23,9 +54,10 @@ struct hfpll_data {
 	u32 user_val;
 	u32 user_vco_mask;
 	unsigned long low_vco_max_rate;
-
+	
 	unsigned long min_rate;
 	unsigned long max_rate;
+	struct hfpll_config const c;
 };
 
 struct clk_hfpll {

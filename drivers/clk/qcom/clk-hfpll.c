@@ -16,34 +16,103 @@
 #define PLL_BYPASSNL	BIT(1)
 #define PLL_RESET_N	BIT(2)
 
+/* Layout of PLL_USER_CTL register */
+#define MN_EN_MASK BIT(24)
+#define VCO_SEL_BIT BIT(20)
+#define PLL_VCO_MASK 0x1
+#define PRE_DIV_BIT BIT(12)
+#define POST_DIV_MASK GENMASK(9,8) 
+#define OUTPUT_INV_BIT BIT(7)
+#define PLLOUT_EARLY_BIT BIT(3)
+#define PLLOUT_AUX2_BIT BIT(2)
+#define PLLOUT_AUX_BIT BIT(1)
+#define PLLOUT_MAIN_BIT BIT(0)
+
+static const struct pll_vco *
+hf_pll_find_vco(const struct hfpll_data *pll_data, unsigned long rate)
+{
+
+	const struct pll_vco *v = pll_data->vco_table;
+	const struct pll_vco *end = v + pll_data->num_vco;
+
+	for (; v < end; v++)
+		if (rate >= v->min_freq && rate <= v->max_freq)
+			return v;
+
+	return NULL;
+}
+
+static void clk_pll_configure(const struct hfpll_data *pll_data, struct regmap *regmap,
+	const struct hfpll_config *config)
+{
+	u32 val;
+	u32 mask;
+
+	regmap_write(regmap, pll_data->l_reg, config->l);
+
+	val = config->vco_val;
+	val |= config->pre_div_val;
+	val |= config->post_div_val;
+	val |= config->mn_ena_mask;
+	val |= config->main_output_mask;
+	val |= config->aux_output_mask;
+
+	mask = config->vco_mask;
+	mask |= config->pre_div_mask;
+	mask |= config->post_div_mask;
+	mask |= config->mn_ena_mask;
+	mask |= config->main_output_mask;
+	mask |= config->aux_output_mask;
+
+	regmap_update_bits(regmap, pll_data->config_reg, mask, val);
+}
+
 /* Initialize a HFPLL at a given rate and enable it. */
 static void __clk_hfpll_init_once(struct clk_hw *hw)
 {
 	struct clk_hfpll *h = to_clk_hfpll(hw);
 	struct hfpll_data const *hd = h->d;
+	struct hfpll_config const *hc = &hd->c;
 	struct regmap *regmap = h->clkr.regmap;
-
+        const struct pll_vco *vco;
+        unsigned long rate;
 	if (likely(h->init_done))
 		return;
 
 	/* Configure PLL parameters for integer mode. */
 	if (hd->config_val)
 		regmap_write(regmap, hd->config_reg, hd->config_val);
-	regmap_write(regmap, hd->m_reg, 0);
-	regmap_write(regmap, hd->n_reg, 1);
-
-	if (hd->user_reg) {
-		u32 regval = hd->user_val;
-		unsigned long rate;
-
-		rate = clk_hw_get_rate(hw);
-
-		/* Pick the right VCO. */
-		if (hd->user_vco_mask && rate > hd->low_vco_max_rate)
-			regval |= hd->user_vco_mask;
-		regmap_write(regmap, hd->user_reg, regval);
+		
+	/* Write M and N only if MN_EN is enabled. */
+	if (hc->mn_ena_mask) {
+		regmap_write(regmap, hd->m_reg, 0);
+		regmap_write(regmap, hd->n_reg, 1);
 	}
 
+        /* Configure user_ctl register */
+	if (hd->user_val || hc)
+          {
+           if (hd->user_reg)
+            regmap_write(regmap, hd->user_reg, hd->user_val);
+           if(hc)
+            clk_pll_configure(hd, regmap, hc);
+          }
+	  else
+	 pr_err("user_reg configuration not specified\n");
+	 rate = 19200000*hc->l;
+      /* Pick the right VCO. */
+        vco = hf_pll_find_vco(hd, rate);
+	if (hd->vco_table && !vco) {
+		pr_err("%s: alpha pll not in a valid vco range\n",
+		       clk_hw_get_name(hw));
+	}
+
+	if (vco) {
+		regmap_update_bits(regmap, hd->user_reg,
+				   VCO_SEL_BIT,
+				   vco->val  ? VCO_SEL_BIT : 0);
+	};
+  
 	if (hd->droop_reg)
 		regmap_write(regmap, hd->droop_reg, hd->droop_val);
 
@@ -128,6 +197,8 @@ static void clk_hfpll_disable(struct clk_hw *hw)
 	spin_unlock_irqrestore(&h->lock, flags);
 }
 
+
+
 static long clk_hfpll_round_rate(struct clk_hw *hw, unsigned long rate,
 				 unsigned long *parent_rate)
 {
@@ -155,7 +226,8 @@ static int clk_hfpll_set_rate(struct clk_hw *hw, unsigned long rate,
 	struct hfpll_data const *hd = h->d;
 	struct regmap *regmap = h->clkr.regmap;
 	unsigned long flags;
-	u32 l_val, val;
+	u32 l_val;
+	const struct pll_vco *vco;
 	bool enabled;
 
 	l_val = rate / parent_rate;
@@ -166,15 +238,19 @@ static int clk_hfpll_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (enabled)
 		__clk_hfpll_disable(h);
 
-	/* Pick the right VCO. */
-	if (hd->user_reg && hd->user_vco_mask) {
-		regmap_read(regmap, hd->user_reg, &val);
-		if (rate <= hd->low_vco_max_rate)
-			val &= ~hd->user_vco_mask;
-		else
-			val |= hd->user_vco_mask;
-		regmap_write(regmap, hd->user_reg, val);
+      /* Pick the right VCO. */
+        vco = hf_pll_find_vco(hd, rate);
+	if (hd->vco_table && !vco) {
+		pr_err("%s: alpha pll not in a valid vco range\n",
+		       clk_hw_get_name(hw));
+		return -EINVAL;
 	}
+
+	if (vco) {
+		regmap_update_bits(regmap, hd->user_reg,
+				   VCO_SEL_BIT,
+				   vco->val  ? VCO_SEL_BIT : 0);
+	};
 
 	regmap_write(regmap, hd->l_reg, l_val);
 

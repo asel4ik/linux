@@ -102,7 +102,6 @@ static int qcom_hfpll_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	void __iomem *base;
 	struct regmap *regmap;
-	static const struct hfpll_data *pll_data;
 	struct clk_hfpll *h;
 	struct clk_init_data init = {
 		.num_parents = 1,
@@ -115,7 +114,7 @@ static int qcom_hfpll_probe(struct platform_device *pdev)
 		 */
 		.flags = CLK_IGNORE_UNUSED,
 	};
-	pll_data = of_device_get_match_data(&pdev->dev);
+
 	int ret;
 	struct clk_parent_data pdata = { .index = 0 };
 
@@ -137,7 +136,7 @@ static int qcom_hfpll_probe(struct platform_device *pdev)
 
 	init.parent_data = &pdata;
 
-	h->d = pll_data;
+	h->d = of_device_get_match_data(&pdev->dev);
 	h->clkr.hw.init = &init;
 	spin_lock_init(&h->lock);
 

@@ -43,6 +43,7 @@ static const struct hfpll_data msm8976_a53 = {
 	.status_reg = 0x1c,
 	.lock_bit = 16,
 
+	.l_val = 0x49,
 	.user_val = 0x109,
 	.min_rate = 902400000UL,
 	.max_rate = 1478400000UL,
@@ -59,6 +60,7 @@ static const struct hfpll_data msm8976_a72 = {
 	.status_reg = 0x1c,
 	.lock_bit = 16,
 
+	.l_val = 0x5b,
 	.user_val = 0x100109,
 	.min_rate = 940800000UL,
 	.max_rate = 1843200000UL,
@@ -75,6 +77,7 @@ static const struct hfpll_data msm8976_cci = {
 	.status_reg = 0x1c,
 	.lock_bit = 16,
 
+	.l_val = 0x20,
 	.user_val = 0x100109,
 	.min_rate = 556800000UL,
 	.max_rate = 902400000UL,

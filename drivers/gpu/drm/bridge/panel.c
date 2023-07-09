@@ -114,7 +114,6 @@ static void panel_bridge_detach(struct drm_bridge *bridge)
 static void panel_bridge_atomic_pre_enable(struct drm_bridge *bridge,
 				struct drm_bridge_state *old_bridge_state)
 {
-	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
 	struct drm_atomic_state *atomic_state = old_bridge_state->base.state;
 	struct drm_encoder *encoder = bridge->encoder;
 	struct drm_crtc *crtc;
@@ -128,7 +127,6 @@ static void panel_bridge_atomic_pre_enable(struct drm_bridge *bridge,
 	if (old_crtc_state && old_crtc_state->self_refresh_active)
 		return;
 
-	drm_panel_prepare(panel_bridge->panel);
 }
 
 static void panel_bridge_atomic_enable(struct drm_bridge *bridge,
@@ -148,6 +146,7 @@ static void panel_bridge_atomic_enable(struct drm_bridge *bridge,
 	if (old_crtc_state && old_crtc_state->self_refresh_active)
 		return;
 
+        drm_panel_prepare(panel_bridge->panel);
 	drm_panel_enable(panel_bridge->panel);
 }
 
@@ -169,12 +168,12 @@ static void panel_bridge_atomic_disable(struct drm_bridge *bridge,
 		return;
 
 	drm_panel_disable(panel_bridge->panel);
+	drm_panel_unprepare(panel_bridge->panel);
 }
 
 static void panel_bridge_atomic_post_disable(struct drm_bridge *bridge,
 				struct drm_bridge_state *old_bridge_state)
 {
-	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
 	struct drm_atomic_state *atomic_state = old_bridge_state->base.state;
 	struct drm_encoder *encoder = bridge->encoder;
 	struct drm_crtc *crtc;
@@ -188,7 +187,6 @@ static void panel_bridge_atomic_post_disable(struct drm_bridge *bridge,
 	if (new_crtc_state && new_crtc_state->self_refresh_active)
 		return;
 
-	drm_panel_unprepare(panel_bridge->panel);
 }
 
 static int panel_bridge_get_modes(struct drm_bridge *bridge,

@@ -53,6 +53,20 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
+	
+	
+	ibb_vreg: fake-ibb-vreg {
+		compatible = "regulator-fixed";
+		regulator-name = "fakeibb_vreg";
+		regulator-min-microvolt = <4000000>;
+		regulator-max-microvolt = <4000000>;
+	};
+	lab_vreg: fake-lab-vreg {
+		compatible = "regulator-fixed";
+		regulator-name = "fakelab_vreg";
+		regulator-min-microvolt = <4000000>;
+		regulator-max-microvolt = <4000000>;
+	};
 
 	gpio_keys {
 		compatible = "gpio-keys";
@@ -72,13 +86,13 @@
 	};
 };
 &gpu_iommu {
-
-	
 	status = "disabled";
-
-
 };
 
+
+&adreno_gpu {
+	status = "disabled";
+};
 &sdhc_1 {
 	vmmc-supply = <&pm8950_l8>;
 	vqmmc-supply = <&pm8950_l5>;
@@ -103,8 +117,8 @@
 		backlight = <&pmi8950_wled>;
 
 		supply-names = "vsp", "vsn";
-		//vsp-supply = <&lab_vreg>;
-		//vsn-supply = <&ibb_vreg>;
+		vsp-supply = <&lab_vreg>;
+		vsn-supply = <&ibb_vreg>;
 
 		reset-gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
 

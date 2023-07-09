@@ -36,8 +36,8 @@
 			compatible = "arm,cortex-a53";
 			reg = <0x0>;
 			enable-method = "psci";
-			// clocks = <&apcs_c0>;
-			// operating-points-v2 = <&little_cpu_opp_table>;
+			clocks = <&apcs_c0>;
+			operating-points-v2 = <&little_cpu_opp_table>;
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;
 			next-level-cache = <&l2_0>;
@@ -49,8 +49,8 @@
 			compatible = "arm,cortex-a53";
 			reg = <0x1>;
 			enable-method = "psci";
-			// clocks = <&apcs_c0>;
-			// operating-points-v2 = <&little_cpu_opp_table>;
+			clocks = <&apcs_c0>;
+			operating-points-v2 = <&little_cpu_opp_table>;
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;
 			next-level-cache = <&l2_0>;
@@ -62,8 +62,8 @@
 			compatible = "arm,cortex-a53";
 			reg = <0x2>;
 			enable-method = "psci";
-			// clocks = <&apcs_c0>;
-			// operating-points-v2 = <&little_cpu_opp_table>;
+			clocks = <&apcs_c0>;
+			operating-points-v2 = <&little_cpu_opp_table>;
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;
 			next-level-cache = <&l2_0>;
@@ -75,8 +75,8 @@
 			compatible = "arm,cortex-a53";
 			reg = <0x3>;
 			enable-method = "psci";
-			// clocks = <&apcs_c0>;
-			// operating-points-v2 = <&little_cpu_opp_table>;
+			clocks = <&apcs_c0>;
+			operating-points-v2 = <&little_cpu_opp_table>;
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;
 			next-level-cache = <&l2_0>;
@@ -88,8 +88,8 @@
 			compatible = "arm,cortex-a72";
 			reg = <0x100>;
 			enable-method = "psci";
-			// clocks = <&apcs>;
-			// operating-points-v2 = <&big_cpu_opp_table>;
+			clocks = <&apcs>;
+			operating-points-v2 = <&big_cpu_opp_table>;
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -101,8 +101,8 @@
 			compatible = "arm,cortex-a72";
 			reg = <0x101>;
 			enable-method = "psci";
-			// clocks = <&apcs>;
-			// operating-points-v2 = <&big_cpu_opp_table>;
+			clocks = <&apcs>;
+			operating-points-v2 = <&big_cpu_opp_table>;
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -114,8 +114,8 @@
 			compatible = "arm,cortex-a72";
 			reg = <0x102>;
 			enable-method = "psci";
-			// clocks = <&apcs>;
-			// operating-points-v2 = <&big_cpu_opp_table>;
+			clocks = <&apcs>;
+			operating-points-v2 = <&big_cpu_opp_table>;
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -127,8 +127,8 @@
 			compatible = "arm,cortex-a72";
 			reg = <0x103>;
 			enable-method = "psci";
-			// clocks = <&apcs>;
-			// operating-points-v2 = <&big_cpu_opp_table>;
+			clocks = <&apcs>;
+			operating-points-v2 = <&big_cpu_opp_table>;
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -1621,12 +1621,15 @@
 		
 		/* A72 cluster */
 		apcs: mailbox@b011000 {
-			compatible =  "qcom,msm8994-apcs-kpss-global", "syscon";
+			compatible =  "qcom,msm8976-apcs-kpss-global", "syscon";
 			reg = <0x0b011000 0x1000>;
 			#mbox-cells = <1>;
-			//clocks = <&a72_pll>, <&gcc GPLL0>;
-			//clock-names = "pll", "aux";
+			clocks = <&a72_pll>, <&gcc GPLL0_CLK_SRC>;
+			clock-names = "pll", "aux";
 			#clock-cells = <0>;
+			assigned-clocks = <&apcs_cci>;
+			assigned-clock-parents = <&cci_pll>;
+			assigned-clock-rates = <614400000>;
 		};
 		
 		a72_pll: clock-controller@b016000 {
@@ -1636,16 +1639,18 @@
 			clock-names = "xo";
 			clock-output-names = "hfpll_a72";
 			#clock-cells = <0>;
-			status = "disabled";
 		};
 	
 		apcs_c0: mailbox@b111000 {
-			compatible = "qcom,msm8994-apcs-kpss-global", "syscon";
+			compatible = "qcom,msm8976-apcs-kpss-global", "syscon";
 			reg = <0x0b111000 0x1000>;
 			#mbox-cells = <1>;
-			//clocks = <&a53_pll>, <&gcc GPLL0>;
-			//clock-names = "pll", "aux";
+			clocks = <&a53_pll>, <&gcc GPLL0_CLK_SRC>;
+			clock-names = "pll", "aux";
 			#clock-cells = <0>;
+			assigned-clocks = <&apcs>;
+			assigned-clock-parents = <&a72_pll>;
+			assigned-clock-rates = <1190400000>;
 		};
 		
 		a53_pll: clock-controller@b116000 {
@@ -1655,20 +1660,16 @@
 			clock-names = "xo";
 			clock-output-names = "hfpll_a53";
 			#clock-cells = <0>;
-			status = "disabled";
+			
 		};
 
 		apcs_cci: mailbox@b1d1000 {
 			compatible = "qcom,msm8976-apcs-kpss-global", "syscon";
 			reg = <0x0b1d1000 0x1000>;
 			#mbox-cells = <1>;
-			clocks = <&cci_pll>, <&gcc GPLL0>;
+			clocks = <&cci_pll>, <&gcc GPLL0_CLK_SRC>;
 			clock-names = "pll", "aux";
 			#clock-cells = <0>;
-			assigned-clocks = <&apcs_cci>;
-			assigned-clock-parents = <&cci_pll>;
-			assigned-clock-rates = <614400000>;
-			status = "disabled";
 		};
 
 		cci_pll: clock-controller@b1d0000 {
@@ -1678,7 +1679,6 @@
 			clock-names = "xo";
 			clock-output-names = "hfpll_cci";
 			#clock-cells = <0>;
-			status = "disabled";
 		};
 
 		timer@b120000 {

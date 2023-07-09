@@ -473,3 +473,7 @@
 &tsens {
 status = "disabled";
 };
+
+&xo_board {
+	clock-frequency = <19200000>;
+};

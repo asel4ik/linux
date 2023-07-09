@@ -96,8 +96,8 @@
 		backlight = <&pmi8950_wled>;
 
 		supply-names = "vsp", "vsn";
-		vsp-supply = <&lab_vreg>;
-		vsn-supply = <&ibb_vreg>;
+		//vsp-supply = <&lab_vreg>;
+		//vsn-supply = <&ibb_vreg>;
 
 		reset-gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
 

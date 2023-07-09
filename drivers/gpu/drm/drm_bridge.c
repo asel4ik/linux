@@ -660,7 +660,7 @@ void drm_atomic_bridge_chain_post_disable(struct drm_bridge *bridge,
 					  struct drm_atomic_state *old_state)
 {
 	struct drm_encoder *encoder;
-	struct drm_bridge *next, *limit;
+	struct drm_bridge *iter, *limit;
 
 	if (!bridge)
 		return;
@@ -670,36 +670,26 @@ void drm_atomic_bridge_chain_post_disable(struct drm_bridge *bridge,
 	list_for_each_entry_from(bridge, &encoder->bridge_chain, chain_node) {
 		limit = NULL;
 
-		if (!list_is_last(&bridge->chain_node, &encoder->bridge_chain)) {
-			next = list_next_entry(bridge, chain_node);
+		/* Find sequence of bridges (bridge, limit] which requested prev to
+		 * be enabled first and disabled last
+		 */
+		iter = list_next_entry(bridge, chain_node);
+		list_for_each_entry_from(iter, &encoder->bridge_chain, chain_node) {
+			if (!iter->pre_enable_prev_first)
+				break;
 
-			if (next->pre_enable_prev_first) {
-				/* next bridge had requested that prev
-				 * was enabled first, so disabled last
-				 */
-				limit = next;
+			limit = iter;
+		}
 
-				/* Find the next bridge that has NOT requested
-				 * prev to be enabled first / disabled last
-				 */
-				list_for_each_entry_from(next, &encoder->bridge_chain,
-							 chain_node) {
-					if (next->pre_enable_prev_first) {
-						next = list_prev_entry(next, chain_node);
-						limit = next;
-						break;
-					}
-				}
+		if (limit) {
+			/* Call these bridges in reverse order */
+			iter = limit;
+			list_for_each_entry_from_reverse(iter,
+					&encoder->bridge_chain, chain_node) {
+				if (iter == bridge)
+					break;
 
-				/* Call these bridges in reverse order */
-				list_for_each_entry_from_reverse(next, &encoder->bridge_chain,
-								 chain_node) {
-					if (next == bridge)
-						break;
-
-					drm_atomic_bridge_call_post_disable(next,
-									    old_state);
-				}
+				drm_atomic_bridge_call_post_disable(iter, old_state);
 			}
 		}
 

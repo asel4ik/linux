@@ -322,7 +322,7 @@ static struct rpmpd mx_s6a_lvl_ao = {
 	.key = KEY_LEVEL,
 };
 static struct rpmpd mx_s6a_vfl = {
-	.pd = { .name = "mx_ao", },
+	.pd = { .name = "mx_vfl", },
 	.peer = &mx_s6a_lvl,
 	.res_type = RPMPD_SMPA,
 	.res_id = 6,

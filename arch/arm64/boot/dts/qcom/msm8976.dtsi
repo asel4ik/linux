@@ -38,6 +38,8 @@
 			enable-method = "psci";
 			clocks = <&apcs_c0>;
 			operating-points-v2 = <&little_cpu_opp_table>;
+			power-domains = <&cpr0_apc0 0>;
+			power-domain-names = "cpr";
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;
 			next-level-cache = <&l2_0>;
@@ -51,6 +53,8 @@
 			enable-method = "psci";
 			clocks = <&apcs_c0>;
 			operating-points-v2 = <&little_cpu_opp_table>;
+			power-domains = <&cpr0_apc0 0>;
+			power-domain-names = "cpr";
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;
 			next-level-cache = <&l2_0>;
@@ -64,6 +68,8 @@
 			enable-method = "psci";
 			clocks = <&apcs_c0>;
 			operating-points-v2 = <&little_cpu_opp_table>;
+			power-domains = <&cpr0_apc0 0>;
+			power-domain-names = "cpr";
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;
 			next-level-cache = <&l2_0>;
@@ -77,6 +83,8 @@
 			enable-method = "psci";
 			clocks = <&apcs_c0>;
 			operating-points-v2 = <&little_cpu_opp_table>;
+			power-domains = <&cpr0_apc0 0>;
+			power-domain-names = "cpr";
 			cpu-idle-states = <&little_cpu_sleep_0>;
 			capacity-dmips-mhz = <573>;
 			next-level-cache = <&l2_0>;
@@ -90,6 +98,8 @@
 			enable-method = "psci";
 			clocks = <&apcs>;
 			operating-points-v2 = <&big_cpu_opp_table>;
+			power-domains = <&cpr1_apc1 0>;
+			power-domain-names = "cpr";
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -103,6 +113,8 @@
 			enable-method = "psci";
 			clocks = <&apcs>;
 			operating-points-v2 = <&big_cpu_opp_table>;
+			power-domains = <&cpr1_apc1 0>;
+			power-domain-names = "cpr";
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -116,6 +128,8 @@
 			enable-method = "psci";
 			clocks = <&apcs>;
 			operating-points-v2 = <&big_cpu_opp_table>;
+			power-domains = <&cpr1_apc1 0>;
+			power-domain-names = "cpr";
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -129,6 +143,8 @@
 			enable-method = "psci";
 			clocks = <&apcs>;
 			operating-points-v2 = <&big_cpu_opp_table>;
+			power-domains = <&cpr1_apc1 0>;
+			power-domain-names = "cpr";
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -220,50 +236,76 @@
 	};
 
 	little_cpu_opp_table: opp-table-cpu-little {
-		compatible = "operating-points-v2";
+		compatible = "operating-points-v2-kryo-cpu";
 		opp-shared;
 
-		opp-200000000 {
-			opp-hz = /bits/ 64 <200000000>;
-		};
+
 		opp-400000000 {
 			opp-hz = /bits/ 64 <400000000>;
+			required-opps = <&cpr_opp1>;
 		};
 		opp-800000000 {
 			opp-hz = /bits/ 64 <800000000>;
+			required-opps = <&cpr_opp2>;
 		};
 		opp-1017600000 {
 			opp-hz = /bits/ 64 <1017600000>;
+			required-opps = <&cpr_opp2>;
 		};
 		opp-1190400000 {
 			opp-hz = /bits/ 64 <1190400000>;
+			required-opps = <&cpr_opp3>;
 		};
 		opp-1305600000 {
 			opp-hz = /bits/ 64 <1305600000>;
+			required-opps = <&cpr_opp3>;
 		};
 		opp-1382400000 {
 			opp-hz = /bits/ 64 <1382400000>;
+			required-opps = <&cpr_opp3>;
 		};
 		opp-1401600000 {
 			opp-hz = /bits/ 64 <1401600000>;
+			required-opps = <&cpr_opp3>;
 		};	
 	};
 
 	big_cpu_opp_table: opp-table-cpu-big {
-		compatible = "operating-points-v2";
+		compatible = "operating-points-v2-kryo-cpu";
 		opp-shared;
 
 		opp-400000000 {
 			opp-hz = /bits/ 64 <400000000>;
+			required-opps = <&cpr_opp1>;
 		};
 		opp-1190400000 {
 			opp-hz = /bits/ 64 <1190400000>;
+			required-opps = <&cpr_opp2>;
 		};
 		opp-1612800000 {
 			opp-hz = /bits/ 64 <1612800000>;
+			required-opps = <&cpr_opp3>;
 		};
 		opp-1747200000 {
 			opp-hz = /bits/ 64 <1747200000>;
+			required-opps = <&cpr_opp3>;
+		};
+	};
+	
+	cpr_opp_table: cpr-opp-table {
+		compatible = "operating-points-v2-qcom-level";
+
+		cpr_opp1: opp1 {
+			opp-level = <1>;
+			qcom,opp-fuse-level = <1>;
+		};
+		cpr_opp2: opp2 {
+			opp-level = <2>;
+			qcom,opp-fuse-level = <2>;
+		};
+		cpr_opp3: opp3 {
+			opp-level = <3>;
+			qcom,opp-fuse-level = <3>;
 		};
 	};
 	
@@ -684,6 +726,10 @@
 				bits = <1 6>;
 			};
 			
+			cpr_efuse_speedbin: speedbin@12c {
+				reg = <0x12c 0x4>;
+				bits = <2 3>;
+			};
 			
 			cpr0_efuse_ring3: ring3@248 {
 				reg = <0x248 0x4>;
@@ -803,6 +849,11 @@
 			cpr1_efuse_quot1: quot1@25a {
 				reg = <0x25a 0x4>;
 				bits = <0 8>; //CPR6_SVS_QUOT_VMIN BIT[23:16]
+			};
+			
+			cpr_efuse_revision: revision@1df {
+				reg = <0x1df 0x4>;
+				bits = <5 3>;
 			};
 			
 		};
@@ -1803,6 +1854,82 @@
 			#clock-cells = <0>;
 		};
 
+		cpr0_apc0: power-controller@b018000 {
+			compatible = "qcom,msm8976-apc0-cpr", "qcom,cpr";
+			reg = <0x0b018000 0x1000>;
+			interrupts = <0 15 IRQ_TYPE_EDGE_RISING>;
+			clocks = <&xo_board>;
+			clock-names = "ref";
+			vdd-apc-supply = <&pm8950_spmi_s5>;
+			#power-domain-cells = <0>;
+			operating-points-v2 = <&cpr_opp_table>;
+
+			nvmem-cells = <&cpr0_efuse_quot_offset1>,
+				<&cpr0_efuse_quot_offset2>,
+				<&cpr0_efuse_quot_offset3>,
+				<&cpr0_efuse_init_voltage1>,
+				<&cpr0_efuse_init_voltage2>,
+				<&cpr0_efuse_init_voltage3>,
+				<&cpr0_efuse_quot1>,
+				<&cpr0_efuse_quot2>,
+				<&cpr0_efuse_quot3>,
+				<&cpr0_efuse_ring1>,
+				<&cpr0_efuse_ring2>,
+				<&cpr0_efuse_ring3>,
+				<&cpr_efuse_revision>;
+			nvmem-cell-names = "cpr_quotient_offset1",
+				"cpr_quotient_offset2",
+				"cpr_quotient_offset3",
+				"cpr_init_voltage1",
+				"cpr_init_voltage2",
+				"cpr_init_voltage3",
+				"cpr_quotient1",
+				"cpr_quotient2",
+				"cpr_quotient3",
+				"cpr_ring_osc1",
+				"cpr_ring_osc2",
+				"cpr_ring_osc3",
+				"cpr_fuse_revision";
+		};
+		
+		cpr1_apc1: power-controller@b118000 {
+			compatible = "qcom,msm8976-apc1-cpr", "qcom,cpr";
+			reg = <0x0b118000 0x1000>;
+			interrupts = <0 19 IRQ_TYPE_EDGE_RISING>;
+			clocks = <&xo_board>;
+			clock-names = "ref";
+			vdd-apc-supply = <&pm8004_s2>;
+			#power-domain-cells = <0>;
+			operating-points-v2 = <&cpr_opp_table>;
+
+			nvmem-cells = <&cpr1_efuse_quot_offset1>,
+				<&cpr1_efuse_quot_offset2>,
+				<&cpr1_efuse_quot_offset3>,
+				<&cpr1_efuse_init_voltage1>,
+				<&cpr1_efuse_init_voltage2>,
+				<&cpr1_efuse_init_voltage3>,
+				<&cpr1_efuse_quot1>,
+				<&cpr1_efuse_quot2>,
+				<&cpr1_efuse_quot3>,
+				<&cpr1_efuse_ring1>,
+				<&cpr1_efuse_ring2>,
+				<&cpr1_efuse_ring3>,
+				<&cpr_efuse_revision>;
+			nvmem-cell-names = "cpr_quotient_offset1",
+				"cpr_quotient_offset2",
+				"cpr_quotient_offset3",
+				"cpr_init_voltage1",
+				"cpr_init_voltage2",
+				"cpr_init_voltage3",
+				"cpr_quotient1",
+				"cpr_quotient2",
+				"cpr_quotient3",
+				"cpr_ring_osc1",
+				"cpr_ring_osc2",
+				"cpr_ring_osc3",
+				"cpr_fuse_revision";
+		};
+		
 		timer@b120000 {
 			compatible = "arm,armv7-timer-mem";
 			reg = <0x0b120000 0x1000>;

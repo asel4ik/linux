@@ -44,7 +44,7 @@ static void __clk_hfpll_init_once(struct clk_hw *hw)
 		regmap_write(regmap, hd->user_reg, regval);
 	}
 
-          /* Write L_VAL from conf if it exist */
+          /* Write L_VAL from conf if it exists */
         if (hd->l_val)
 	      regmap_write(regmap, hd->l_reg, hd->l_val);
 

@@ -433,24 +433,27 @@ static int cpr_post_voltage(struct cpr_drv *drv,
 static int cpr_scale_voltage(struct cpr_drv *drv, struct corner *corner,
 			     int new_uV, enum voltage_change_dir dir)
 {
+
 	int ret;
 	struct fuse_corner *fuse_corner = corner->fuse_corner;
-
-	ret = cpr_pre_voltage(drv, fuse_corner, dir);
-	if (ret)
-		return ret;
-
+	const struct cpr_desc *desc = drv->desc;
+        if(desc->mem_acc_supported) { 
+	  ret = cpr_pre_voltage(drv, fuse_corner, dir);
+	  if (ret)
+		  return ret;
+};
 	ret = regulator_set_voltage(drv->vdd_apc, new_uV, new_uV);
 	if (ret) {
 		dev_err_ratelimited(drv->dev, "failed to set apc voltage %d\n",
 				    new_uV);
 		return ret;
 	}
-
-	ret = cpr_post_voltage(drv, fuse_corner, dir);
-	if (ret)
-		return ret;
-
+          if(desc->mem_acc_supported)
+          {
+	  ret = cpr_post_voltage(drv, fuse_corner, dir);
+	  if (ret)
+		  return ret;
+};
 	return 0;
 }
 
@@ -470,9 +473,14 @@ static int cpr_scale(struct cpr_drv *drv, enum voltage_change_dir dir)
 		return 0;
 
 	step_uV = regulator_get_linear_step(drv->vdd_apc);
+	step_uV = desc->cpr_fuses.init_voltage_step;
+	dev_err(drv->dev, "cpr step_volt from data:%d\n",step_uV);
+	
 	if (!step_uV)
+	{
+	 dev_err(drv->dev, "cpr_scale_regulator_get_linear failed\n");
 		return -EINVAL;
-
+      };
 	corner = drv->corner;
 
 	val = cpr_read(drv, REG_RBCPR_RESULT_0);
@@ -763,6 +771,7 @@ static int cpr_set_performance_state(struct generic_pm_domain *domain,
 	corner = drv->corners + state - 1;
 	end = &drv->corners[drv->num_corners - 1];
 	if (corner > end || corner < drv->corners) {
+	 dev_err(drv->dev, "cpr_set_perfomance_state failed 1\n");
 		ret = -EINVAL;
 		goto unlock;
 	}
@@ -859,16 +868,19 @@ static int cpr_fuse_corner_init(struct cpr_drv *drv)
 	const struct reg_sequence *accs;
 	int ret;
         bool acc_supported;
-        
+
 	acc_supported = desc->mem_acc_supported;
 
 	if(acc_supported)
 	  accs = acc_desc->settings;
 
 	step_volt = regulator_get_linear_step(drv->vdd_apc);
+	step_volt = desc->cpr_fuses.init_voltage_step;
+	dev_err(drv->dev, "cpr step_volt from data:%d\n",step_volt);
 	if (!step_volt)
+	{  dev_err(drv->dev, "cpr_fuse_corner_init 1 failed\n");
 		return -EINVAL;
-
+        };
 	/* Populate fuse_corner members */
 	fuse = drv->fuse_corners;
 	end = &fuse[desc->num_fuse_corners - 1];
@@ -1096,11 +1108,15 @@ static int cpr_corner_init(struct cpr_drv *drv)
 	unsigned long freq_diff, freq_diff_mhz;
 	unsigned long freq;
 	int step_volt = regulator_get_linear_step(drv->vdd_apc);
+	step_volt = desc->cpr_fuses.init_voltage_step;
+	dev_err(drv->dev, "cpr step_volt from data:%d\n",step_volt);
 	struct dev_pm_opp *opp;
 
 	if (!step_volt)
+	{
+	 dev_err(drv->dev, "cpr corner init failed\n");
 		return -EINVAL;
-
+}
 	corner = drv->corners;
 	end = &corner[drv->num_corners - 1];
 
@@ -1117,15 +1133,19 @@ static int cpr_corner_init(struct cpr_drv *drv)
 	for (level = 1; level <= drv->num_corners; level++) {
 		opp = dev_pm_opp_find_level_exact(&drv->pd.dev, level);
 		if (IS_ERR(opp))
+		{  dev_err(drv->dev, "dev_pm_opp_find_level_exact failed\n");
 			return -EINVAL;
+			}
 		fc = cpr_get_fuse_corner(opp);
 		if (!fc) {
 			dev_pm_opp_put(opp);
+		      dev_err(drv->dev, "dev_pm_opp_put failed\n");
 			return -EINVAL;
 		}
 		fnum = fc - 1;
 		freq = cpr_get_opp_hz_for_req(opp, drv->attached_cpu_dev);
 		if (!freq) {
+			dev_err(drv->dev, "cpr_get_opp_hz_for_req failed\n");
 			dev_pm_opp_put(opp);
 			return -EINVAL;
 		}
@@ -1367,7 +1387,7 @@ static const struct cpr_desc msm8976_apc0_cpr_desc = {
 	.vdd_apc_step_up_limit = 1,
 	.vdd_apc_step_down_limit = 1,
 	.cpr_fuses = {
-		.init_voltage_step = 10000,
+		.init_voltage_step = 5000,
 		.init_voltage_width = 6, //?
 		.fuse_corner_data = (struct fuse_corner_data[]){
 			/* fuse corner 0 */
@@ -1434,7 +1454,7 @@ static const struct cpr_desc msm8976_apc1_cpr_desc = {
 	.vdd_apc_step_up_limit = 1,
 	.vdd_apc_step_down_limit = 1,
 	.cpr_fuses = {
-		.init_voltage_step = 10000,
+		.init_voltage_step = 5000,
 		.init_voltage_width = 6, //?
 		.fuse_corner_data = (struct fuse_corner_data[]){
 			/* fuse corner 0 */
@@ -1591,6 +1611,7 @@ static int cpr_pd_attach_dev(struct generic_pm_domain *domain,
 			     struct device *dev)
 {
 	struct cpr_drv *drv = container_of(domain, struct cpr_drv, pd);
+	const struct cpr_desc *desc = drv->desc;
 	const struct acc_desc *acc_desc = drv->acc_desc;
 	int ret = 0;
 
@@ -1677,6 +1698,8 @@ static int cpr_pd_attach_dev(struct generic_pm_domain *domain,
 	if (ret)
 		goto unlock;
 
+    if(desc->mem_acc_supported)
+    {
 	if (acc_desc->config)
 		regmap_multi_reg_write(drv->tcsr, acc_desc->config,
 				       acc_desc->num_regs_per_fuse);
@@ -1686,7 +1709,7 @@ static int cpr_pd_attach_dev(struct generic_pm_domain *domain,
 		regmap_update_bits(drv->tcsr, acc_desc->enable_reg,
 				   acc_desc->enable_mask,
 				   acc_desc->enable_mask);
-
+};
 	dev_info(drv->dev, "driver initialized with %u OPPs\n",
 		 drv->num_corners);
 

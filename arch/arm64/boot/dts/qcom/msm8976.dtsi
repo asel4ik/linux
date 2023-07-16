@@ -101,7 +101,7 @@
 			clocks = <&apcs>;
 			operating-points-v2 = <&big_cpu_opp_table>;
 			power-domains = <&cpr1_apc1>;
-			power-domain-names = "cpr1";
+			power-domain-names = "cpr";
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -116,7 +116,7 @@
 			clocks = <&apcs>;
 			operating-points-v2 = <&big_cpu_opp_table>;
 			power-domains = <&cpr1_apc1>;
-			power-domain-names = "cpr1";
+			power-domain-names = "cpr";
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -131,7 +131,7 @@
 			clocks = <&apcs>;
 			operating-points-v2 = <&big_cpu_opp_table>;
 			power-domains = <&cpr1_apc1>;
-			power-domain-names = "cpr1";
+			power-domain-names = "cpr";
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -146,7 +146,7 @@
 			clocks = <&apcs>;
 			operating-points-v2 = <&big_cpu_opp_table>;
 			power-domains = <&cpr1_apc1>;
-			power-domain-names = "cpr1";
+			power-domain-names = "cpr";
 			cpu-idle-states = <&big_cpu_sleep_0 &big_cpu_sleep_1>;
 			capacity-dmips-mhz = <1024>;
 			next-level-cache = <&l2_1>;
@@ -241,38 +241,25 @@
 		compatible = "operating-points-v2-qcom-cpu";
 		nvmem-cells = <&cpr_efuse_speedbin>;
 		opp-shared;
-
-
-		opp-400000000 {
-			opp-hz = /bits/ 64 <400000000>;
+		
+		opp-800000000 {
+			opp-hz = /bits/ 64 <800000000>;
 			required-opps = <&cpr_opp1>;
 			opp-supported-hw = <BIN_ALL>;
 		};
-		opp-800000000 {
-			opp-hz = /bits/ 64 <800000000>;
-			required-opps = <&cpr_opp2>;
+		
+		opp-902400000 {
+			opp-hz = /bits/ 64 <902400000>;
+			required-opps = <&cpr_opp1>;
 			opp-supported-hw = <BIN_ALL>;
 		};
+
 		opp-1017600000 {
 			opp-hz = /bits/ 64 <1017600000>;
 			required-opps = <&cpr_opp2>;
 			opp-supported-hw = <BIN_ALL>;
 		};
-		opp-1190400000 {
-			opp-hz = /bits/ 64 <1190400000>;
-			required-opps = <&cpr_opp3>;
-			opp-supported-hw = <BIN_ALL>;
-		};
-		opp-1305600000 {
-			opp-hz = /bits/ 64 <1305600000>;
-			required-opps = <&cpr_opp3>;
-			opp-supported-hw = <BIN_ALL>;
-		};
-		opp-1382400000 {
-			opp-hz = /bits/ 64 <1382400000>;
-			required-opps = <&cpr_opp3>;
-			opp-supported-hw = <BIN_ALL>;
-		};
+
 		opp-1401600000 {
 			opp-hz = /bits/ 64 <1401600000>;
 			required-opps = <&cpr_opp3>;
@@ -284,9 +271,15 @@
 		compatible = "operating-points-v2-qcom-cpu";
 		nvmem-cells = <&cpr_efuse_speedbin>;
 		opp-shared;
+		
+		opp-800000000 {
+			opp-hz = /bits/ 64 <800000000>;
+			required-opps = <&cpr_opp1>;
+			opp-supported-hw = <BIN_ALL>;
+		};
 
-		opp-400000000 {
-			opp-hz = /bits/ 64 <400000000>;
+		opp-960000000 {
+			opp-hz = /bits/ 64 <960000000>;
 			required-opps = <&cpr_opp1>;
 			opp-supported-hw = <BIN_ALL>;
 		};
@@ -295,11 +288,7 @@
 			required-opps = <&cpr_opp2>;
 			opp-supported-hw = <BIN_ALL>;
 		};
-		opp-1612800000 {
-			opp-hz = /bits/ 64 <1612800000>;
-			required-opps = <&cpr_opp3>;
-			opp-supported-hw = <BIN_ALL>;
-		};
+
 		opp-1747200000 {
 			opp-hz = /bits/ 64 <1747200000>;
 			required-opps = <&cpr_opp3>;

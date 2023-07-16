@@ -167,6 +167,7 @@ struct cpr_desc {
 	unsigned int num_fuse_corners;
 	int min_diff_quot;
 	int *step_quot;
+        bool mem_acc_supported;
 
 	unsigned int		timer_delay_us;
 	unsigned int		timer_cons_up;
@@ -857,8 +858,12 @@ static int cpr_fuse_corner_init(struct cpr_drv *drv)
 	int uV;
 	const struct reg_sequence *accs;
 	int ret;
+        bool acc_supported;
+        
+	acc_supported = desc->mem_acc_supported;
 
-	accs = acc_desc->settings;
+	if(acc_supported)
+	  accs = acc_desc->settings;
 
 	step_volt = regulator_get_linear_step(drv->vdd_apc);
 	if (!step_volt)
@@ -908,10 +913,13 @@ static int cpr_fuse_corner_init(struct cpr_drv *drv)
 		fuse->quot += fdata->quot_adjust;
 		fuse->step_quot = desc->step_quot[fuse->ring_osc_idx];
 
-		/* Populate acc settings */
+		/* Populate acc settings if exist */
+		 if(acc_supported)
+                {
 		fuse->accs = accs;
 		fuse->num_accs = acc_desc->num_regs_per_fuse;
 		accs += acc_desc->num_regs_per_fuse;
+		};
 	}
 
 	/*
@@ -1345,6 +1353,7 @@ static int cpr_find_initial_corner(struct cpr_drv *drv)
 }
 
 static const struct cpr_desc msm8976_apc0_cpr_desc = {
+	.mem_acc_supported = false,
 	.num_fuse_corners = 3,
 	.min_diff_quot = CPR_FUSE_MIN_QUOT_DIFF,
 	.step_quot = (int []){ 25, 25, 25, },
@@ -1411,6 +1420,7 @@ static const struct cpr_acc_desc msm8976_apc0_cpr_acc_desc = {
 };
 
 static const struct cpr_desc msm8976_apc1_cpr_desc = {
+	.mem_acc_supported = false,
 	.num_fuse_corners = 3,
 	.min_diff_quot = CPR_FUSE_MIN_QUOT_DIFF,
 	.step_quot = (int []){ 25, 25, 25, },
@@ -1476,6 +1486,7 @@ static const struct cpr_acc_desc msm8976_apc1_cpr_acc_desc = {
 };
 
 static const struct cpr_desc qcs404_cpr_desc = {
+	.mem_acc_supported = true,
 	.num_fuse_corners = 3,
 	.min_diff_quot = CPR_FUSE_MIN_QUOT_DIFF,
 	.step_quot = (int []){ 25, 25, 25, },
@@ -1751,16 +1762,22 @@ static int cpr_probe(struct platform_device *pdev)
 	const struct cpr_acc_desc *data;
 	struct device_node *np;
 	u32 cpr_rev = FUSE_REVISION_UNKNOWN;
-
+        
 	data = of_device_get_match_data(dev);
-	if (!data || !data->cpr_desc || !data->acc_desc)
-		return -EINVAL;
+	/* Some SoC like MSM8976 does not use acc data */
+	if (!data || !data->cpr_desc)
+	{
+	dev_err(drv->dev, "failed checking data\n");
+	return -EINVAL;
+	}
 
 	drv = devm_kzalloc(dev, sizeof(*drv), GFP_KERNEL);
 	if (!drv)
 		return -ENOMEM;
 	drv->dev = dev;
 	drv->desc = data->cpr_desc;
+	
+
 	drv->acc_desc = data->acc_desc;
 
 	drv->fuse_corners = devm_kcalloc(dev, drv->desc->num_fuse_corners,
@@ -1768,7 +1785,9 @@ static int cpr_probe(struct platform_device *pdev)
 					 GFP_KERNEL);
 	if (!drv->fuse_corners)
 		return -ENOMEM;
-
+        if(data->cpr_desc->mem_acc_supported)
+        {
+        dev_err(drv->dev, "checking for acc-sycon\n");
 	np = of_parse_phandle(dev->of_node, "acc-syscon", 0);
 	if (!np)
 		return -ENODEV;
@@ -1777,7 +1796,7 @@ static int cpr_probe(struct platform_device *pdev)
 	of_node_put(np);
 	if (IS_ERR(drv->tcsr))
 		return PTR_ERR(drv->tcsr);
-
+      }
 	drv->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(drv->base))
 		return PTR_ERR(drv->base);

@@ -204,6 +204,32 @@ len_error:
 	return ret;
 }
 
+static int qcom_cpufreq_a53_name_version(struct device *cpu_dev,
+					 struct nvmem_cell *speedbin_nvmem,
+					 char **pvs_name,
+					 struct qcom_cpufreq_drv *drv)
+{
+	int speed = 0;
+	u8 *speedbin;
+	size_t len;
+
+	speedbin = nvmem_cell_read(speedbin_nvmem, &len);
+
+	if (IS_ERR(speedbin))
+		return PTR_ERR(speedbin);
+
+	if (len < 1) {
+		dev_err(cpu_dev, "Unable to read nvmem data. Defaulting to 0!\n");
+		return -ENODEV;
+	}
+
+	speed = (*speedbin) & 0x7;
+	snprintf(*pvs_name, sizeof("speedXX"), "speed%d", speed);
+	drv->versions = BIT(speed);
+	kfree(speedbin);
+	return 0;
+}
+
 static const struct qcom_cpufreq_match_data match_data_kryo = {
 	.get_version = qcom_cpufreq_kryo_name_version,
 };
@@ -215,6 +241,11 @@ static const struct qcom_cpufreq_match_data match_data_krait = {
 static const char *qcs404_genpd_names[] = { "cpr", NULL };
 
 static const struct qcom_cpufreq_match_data match_data_qcs404 = {
+	.genpd_names = qcs404_genpd_names,
+};
+
+static const struct qcom_cpufreq_match_data match_data_a53 = {
+	.get_version = qcom_cpufreq_a53_name_version,
 	.genpd_names = qcs404_genpd_names,
 };
 
@@ -238,8 +269,8 @@ static int qcom_cpufreq_probe(struct platform_device *pdev)
 	if (!np)
 		return -ENOENT;
 
-	ret = of_device_is_compatible(np, "operating-points-v2-kryo-cpu");
-	if (!ret) {
+	if (!of_device_is_compatible(np, "operating-points-v2-kryo-cpu") &&
+	    !of_device_is_compatible(np, "operating-points-v2-qcom-cpu")) {
 		of_node_put(np);
 		return -ENOENT;
 	}
@@ -366,7 +397,10 @@ static const struct of_device_id qcom_cpufreq_match_list[] __initconst = {
 	{ .compatible = "qcom,apq8064", .data = &match_data_krait },
 	{ .compatible = "qcom,msm8974", .data = &match_data_krait },
 	{ .compatible = "qcom,msm8960", .data = &match_data_krait },
-	{ .compatible = "qcom,msm8976", .data = &match_data_qcs404 },
+	{ .compatible = "qcom,msm8953", .data = &match_data_a53 },
+	{ .compatible = "qcom,sdm450", .data = &match_data_a53 },
+	{ .compatible = "qcom,sdm632", .data = &match_data_a53 },
+	{ .compatible = "qcom,msm8976", .data = &match_data_a53 },
 	{},
 };
 MODULE_DEVICE_TABLE(of, qcom_cpufreq_match_list);

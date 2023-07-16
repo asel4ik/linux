@@ -325,7 +325,7 @@
 		regulator-boot-on;
 		regulator-name = "vdd_apc1";
 		regulator-initial-mode = <1>;
-		regulator-min-microvolt = <950000>;
+		regulator-min-microvolt = <790000>;
 		regulator-max-microvolt = <1165000>;
 	};
 
@@ -363,7 +363,7 @@
 	/* Cluster 0 supply */
 	pm8950_spmi_s5: s5 {
 	
-		regulator-min-microvolt = <950000>;
+		regulator-min-microvolt = <795000>;
 		regulator-max-microvolt = <1165000>;
 		regulator-name = "vdd_apc0";
 		regulator-initial-mode = <1>;

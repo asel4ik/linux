@@ -24,9 +24,11 @@
 /* Number of bytes for chip identification */
 #define NT36XXX_ID_LEN_MAX	6
 
+
+
 /* Touch info */
-#define TOUCH_DEFAULT_MAX_WIDTH  1080
-#define TOUCH_DEFAULT_MAX_HEIGHT 2246
+#define TOUCH_DEFAULT_MAX_WIDTH  720
+#define TOUCH_DEFAULT_MAX_HEIGHT 1520
 #define TOUCH_MAX_FINGER_NUM	 10
 #define TOUCH_MAX_PRESSURE	 1000
 

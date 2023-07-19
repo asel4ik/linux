@@ -366,6 +366,8 @@ static int __nt36xxx_get_fw_info(struct nt36xxx_i2c *ts)
 		fwi->abs_x_max = TOUCH_DEFAULT_MAX_WIDTH;
 		fwi->abs_y_max = TOUCH_DEFAULT_MAX_HEIGHT;
 		fwi->max_buttons = 0;
+		dev_err(&ts->hw_client->dev,
+			"Failed reading FW info setting defaults");
 		return -EINVAL;
 	}
 
@@ -659,7 +661,7 @@ static void nt36xxx_disable_regulators(void *data)
 	regulator_bulk_disable(NT36XXX_NUM_SUPPLIES, ts->supplies);
 }
 
-static int nt36xxx_i2c_probe(struct i2c_client *hw_client,
+static int nt36xxx_i2c_probe(struct i2c_client *hw_client)
 			     const struct i2c_device_id *id)
 {
 	struct nt36xxx_i2c *ts;
@@ -765,8 +767,6 @@ static int nt36xxx_i2c_probe(struct i2c_client *hw_client,
 
 	/* Get informations from the TS firmware */
 	ret = nt36xxx_get_fw_info(ts);
-	if (ret < 0)
-		return ret;
 
 	input->phys = devm_kasprintf(&hw_client->dev, GFP_KERNEL,
 				     "%s/input0", dev_name(&hw_client->dev));

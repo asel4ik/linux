@@ -131,24 +131,18 @@
 };
 
 &i2c_3 {
-	status = "disabled";
+	status = "okay";
 //novatek
-	touchscreen@20 {
-		reg = <0x20>;
-		compatible = "syna,rmi4-i2c";
 
-		interrupt-parent = <&tlmm>;
-		interrupts = <65 IRQ_TYPE_EDGE_FALLING>;
-
-		pinctrl-names = "default";
-		pinctrl-0 = <&ts_reset>;
-
-		vdd-supply = <&pm8953_l22>;
-		vio-supply = <&pm8953_l6>;
-
-		syna,reset-delay-ms = <200>;
-		syna,startup-delay-ms = <500>;
-	};
+touchscreen@62 {
+        compatible = "novatek,nt36525";
+        reg = <0x62>;
+        interrupt-parent = <&tlmm>;
+        pinctrl-names = "default";
+	pinctrl-0 = <&ts_reset &ts_int>;
+        vio-supply = <&pm8953_l6>;
+        interrupts = <65 IRQ_TYPE_EDGE_RISING>;
+      };
 };
 
 &lpass {
@@ -342,7 +336,14 @@
 	ts_reset: ts-reset-state {
 		pins = "gpio64";
 		function = "gpio";
-		drive-strength = <2>;
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+	
+	ts_int: ts-int-state {
+		pins = "gpio65";
+		function = "gpio";
+		drive-strength = <8>;
 		bias-pull-up;
 	};
 

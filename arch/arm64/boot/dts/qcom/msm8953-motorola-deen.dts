@@ -75,9 +75,6 @@
 	status = "disabled";
 };
 
-
-
-
 &atc_leds {
 	status = "disabled";
 };
@@ -130,10 +127,29 @@
 	status = "okay";
 };
 
+&i2c_2 {
+	status = "okay";
+
+	speaker_codec: audio-codec@34 {
+		compatible = "nxp,tfa9874";
+		reg = <0x34>;
+
+		reset-gpio = <&tlmm 94 GPIO_ACTIVE_HIGH>;
+
+		#sound-dai-cells = <0>;
+	};
+};
+
+&q6afedai {
+	dai@22 {
+		reg = <QUATERNARY_MI2S_RX>;
+		qcom,sd-lines = <0>;
+	};
+};
+
 &i2c_3 {
 	status = "okay";
-//novatek
-
+	
 touchscreen@62 {
         compatible = "novatek,nt36525";
         reg = <0x62>;
@@ -146,7 +162,7 @@ touchscreen@62 {
 };
 
 &lpass {
-	status = "disabled";
+	status = "okay";
 };
 
 &mdss {
@@ -172,6 +188,13 @@ touchscreen@62 {
 	qcom,cabc;
 
 	status = "okay";
+};
+
+&q6afedai {
+	dai@127 {
+		reg = <QUINARY_MI2S_RX>;
+		qcom,sd-lines = <1>;
+	};
 };
 
 &rpm_requests {
@@ -321,13 +344,21 @@ touchscreen@62 {
 };
 
 &sound_card {
-	status = "disabled";
+	status = "okay";
+
+	model = "motorola-deen";
 
 	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act &cdc_pdm_comp_lines_act>;
-	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus &cdc_pdm_comp_lines_act>;
+	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act &cdc_pdm_comp_lines_act &tlmm_sec_act >;
+	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus &cdc_pdm_comp_lines_act &tlmm_sec_sus >;
+	
+};
 
-	model = "msm8916";
+&sound_dai_quaternary {
+status = "okay";
+	codec {
+		sound-dai = <&speaker_codec>;
+	};
 };
 
 &tlmm {
@@ -382,6 +413,20 @@ touchscreen@62 {
 		output-low;
 		drive-strength = <2>;
 	};
+	
+	tlmm_sec_act: tlmm_quat_default {
+		pins = "gpio135", "gpio136", "gpio137", "gpio138";
+		function = "sec_mi2s";
+		drive-strength = <8>;
+		/* bias-disable; */
+	};
+
+	tlmm_sec_sus: tlmm_quat_sleep {
+		pins = "gpio135", "gpio136", "gpio137", "gpio138";
+		function = "sec_mi2s";
+		drive-strength = <2>;
+		bias-pull-down;
+	};	
 };
 
 &usb3 {
@@ -393,7 +438,7 @@ touchscreen@62 {
 };
 
 &wcd_codec {
-	status = "disabled";
+	status = "okay";
 
 	qcom,micbias1-ext-cap;
 	qcom,micbias2-ext-cap;
@@ -407,14 +452,17 @@ touchscreen@62 {
 };
 
 &wcnss {
-	status = "disabled";
+	status = "okay";
 
 	vddpx-supply = <&pm8953_l5>;
 };
 
 &wcnss_iris {
+	compatible = "qcom,wcn3660b";
+
 	vddxo-supply = <&pm8953_l7>;
 	vddrfa-supply = <&pm8953_l19>;
 	vddpa-supply = <&pm8953_l9>;
 	vdddig-supply = <&pm8953_l5>;
 };
+

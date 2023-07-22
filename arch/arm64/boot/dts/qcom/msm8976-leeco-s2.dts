@@ -381,6 +381,10 @@
 	};
 };
 
+&xo_board {
+	clock-frequency = <19200000>;
+};
+
 &pm8950_codec {
 	status="okay";
 	qcom,micbias1-ext-cap;

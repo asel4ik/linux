@@ -11,6 +11,9 @@ PROPERTIES
                         "qcom,hfpll-ipq8064", "qcom,hfpll"
                         "qcom,hfpll-apq8064", "qcom,hfpll"
                         "qcom,hfpll-msm8974", "qcom,hfpll"
+                        "qcom,hfpll-msm8976-a53", "qcom,hfpll"
+                        "qcom,hfpll-msm8976-a72", "qcom,hfpll"
+                        "qcom,hfpll-msm8976-cci", "qcom,hfpll"
                         "qcom,hfpll-msm8960", "qcom,hfpll"
 
 - reg:

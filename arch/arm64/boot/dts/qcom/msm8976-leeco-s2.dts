@@ -354,7 +354,7 @@
 	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act  &tlmm_pri_act &cross_con_sus >;
 	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus  &tlmm_pri_sus &cross_con_act>;
 	model = "leeco-s2";
-}
+};
 
 &sound_dai_quinary {
 	codec {
@@ -362,7 +362,7 @@
 	};
 };
 
-&wcd_codec {
+&pm8950_codec {
 	status="okay";
 	qcom,micbias1-ext-cap;
 	qcom,hphl-jack-type-normally-open;

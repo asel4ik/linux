@@ -548,3 +548,6 @@ status = "okay";
 		};
 	};
 };
+&tsens {
+status = "disabled";
+};

@@ -1846,6 +1846,10 @@
 				    "pri-iomux",
 				    "quin-iomux";
 
+			assigned-clocks = <&q6afecc LPASS_CLK_ID_INTERNAL_DIGITAL_CODEC_CORE LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
+			assigned-clock-rates = <9600000>;
+			
+
 			dai-link-multimedia1 {
 				link-name = "MultiMedia1";
 				cpu {

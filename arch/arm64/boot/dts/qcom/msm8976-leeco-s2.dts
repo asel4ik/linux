@@ -385,6 +385,7 @@
 };
 
 &sound_dai_quinary {
+status = "okay";
 	codec {
 		sound-dai = <&speaker_codec>;
 	};

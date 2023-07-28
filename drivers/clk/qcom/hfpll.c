@@ -85,9 +85,9 @@ static const struct hfpll_data msm8976_cci = {
 
 static const struct of_device_id qcom_hfpll_match_table[] = {
 	{ .compatible = "qcom,hfpll", &hdata },
-	{ .compatible = "qcom,hfpll-msm8976-a53", &msm8976_a53 },
-	{ .compatible = "qcom,hfpll-msm8976-a72", &msm8976_a72 },
-	{ .compatible = "qcom,hfpll-msm8976-cci", &msm8976_cci },
+	{ .compatible = "qcom,hfpll-msm8976-a53", .data = &msm8976_a53},
+	{ .compatible = "qcom,hfpll-msm8976-a72", .data = &msm8976_a72},
+	{ .compatible = "qcom,hfpll-msm8976-cci", .data = &msm8976_cci},
 	{ }
 };
 MODULE_DEVICE_TABLE(of, qcom_hfpll_match_table);

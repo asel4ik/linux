@@ -54,6 +54,14 @@
 		regulator-boot-on;
 	};
 
+	battery: battery {
+		compatible = "simple-battery";
+		charge-full-design-microamp-hours = <3000000>;
+		constant-charge-current-max-microamp = <1000000>;
+		voltage-min-design-microvolt = <3400000>;
+		voltage-max-design-microvolt = <4400000>;
+	};
+	
 	gpio_keys {
 		compatible = "gpio-keys";
 		input-name = "gpio-keys";
@@ -70,6 +78,7 @@
 			debounce-interval = <15>;
 		};
 	};
+	/*
 	ibb_vreg: fake-ibb-vreg {
 		compatible = "regulator-fixed";
 		regulator-name = "fakeibb_vreg";
@@ -82,7 +91,7 @@
 		regulator-min-microvolt = <4000000>;
 		regulator-max-microvolt = <4000000>;
 	};
-
+*/
 };
 
 &sdhc_1 {
@@ -132,6 +141,16 @@
 	};
 };
 
+&pmi8950_fg {
+	monitored-battery = <&battery>;
+	power-supplies = <&pmi8950_smbcharger>;
+	status = "okay";
+};
+
+&pmi8950_smbcharger {
+	monitored-battery = <&battery>;
+	status = "okay";
+};
 
 &dsi0_out {
 	data-lanes = <0 1 2 3>;

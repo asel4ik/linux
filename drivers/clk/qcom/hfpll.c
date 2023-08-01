@@ -63,7 +63,7 @@ static const struct hfpll_data msm8976_a72 = {
 	.l_val = 0x3e,
 	.user_val = 0x100109,
 	.min_rate = 940800000UL,
-	.max_rate = 1843200000UL,
+	.max_rate = 2016000000UL,
 };
 
 static const struct hfpll_data msm8976_cci = {

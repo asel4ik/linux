@@ -551,6 +551,55 @@ static const struct venus_resources msm8916_res = {
 	.fwname = "qcom/venus-1.8/venus.mdt",
 };
 
+static const struct freq_tbl msm8953_freq_table[] = {
+	{ 979200, 465000000 },	/* 4k UHD @ 30 */
+	{ 864000, 400000000 },	/* 720p @ 240 */
+	{ 489600, 360000000 },	/* 1080p @ 60 */
+	{ 432000, 310000000 },  /* 720p @ 120 */
+	{ 244800, 228570000 },	/* 1080p @ 30 */
+	{ 108000, 114290000 },	/* 720p @ 30 */
+};
+
+static const struct bw_tbl msm8953_bw_table_enc[] = {
+	{  979200,  1044000, 0, 0, 0 },	/* 4k UHD @ 30 */
+	{  864000,   887000, 0, 0, 0 }, /* 720p @ 240 */
+	{  489600,   666000, 0, 0, 0 }, /* 1080p @ 60 */
+	{  432000,   578000, 0, 0, 0 }, /* 720p @ 120 */
+	{  244800,   346000, 0, 0, 0 }, /* 1080p @ 30 */
+	{  216000,   293000, 0, 0, 0 }, /* 720p @ 60 */
+	{  108000,   151000, 0, 0, 0 }, /* 720p @ 30 */
+};
+
+static const struct bw_tbl msm8953_bw_table_dec[] = {
+	{  979200,  2365000, 0, 0, 0 }, /* 4k UHD @ 30 */
+	{  864000,  1978000, 0, 0, 0 }, /* 720p @ 240 */
+	{  489600,  1133000, 0, 0, 0 },	/* 1080p @ 60 */
+	{  432000,   994000, 0, 0, 0 },	/* 720p @ 120 */
+	{  244800,   580000, 0, 0, 0 },	/* 1080p @ 30 */
+	{  216000,   501000, 0, 0, 0 },	/* 720p @ 60 */
+	{  108000,   255000, 0, 0, 0 },	/* 720p @ 30 */
+};
+
+static const struct venus_resources msm8953_res = {
+	.freq_tbl = msm8953_freq_table,
+	.freq_tbl_size = ARRAY_SIZE(msm8953_freq_table),
+	.reg_tbl = msm8916_reg_preset,
+	.reg_tbl_size = ARRAY_SIZE(msm8916_reg_preset),
+	.clks = {"core", "iface", "bus" },
+	.clks_num = 3,
+	.vcodec0_clks = { "vcodec0_core" },
+	.vcodec1_clks = { "vcodec0_core" },
+	.vcodec_clks_num = 1,
+	.vcodec_num = 1,
+	.max_load = 1044480,
+	.hfi_version = HFI_VERSION_3XX,
+	.vmem_id = VIDC_RESOURCE_NONE,
+	.vmem_size = 0,
+	.vmem_addr = 0,
+	.dma_mask = 0xddc00000 - 1,
+	.fwname = "qcom/venus-4.2/venus.mdt",
+};
+
 static const struct freq_tbl msm8976_freq_table[] = {
 	{ 979200, 466000000 },	/* 3840 x 2160 @ 30E */
 	{ 734400, 400000000 },	/* 1920x1080 @ 90E */
@@ -927,6 +976,7 @@ static const struct venus_resources sc7280_res = {
 
 static const struct of_device_id venus_dt_match[] = {
 	{ .compatible = "qcom,msm8916-venus", .data = &msm8916_res, },
+	{ .compatible = "qcom,msm8953-venus", .data = &msm8953_res, },
 	{ .compatible = "qcom,msm8976-venus", .data = &msm8976_res, },
 	{ .compatible = "qcom,msm8996-venus", .data = &msm8996_res, },
 	{ .compatible = "qcom,sdm660-venus", .data = &sdm660_res, },

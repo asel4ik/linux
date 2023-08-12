@@ -50,6 +50,27 @@ required:
   - compatible
   - reg
 
+  - if:
+      properties:
+        compatible:
+          contains:
+            enum:
+              - qcom,msm8976-snoc
+
+      then:
+        required:
+          - clocks
+          - clock-names
+
+        properties:
+          clock-names:
+            items:
+              - const: ipa
+
+          clocks:
+            items:
+              - description: IPA clock from RPMCC
+
 unevaluatedProperties: false
 
 examples:
@@ -66,9 +87,4 @@ examples:
         compatible = "qcom,msm8976-bimc";
         reg = <0x00400000 0x62000>;
         #interconnect-cells = <1>;
-
-          snoc_mm: interconnect-snoc {
-              compatible = "qcom,msm8976-snoc-mm";
-              #interconnect-cells = <1>;
-          };
     };

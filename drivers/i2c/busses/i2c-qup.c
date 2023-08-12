@@ -1665,7 +1665,8 @@ static int qup_i2c_probe(struct platform_device *pdev)
 	u32 clk_freq = DEFAULT_CLK_FREQ;
 	int blocks;
 	bool is_qup_v1;
-
+        bool ownership_overtake;
+        int qup_id;
 	qup = devm_kzalloc(&pdev->dev, sizeof(*qup), GFP_KERNEL);
 	if (!qup)
 		return -ENOMEM;
@@ -1673,7 +1674,13 @@ static int qup_i2c_probe(struct platform_device *pdev)
 	qup->dev = &pdev->dev;
 	init_completion(&qup->xfer);
 	platform_set_drvdata(pdev, qup);
-
+      
+      
+        
+        ret = device_property_read_bool(qup->dev,
+				"qup,tz-owned", &ownership_overtake);
+				
+				
 	if (scl_freq) {
 		dev_notice(qup->dev, "Using override frequency of %u\n", scl_freq);
 		clk_freq = scl_freq;
@@ -1767,7 +1774,7 @@ nodma:
 		ret = qup->irq;
 		goto fail_dma;
 	}
-
+	
 	if (has_acpi_companion(qup->dev)) {
 		ret = device_property_read_u32(qup->dev,
 				"src-clock-hz", &src_clk_freq);

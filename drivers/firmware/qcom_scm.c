@@ -1325,6 +1325,21 @@ static int qcom_scm_find_dload_address(struct device *dev, u64 *addr)
 	return 0;
 }
 
+int qcom_scm_qup_set_ownership(u32 qup_id, u32 subsystem_id)
+{
+	struct qcom_scm_desc desc = {
+		.svc = SCM_SVC_TZ,
+		.cmd = QCOM_SCM_QUP_MODIFY_OWNERSHIP,
+		.arginfo = QCOM_SCM_ARGS(2),
+		.args[0] = qup_id,
+		.args[1] = subsystem_id,
+		.owner = ARM_SMCCC_OWNER_SIP,
+	};
+
+	return qcom_scm_call(__scm->dev, &desc, NULL);
+}
+EXPORT_SYMBOL(qcom_scm_qup_set_ownership);
+
 /**
  * qcom_scm_is_available() - Checks if SCM is available
  */

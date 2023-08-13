@@ -1790,6 +1790,16 @@ static const struct msm_pingroup msm8953_groups[] = {
 	SDC_QDSD_PINGROUP(sdc2_data, 0x109000, 9, 0),
 };
 
+static const struct msm_gpio_wakeirq_map msm8953_mpm_map[] = {
+{ 3, 38  }, { 4, 1 }, { 5, 5 }, { 6, 9 }, { 8, 37 }, { 9, 36 }, { 10, 13 },
+{ 11, 35 }, { 12, 17 }, { 13, 21 }, { 14, 54 }, { 15, 34 }, { 16, 31 }, { 17, 58 },
+{ 18, 28 }, { 19, 42 }, { 20, 25 }, { 21, 12 }, { 22, 43 }, { 23, 44 }, { 24, 45 },
+{ 25, 46 }, { 26, 48 }, { 27, 65 }, { 28, 93 }, { 29, 97 }, { 30, 63 }, { 31, 70 },
+{ 32, 71 }, { 33, 72 }, { 34, 81 }, { 35, 85 }, { 36, 90 }, { 50, 67 }, { 51, 73 },
+{ 52, 74 }, { 53, 62 }, { 59, 59 }, { 60, 60 }, { 61, 61 }, { 62, 86 }, { 63, 87 },
+{ 64, 91 }, { 65, 129 }, { 66, 130 }, { 67, 131 }, { 68, 132 }, { 69, 133 }, { 70, 137 },
+{ 71, 138 }, { 72, 139 }, { 73, 140 }, { 74, 141 },
+};
 static const struct msm_pinctrl_soc_data msm8953_pinctrl = {
 	.pins = msm8953_pins,
 	.npins = ARRAY_SIZE(msm8953_pins),
@@ -1798,6 +1808,8 @@ static const struct msm_pinctrl_soc_data msm8953_pinctrl = {
 	.groups = msm8953_groups,
 	.ngroups = ARRAY_SIZE(msm8953_groups),
 	.ngpios = 142,
+	.wakeirq_map = msm8953_mpm_map,
+	.nwakeirq_map = ARRAY_SIZE(msm8953_mpm_map),
 };
 
 static int msm8953_pinctrl_probe(struct platform_device *pdev)

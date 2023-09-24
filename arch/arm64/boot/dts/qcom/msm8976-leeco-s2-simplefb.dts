@@ -12,7 +12,7 @@
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/input/ti-drv260x.h>
 
-/delete-node/ &ext-region;
+/delete-node/ &ext-region@85b00000;
 
 / {
 	model = "Leeco Le S2";

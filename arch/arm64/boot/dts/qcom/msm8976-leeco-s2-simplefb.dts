@@ -59,6 +59,8 @@
 		};
 
                 ramoops@9ff00000 {
+                        compatible = "removed-dma-pool", "ramoops";
+			no-map;
                         reg = <0 0x9ff00000 0 0x100000>;
 			record-size = <0x10000>;
 			console-size = <0x60000>;

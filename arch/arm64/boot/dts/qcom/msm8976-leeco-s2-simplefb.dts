@@ -12,8 +12,6 @@
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/input/ti-drv260x.h>
 
-/delete-node/ &ext-region@85b00000;
-
 / {
 	model = "Leeco Le S2";
 	compatible = "leeco,s2", "qcom,msm8976";
@@ -52,6 +50,8 @@
                         no-map;
                         label = "cont_splash_region";
                 };
+
+                /delete-node/ ext-region@85b00000;
 
 		ext-region@84a00000 {
 			reg = <0x0 0x84a00000 0x0 0x1900000>;
